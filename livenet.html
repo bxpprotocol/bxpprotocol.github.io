@@ -7,387 +7,774 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="BXP LiveNet">
-<meta name="description" content="Your personal atmospheric exposure passport.">
 <title>BXP LiveNet</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
-  --bg:#080b12;--bg2:#0d1120;--surface:#111827;--surface2:#1a2235;
+  --bg:#080b12;--bg2:#0d1120;--surface:#111827;--s2:#151e30;
   --border:#1e2d45;--text:#e8edf5;--muted:#4a5a78;--muted2:#7a8ba8;
-  --accent:#00ff88;--accent2:#00c8ff;--warn:#ffaa00;--danger:#ff4466;
-  --mono:'JetBrains Mono',monospace;--sans:'Syne',sans-serif;
+  --accent:#00ff88;--a2:#00c8ff;--warn:#ffaa00;--danger:#ff4466;
+  --mono:'JetBrains Mono',monospace;
+  --sans:'Syne',sans-serif;
+  --serif:'Instrument Serif',serif;
 }
 html,body{height:100%;overflow:hidden}
-body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex;flex-direction:column;max-width:480px;margin:0 auto;position:relative;}
-body::before{content:'';position:fixed;top:-20%;left:-20%;width:60%;height:60%;background:radial-gradient(circle,rgba(0,255,136,0.04) 0%,transparent 70%);pointer-events:none;z-index:0;}
-body::after{content:'';position:fixed;bottom:-20%;right:-20%;width:60%;height:60%;background:radial-gradient(circle,rgba(0,200,255,0.04) 0%,transparent 70%);pointer-events:none;z-index:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex;flex-direction:column;max-width:480px;margin:0 auto;}
+body::before{content:'';position:fixed;top:-30%;left:-20%;width:70%;height:70%;background:radial-gradient(circle,rgba(0,255,136,0.025),transparent 70%);pointer-events:none;z-index:0;}
+body::after{content:'';position:fixed;bottom:-20%;right:-10%;width:50%;height:50%;background:radial-gradient(circle,rgba(0,200,255,0.02),transparent 70%);pointer-events:none;z-index:0;}
 
-.screen{position:absolute;inset:0;display:none;flex-direction:column;z-index:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;z-index:1;}
 .screen.active{display:flex}
 
-/* ONBOARDING */
-#screen-onboard{align-items:center;justify-content:center;padding:2rem;text-align:center;}
-.ob-logo{font-family:var(--mono);font-size:0.7rem;letter-spacing:0.2em;color:var(--muted2);margin-bottom:2rem;text-transform:uppercase;}
-.ob-orb{width:110px;height:110px;border-radius:50%;background:radial-gradient(circle at 35% 35%,rgba(0,255,136,0.3),rgba(0,200,255,0.1),transparent);border:1px solid rgba(0,255,136,0.2);margin:0 auto 2rem;animation:breathe 4s ease-in-out infinite;}
-@keyframes breathe{0%,100%{transform:scale(1);box-shadow:0 0 30px rgba(0,255,136,0.1)}50%{transform:scale(1.05);box-shadow:0 0 60px rgba(0,255,136,0.2)}}
-.ob-title{font-size:1.9rem;font-weight:800;letter-spacing:-0.02em;margin-bottom:0.6rem;line-height:1.15;}
-.ob-title span{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent;}
-.ob-sub{font-size:0.875rem;color:var(--muted2);line-height:1.7;max-width:300px;margin:0 auto 2rem;}
-.ob-features{width:100%;max-width:320px;display:flex;flex-direction:column;gap:0.6rem;margin-bottom:2rem;text-align:left;}
-.ob-feat{display:flex;align-items:flex-start;gap:0.75rem;padding:0.8rem 1rem;background:var(--surface);border-radius:10px;border:1px solid var(--border);}
-.ob-feat-icon{font-size:1rem;flex-shrink:0;margin-top:2px;}
-.ob-feat-text{font-size:0.8rem;color:var(--muted2);line-height:1.5;}
-.ob-feat-text strong{color:var(--text);display:block;margin-bottom:0.1rem;font-size:0.82rem;}
-.btn-start{width:100%;max-width:320px;padding:1rem;background:var(--accent);color:#080b12;border:none;border-radius:12px;font-family:var(--sans);font-size:1rem;font-weight:800;cursor:pointer;letter-spacing:0.02em;}
-.btn-start:active{transform:scale(0.98)}
-.ob-privacy{font-family:var(--mono);font-size:0.6rem;color:var(--muted);margin-top:0.875rem;line-height:1.6;max-width:280px;}
+/* ── ONBOARDING ── */
+#ob{background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.ob-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100%;padding:3rem 2rem;text-align:center;}
+.ob-eyebrow{font-family:var(--mono);font-size:0.62rem;letter-spacing:0.2em;color:var(--muted2);margin-bottom:2.5rem;text-transform:uppercase;}
+.ob-title{font-family:var(--serif);font-size:2.8rem;line-height:1.1;margin-bottom:1rem;font-weight:400;}
+.ob-title em{font-style:italic;color:var(--muted2);}
+.ob-sub{font-size:0.875rem;color:var(--muted2);line-height:1.8;max-width:290px;margin:0 auto 2.5rem;}
+.ob-feats{width:100%;max-width:320px;display:flex;flex-direction:column;gap:0.5rem;margin-bottom:2.5rem;text-align:left;}
+.ob-feat{padding:0.875rem 1rem;background:var(--surface);border:1px solid var(--border);border-radius:10px;}
+.ob-feat-t{font-size:0.82rem;font-weight:700;margin-bottom:0.2rem;}
+.ob-feat-b{font-size:0.75rem;color:var(--muted2);line-height:1.5;}
+.btn-begin{width:100%;max-width:320px;padding:1.1rem;background:var(--accent);color:#080b12;border:none;border-radius:12px;font-family:var(--sans);font-size:1rem;font-weight:800;cursor:pointer;}
+.btn-begin:active{transform:scale(0.98)}
+.ob-legal{font-family:var(--mono);font-size:0.57rem;color:var(--muted);margin-top:1rem;line-height:1.6;max-width:280px;}
 
-/* HEADER */
-.app-header{padding:0.875rem 1.25rem;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:rgba(8,11,18,0.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;}
-.app-logo{font-family:var(--mono);font-size:0.75rem;font-weight:700;letter-spacing:0.1em;color:var(--accent);}
-.header-right{display:flex;align-items:center;gap:0.75rem;}
-.app-status{display:flex;align-items:center;gap:0.4rem;font-family:var(--mono);font-size:0.62rem;color:var(--muted2);}
-.status-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse-dot 2s infinite;}
-.status-dot.inactive{background:var(--muted);animation:none;}
-.status-dot.error{background:var(--danger);animation:none;}
-@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.7)}}
+/* ── HEADER ── */
+.hdr{padding:0.875rem 1.25rem;display:flex;align-items:center;justify-content:space-between;background:rgba(8,11,18,0.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;flex-shrink:0;}
+.hdr-logo{font-family:var(--mono);font-size:0.72rem;font-weight:700;letter-spacing:0.1em;color:var(--accent);}
+.hdr-r{display:flex;align-items:center;gap:0.625rem;}
+.hdr-st{display:flex;align-items:center;gap:0.3rem;font-family:var(--mono);font-size:0.58rem;color:var(--muted2);}
+.sdot{width:5px;height:5px;border-radius:50%;background:var(--accent);animation:sd 2s infinite;}
+.sdot.off{background:var(--muted);animation:none;}
+.sdot.err{background:var(--danger);animation:none;}
+@keyframes sd{0%,100%{opacity:1}50%{opacity:0.25}}
+.hdr-btn{background:none;border:1px solid var(--border);border-radius:7px;color:var(--muted2);padding:0.28rem 0.52rem;font-size:0.88rem;cursor:pointer;}
+.hdr-btn.spin{animation:btnsp 0.65s linear;}
+@keyframes btnsp{to{transform:rotate(360deg)}}
 
-/* REFRESH BUTTON */
-.refresh-btn{background:none;border:1px solid var(--border);border-radius:8px;color:var(--muted2);padding:0.35rem 0.6rem;font-size:0.9rem;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;}
-.refresh-btn:active{border-color:var(--accent);color:var(--accent);transform:rotate(180deg);}
-.refresh-btn.spinning{animation:spin 0.8s linear;}
-@keyframes spin{to{transform:rotate(360deg)}}
+/* ── CONTENT ── */
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:1.125rem;padding-bottom:88px;display:flex;flex-direction:column;gap:0.875rem;}
 
-.app-content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:1.25rem;padding-bottom:90px;display:flex;flex-direction:column;gap:1rem;}
+/* ── CARDS ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.card-pad{padding:1.25rem;}
+.eyebrow{font-family:var(--mono);font-size:0.57rem;letter-spacing:0.15em;color:var(--muted2);text-transform:uppercase;margin-bottom:0.625rem;}
+.card-title{font-size:0.9rem;font-weight:700;margin-bottom:0.375rem;}
+.card-body{font-size:0.78rem;color:var(--muted2);line-height:1.7;}
+.card-body strong{color:var(--text);}
+.divider{height:1px;background:var(--border);}
 
-/* HRI HERO */
-.hri-hero{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.5rem;position:relative;overflow:hidden;}
-.hri-hero::before{content:'';position:absolute;top:0;right:0;width:200px;height:200px;background:radial-gradient(circle,rgba(0,255,136,0.06),transparent 70%);pointer-events:none;}
-.hri-label{font-family:var(--mono);font-size:0.62rem;letter-spacing:0.15em;color:var(--muted2);text-transform:uppercase;margin-bottom:0.75rem;}
-.hri-main{display:flex;align-items:flex-end;gap:1rem;margin-bottom:1rem;}
-.hri-number{font-family:var(--mono);font-size:4rem;font-weight:700;line-height:1;}
-.hri-level-badge{display:inline-block;font-size:0.7rem;font-weight:700;letter-spacing:0.1em;padding:0.25rem 0.6rem;border-radius:999px;margin-bottom:0.4rem;}
-.hri-advice{font-size:0.8rem;color:var(--muted2);line-height:1.5;max-width:180px;}
-.hri-bar-track{height:4px;background:var(--border);border-radius:999px;overflow:hidden;margin-bottom:0.75rem;}
-.hri-bar-fill{height:100%;border-radius:999px;transition:width 1s cubic-bezier(0.16,1,0.3,1);}
-.hri-meta{display:flex;gap:1.5rem;}
-.hri-meta-item{font-family:var(--mono);font-size:0.62rem;color:var(--muted);line-height:1.6;}
-.hri-meta-item span{color:var(--muted2);display:block;font-size:0.7rem;}
+/* ── BODY LOAD RING ── */
+.bl-wrap{display:flex;flex-direction:column;align-items:center;padding:1.5rem 1.25rem 1.25rem;}
+.bl-ring{position:relative;width:130px;height:130px;margin-bottom:1rem;}
+.bl-svg{position:absolute;inset:0;transform:rotate(-90deg);}
+.bl-track{fill:none;stroke:var(--border);stroke-width:7;}
+.bl-fill{fill:none;stroke-width:7;stroke-linecap:round;transition:stroke-dashoffset 1.8s cubic-bezier(0.16,1,0.3,1),stroke 0.5s;}
+.bl-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.bl-num{font-family:var(--mono);font-size:2.1rem;font-weight:700;line-height:1;}
+.bl-lbl{font-family:var(--mono);font-size:0.52rem;color:var(--muted2);letter-spacing:0.1em;margin-top:0.2rem;}
+.bl-title{font-size:0.8rem;font-weight:700;text-align:center;margin-bottom:0.25rem;}
+.bl-desc{font-size:0.73rem;color:var(--muted2);text-align:center;line-height:1.65;max-width:240px;}
 
-/* HEALTH CARD */
-.health-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem;border-left:3px solid var(--warn);}
-.hc-label{font-family:var(--mono);font-size:0.6rem;letter-spacing:0.15em;color:var(--warn);text-transform:uppercase;margin-bottom:0.75rem;}
-.hc-title{font-size:0.95rem;font-weight:700;margin-bottom:0.5rem;}
-.hc-body{font-size:0.8rem;color:var(--muted2);line-height:1.7;}
-.hc-risks{display:flex;flex-direction:column;gap:0.5rem;margin-top:0.875rem;}
-.hc-risk-row{display:flex;align-items:center;gap:0.75rem;}
-.hc-risk-name{font-size:0.72rem;color:var(--text);min-width:130px;}
-.hc-risk-bar{flex:1;height:4px;background:var(--border);border-radius:999px;overflow:hidden;}
-.hc-risk-fill{height:100%;border-radius:999px;}
-.hc-risk-pct{font-family:var(--mono);font-size:0.62rem;min-width:40px;text-align:right;}
-.hc-disclaimer{font-family:var(--mono);font-size:0.58rem;color:var(--muted);margin-top:0.875rem;line-height:1.6;border-top:1px solid var(--border);padding-top:0.75rem;}
+/* ── HRI HERO ── */
+.hri-row{display:flex;align-items:flex-end;gap:0.875rem;margin-bottom:0.875rem;}
+.hri-big{font-family:var(--mono);font-size:3rem;font-weight:700;line-height:1;}
+.hri-badge{display:inline-block;font-family:var(--mono);font-size:0.62rem;font-weight:700;letter-spacing:0.08em;padding:0.2rem 0.55rem;border-radius:999px;margin-bottom:0.3rem;}
+.hri-advice{font-size:0.75rem;color:var(--muted2);line-height:1.5;}
+.bar-t{height:3px;background:var(--border);border-radius:999px;overflow:hidden;margin-bottom:0.875rem;}
+.bar-f{height:100%;border-radius:999px;transition:width 1s ease;}
+.agents-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.4rem;}
+.ag-item{background:var(--bg2);border-radius:7px;padding:0.55rem;text-align:center;}
+.ag-id{font-family:var(--mono);font-size:0.52rem;color:var(--muted2);margin-bottom:0.15rem;}
+.ag-val{font-family:var(--mono);font-size:0.875rem;font-weight:700;}
+.ag-pct{font-family:var(--mono);font-size:0.48rem;color:var(--muted);margin-top:0.1rem;}
+.loc-row{display:flex;align-items:center;gap:0.5rem;margin-top:0.875rem;padding-top:0.875rem;border-top:1px solid var(--border);}
+.loc-name{font-size:0.8rem;font-weight:600;}
+.loc-sub{font-family:var(--mono);font-size:0.6rem;color:var(--muted2);}
 
-/* LOCATION ERROR */
-.location-error{background:var(--surface);border:1px solid rgba(255,68,102,0.3);border-radius:12px;padding:1.25rem;border-left:3px solid var(--danger);}
-.le-title{font-size:0.9rem;font-weight:700;color:var(--danger);margin-bottom:0.5rem;}
-.le-body{font-size:0.8rem;color:var(--muted2);line-height:1.7;margin-bottom:0.875rem;}
-.le-steps{display:flex;flex-direction:column;gap:0.5rem;}
-.le-step{font-size:0.78rem;color:var(--text);display:flex;gap:0.5rem;align-items:flex-start;}
-.le-step-num{font-family:var(--mono);font-size:0.65rem;color:var(--accent);flex-shrink:0;margin-top:2px;}
-.le-retry{margin-top:1rem;width:100%;padding:0.75rem;background:transparent;border:1px solid var(--danger);color:var(--danger);border-radius:8px;font-family:var(--sans);font-size:0.85rem;font-weight:700;cursor:pointer;}
+/* ── METRIC ROWS ── */
+.metric-row{display:flex;align-items:center;justify-content:space-between;padding:0.75rem 0;border-bottom:1px solid var(--border);}
+.metric-row:last-child{border-bottom:none}
+.metric-label{font-size:0.78rem;color:var(--muted2);}
+.metric-value{font-family:var(--mono);font-size:0.85rem;font-weight:700;}
 
-/* AGENTS */
-.agents-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;}
-.agent-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem;position:relative;overflow:hidden;}
-.agent-id{font-family:var(--mono);font-size:0.62rem;color:var(--muted2);margin-bottom:0.3rem;letter-spacing:0.05em;}
-.agent-value{font-family:var(--mono);font-size:1.4rem;font-weight:700;line-height:1;margin-bottom:0.2rem;}
-.agent-unit{font-family:var(--mono);font-size:0.6rem;color:var(--muted);}
-.agent-who{font-family:var(--mono);font-size:0.58rem;color:var(--muted);margin-top:0.4rem;}
-.agent-mini-bar{height:2px;background:var(--border);border-radius:999px;overflow:hidden;margin-top:0.5rem;}
-.agent-mini-fill{height:100%;border-radius:999px;}
+/* ── EXPOSURE AGE ── */
+.exp-age-big{font-family:var(--serif);font-size:3rem;line-height:1;font-weight:400;}
+.exp-age-unit{font-family:var(--mono);font-size:0.65rem;color:var(--muted2);margin-left:0.5rem;vertical-align:middle;}
 
-/* LOCATION CARD */
-.location-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;}
-.location-icon{font-size:1.5rem;flex-shrink:0;}
-.location-name{font-size:0.9rem;font-weight:600;margin-bottom:0.2rem;}
-.location-coords{font-family:var(--mono);font-size:0.62rem;color:var(--muted2);}
-.location-gh{font-family:var(--mono);font-size:0.62rem;color:var(--muted);margin-top:0.2rem;}
+/* ── DEBT BAR ── */
+.debt-big{font-family:var(--mono);font-size:2rem;font-weight:700;line-height:1;}
+.debt-unit{font-family:var(--mono);font-size:0.65rem;color:var(--muted2);margin-left:0.25rem;}
 
-/* SHARE */
-.share-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem;}
-.sc-label{font-family:var(--mono);font-size:0.6rem;letter-spacing:0.15em;color:var(--muted2);text-transform:uppercase;margin-bottom:0.875rem;}
-.sc-buttons{display:flex;gap:0.5rem;flex-wrap:wrap;}
-.sc-btn{flex:1;min-width:90px;padding:0.7rem 0.5rem;border-radius:8px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-family:var(--sans);font-size:0.78rem;font-weight:600;cursor:pointer;text-align:center;}
-.sc-btn.wa{border-color:rgba(37,211,102,0.3);color:#25d366;}
+/* ── BUDGET ── */
+.budget-gauge{display:flex;gap:0.3rem;height:8px;border-radius:999px;overflow:hidden;margin:0.75rem 0;}
+.bg-seg{border-radius:999px;transition:width 0.8s ease;}
+.budget-stat-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem;margin-top:0.75rem;}
+.bs-item{background:var(--bg2);border-radius:8px;padding:0.625rem;text-align:center;}
+.bs-num{font-family:var(--mono);font-size:1.1rem;font-weight:700;line-height:1;margin-bottom:0.2rem;}
+.bs-lbl{font-family:var(--mono);font-size:0.5rem;color:var(--muted2);text-transform:uppercase;letter-spacing:0.05em;}
 
-/* NOTIFICATION */
-.notif-card{background:rgba(0,255,136,0.05);border:1px solid rgba(0,255,136,0.2);border-radius:12px;padding:1.25rem;display:flex;gap:1rem;align-items:flex-start;}
-.notif-icon{font-size:1.5rem;flex-shrink:0;}
-.notif-title{font-size:0.875rem;font-weight:700;margin-bottom:0.3rem;}
-.notif-body{font-size:0.78rem;color:var(--muted2);line-height:1.5;margin-bottom:0.75rem;}
-.notif-btn{padding:0.6rem 1.25rem;background:var(--accent);color:#080b12;border:none;border-radius:8px;font-family:var(--sans);font-size:0.82rem;font-weight:800;cursor:pointer;}
+/* ── ROUTE INTELLIGENCE ── */
+.route-card{background:var(--bg2);border-radius:8px;padding:0.875rem;margin-top:0.625rem;}
+.route-title{font-size:0.8rem;font-weight:700;margin-bottom:0.5rem;}
+.route-compare{display:flex;flex-direction:column;gap:0.375rem;}
+.route-row{display:flex;align-items:center;gap:0.625rem;}
+.route-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.route-info{flex:1;font-size:0.75rem;color:var(--muted2);line-height:1.4;}
+.route-info strong{color:var(--text);}
 
-/* TIMELINE */
-.timeline-list{display:flex;flex-direction:column;gap:0.5rem;}
-.timeline-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:0.875rem 1rem;display:flex;align-items:center;gap:1rem;}
-.tl-score{font-family:var(--mono);font-size:1.1rem;font-weight:700;min-width:36px;text-align:center;}
-.tl-info{flex:1;min-width:0;}
-.tl-location{font-size:0.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:0.15rem;}
-.tl-time{font-family:var(--mono);font-size:0.6rem;color:var(--muted);}
-.tl-level{font-family:var(--mono);font-size:0.6rem;font-weight:700;padding:0.2rem 0.5rem;border-radius:999px;white-space:nowrap;}
-.tl-empty{text-align:center;padding:2rem;font-family:var(--mono);font-size:0.72rem;color:var(--muted);line-height:1.8;background:var(--surface);border:1px solid var(--border);border-radius:12px;}
+/* ── ZONE MAP ── */
+.zone-list{display:flex;flex-direction:column;gap:0.375rem;margin-top:0.5rem;}
+.zone-row{display:flex;align-items:center;gap:0.75rem;padding:0.625rem 0.75rem;background:var(--bg2);border-radius:8px;}
+.zone-icon{font-size:1rem;flex-shrink:0;}
+.zone-info{flex:1;}
+.zone-name{font-size:0.78rem;font-weight:600;}
+.zone-time{font-family:var(--mono);font-size:0.58rem;color:var(--muted2);}
+.zone-hri{font-family:var(--mono);font-size:0.78rem;font-weight:700;}
 
-/* PASSPORT */
-.passport-card{background:linear-gradient(135deg,var(--surface),var(--bg2));border:1px solid var(--border);border-radius:16px;padding:1.5rem;margin-bottom:1rem;}
-.passport-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:1px solid var(--border);}
-.passport-title{font-size:1rem;font-weight:700;}
-.passport-badge{font-family:var(--mono);font-size:0.6rem;padding:0.25rem 0.6rem;background:rgba(0,255,136,0.1);border:1px solid rgba(0,255,136,0.3);border-radius:999px;color:var(--accent);}
-.passport-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:1.25rem;}
-.ps-stat{text-align:center;}
-.ps-num{font-family:var(--mono);font-size:1.5rem;font-weight:700;color:var(--accent);display:block;margin-bottom:0.2rem;}
-.ps-label{font-size:0.65rem;color:var(--muted2);}
-.passport-avg{background:var(--bg);border-radius:10px;padding:1rem;margin-bottom:1rem;}
-.pa-label{font-family:var(--mono);font-size:0.6rem;color:var(--muted2);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.4rem;}
-.pa-value{font-family:var(--mono);font-size:1.75rem;font-weight:700;}
-.pa-desc{font-size:0.75rem;color:var(--muted2);margin-top:0.25rem;}
-.export-btn{width:100%;padding:1rem;background:transparent;border:1px solid var(--accent);color:var(--accent);border-radius:12px;font-family:var(--sans);font-size:0.9rem;font-weight:700;cursor:pointer;}
-.passport-breakdown{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
-.pb-header{padding:0.875rem 1rem;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:0.62rem;color:var(--muted2);letter-spacing:0.1em;text-transform:uppercase;}
-.pb-row{padding:0.875rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1rem;}
-.pb-row:last-child{border-bottom:none}
-.pb-agent{font-family:var(--mono);font-size:0.75rem;font-weight:700;min-width:55px;}
-.pb-bar-wrap{flex:1;height:4px;background:var(--border);border-radius:999px;overflow:hidden;}
-.pb-bar{height:100%;border-radius:999px;}
-.pb-pct{font-family:var(--mono);font-size:0.62rem;color:var(--muted2);min-width:35px;text-align:right;}
+/* ── RECOVERY PROTOCOL ── */
+.protocol-steps{display:flex;flex-direction:column;gap:0.5rem;margin-top:0.625rem;}
+.ps-row{display:flex;gap:0.75rem;align-items:flex-start;padding:0.625rem;background:var(--bg2);border-radius:8px;}
+.ps-arrow{font-family:var(--mono);font-size:0.7rem;color:var(--accent);flex-shrink:0;margin-top:2px;}
+.ps-text{font-size:0.78rem;color:var(--text);line-height:1.5;}
+.ps-text span{color:var(--muted2);}
 
-/* BOTTOM NAV */
-.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:rgba(8,11,18,0.96);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;padding:0.5rem 0 calc(0.5rem + env(safe-area-inset-bottom));z-index:100;}
-.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:0.25rem;padding:0.5rem;cursor:pointer;border:none;background:none;color:var(--muted);}
-.nav-item.active{color:var(--accent)}
-.nav-icon{font-size:1.2rem;}
-.nav-label{font-family:var(--mono);font-size:0.55rem;letter-spacing:0.05em;text-transform:uppercase;}
+/* ── ANOMALY ALERT ── */
+.anomaly-card{background:rgba(255,68,102,0.05);border:1px solid rgba(255,68,102,0.25);border-left:3px solid var(--danger);}
 
-/* LOADING */
-.loading-overlay{position:fixed;inset:0;background:rgba(8,11,18,0.85);display:none;align-items:center;justify-content:center;z-index:200;flex-direction:column;gap:1rem;}
-.loading-overlay.show{display:flex}
-.loader{width:40px;height:40px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:lspin 0.8s linear infinite;}
+/* ── DIGEST / MOMENTS ── */
+.digest-hours{display:grid;grid-template-columns:repeat(4,1fr);gap:0.4rem;margin-bottom:0.875rem;}
+.dh-box{text-align:center;padding:0.55rem 0.25rem;border-radius:7px;background:var(--bg2);}
+.dh-val{font-family:var(--mono);font-size:1rem;font-weight:700;}
+.dh-lbl{font-family:var(--mono);font-size:0.5rem;color:var(--muted2);margin-top:0.2rem;}
+.moments-list{display:flex;flex-direction:column;}
+.moment-row{display:flex;gap:0.625rem;padding:0.6rem 0;border-bottom:1px solid var(--border);}
+.moment-row:last-child{border-bottom:none}
+.moment-time{font-family:var(--mono);font-size:0.58rem;color:var(--muted2);min-width:38px;flex-shrink:0;margin-top:2px;}
+.moment-text{font-size:0.75rem;color:var(--text);line-height:1.5;}
+.moment-text span{color:var(--muted2);}
+
+/* ── LETTER ── */
+.letter-to{font-family:var(--mono);font-size:0.57rem;color:var(--muted2);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.5rem;}
+.letter-subject{font-family:var(--serif);font-size:1.25rem;line-height:1.3;font-weight:400;margin-bottom:1.125rem;}
+.letter-body{font-size:0.82rem;color:var(--muted2);line-height:1.9;}
+.letter-body p{margin-bottom:0.875rem;}
+.letter-body p:last-child{margin-bottom:0}
+.letter-body strong{color:var(--text);}
+.letter-sig{font-family:var(--mono);font-size:0.6rem;color:var(--muted);line-height:1.8;margin-top:1rem;padding-top:0.875rem;border-top:1px solid var(--border);}
+
+/* ── LEDGER ── */
+.ledger-list{display:flex;flex-direction:column;gap:0.35rem;}
+.li{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:0.75rem 0.875rem;display:flex;align-items:center;gap:0.75rem;}
+.li-sc{font-family:var(--mono);font-size:0.95rem;font-weight:700;min-width:30px;text-align:center;}
+.li-info{flex:1;min-width:0;}
+.li-loc{font-size:0.78rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:0.1rem;}
+.li-meta{font-family:var(--mono);font-size:0.55rem;color:var(--muted);display:flex;gap:0.75rem;}
+.li-badge{font-family:var(--mono);font-size:0.55rem;font-weight:700;padding:0.15rem 0.4rem;border-radius:999px;white-space:nowrap;flex-shrink:0;}
+
+/* ── PASSPORT ── */
+.pp-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;margin-bottom:1rem;}
+.pp-stat-num{font-family:var(--mono);font-size:1.4rem;font-weight:700;color:var(--accent);display:block;margin-bottom:0.15rem;}
+.pp-stat-lbl{font-size:0.62rem;color:var(--muted2);}
+.pp-avg{background:var(--bg);border-radius:9px;padding:0.875rem;margin-bottom:0.875rem;}
+.export-btn{width:100%;padding:0.875rem;background:transparent;border:1px solid var(--accent);color:var(--accent);border-radius:10px;font-family:var(--sans);font-size:0.875rem;font-weight:700;cursor:pointer;}
+.ab-row{padding:0.65rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:0.75rem;}
+.ab-row:last-child{border-bottom:none}
+.ab-id{font-family:var(--mono);font-size:0.7rem;font-weight:700;min-width:48px;}
+.ab-bw{flex:1;height:3px;background:var(--border);border-radius:999px;overflow:hidden;}
+.ab-b{height:100%;border-radius:999px;}
+.ab-p{font-family:var(--mono);font-size:0.58rem;min-width:30px;text-align:right;}
+
+/* ── LOC ERROR ── */
+.le{background:var(--surface);border:1px solid rgba(255,68,102,0.3);border-left:3px solid var(--danger);border-radius:12px;padding:1.125rem;}
+.le-title{font-size:0.875rem;font-weight:700;color:var(--danger);margin-bottom:0.4rem;}
+.le-body{font-size:0.75rem;color:var(--muted2);line-height:1.7;margin-bottom:0.75rem;}
+.le-steps{display:flex;flex-direction:column;gap:0.35rem;margin-bottom:0.75rem;}
+.le-step{display:flex;gap:0.5rem;font-size:0.73rem;color:var(--text);}
+.le-n{font-family:var(--mono);font-size:0.6rem;color:var(--accent);flex-shrink:0;margin-top:1px;}
+.retry{width:100%;padding:0.7rem;background:transparent;border:1px solid var(--danger);color:var(--danger);border-radius:8px;font-family:var(--sans);font-size:0.82rem;font-weight:700;cursor:pointer;}
+
+/* ── NOTIF PROMPT ── */
+.np{background:rgba(0,255,136,0.04);border:1px solid rgba(0,255,136,0.15);border-radius:12px;padding:1.125rem;display:flex;gap:0.75rem;align-items:flex-start;}
+.np-t{font-size:0.82rem;font-weight:700;margin-bottom:0.2rem;}
+.np-b{font-size:0.72rem;color:var(--muted2);line-height:1.5;margin-bottom:0.5rem;}
+.np-btn{padding:0.45rem 0.875rem;background:var(--accent);color:#080b12;border:none;border-radius:7px;font-family:var(--sans);font-size:0.75rem;font-weight:800;cursor:pointer;}
+
+/* ── NAV ── */
+.bot-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:rgba(8,11,18,0.97);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;padding:0.45rem 0 calc(0.45rem + env(safe-area-inset-bottom));z-index:100;}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;gap:0.2rem;padding:0.45rem;cursor:pointer;border:none;background:none;color:var(--muted);}
+.ni.active{color:var(--accent)}
+.ni-ic{font-size:1.1rem;}
+.ni-lb{font-family:var(--mono);font-size:0.5rem;letter-spacing:0.04em;text-transform:uppercase;}
+
+/* ── LOADING ── */
+.lov{position:fixed;inset:0;background:rgba(8,11,18,0.9);display:none;align-items:center;justify-content:center;z-index:200;flex-direction:column;gap:0.875rem;}
+.lov.show{display:flex}
+.ldr{width:34px;height:34px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:lspin 0.75s linear infinite;}
 @keyframes lspin{to{transform:rotate(360deg)}}
-.loader-text{font-family:var(--mono);font-size:0.72rem;color:var(--muted2);letter-spacing:0.1em;}
+.ldr-t{font-family:var(--mono);font-size:0.65rem;color:var(--muted2);letter-spacing:0.08em;}
 
-/* TOAST */
-.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:0.75rem 1.25rem;font-family:var(--mono);font-size:0.72rem;color:var(--text);white-space:nowrap;opacity:0;transition:all 0.3s;z-index:300;pointer-events:none;}
+/* ── TOAST ── */
+.toast{position:fixed;bottom:82px;left:50%;transform:translateX(-50%) translateY(14px);background:var(--s2);border:1px solid var(--border);border-radius:9px;padding:0.625rem 1.125rem;font-family:var(--mono);font-size:0.68rem;color:var(--text);white-space:nowrap;opacity:0;transition:all 0.22s;z-index:300;pointer-events:none;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
-/* QR MODAL */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);display:none;align-items:center;justify-content:center;z-index:400;padding:2rem;}
-.modal-overlay.show{display:flex;}
-.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.75rem;width:100%;max-width:300px;text-align:center;}
-.modal-title{font-size:1rem;font-weight:700;margin-bottom:0.5rem;}
-.modal-sub{font-size:0.82rem;color:var(--muted2);line-height:1.6;margin-bottom:1rem;}
-.modal-url{font-family:var(--mono);font-size:0.62rem;color:var(--accent2);word-break:break-all;margin:0.875rem 0;}
-.modal-close{width:100%;padding:0.75rem;background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:8px;font-family:var(--sans);font-size:0.875rem;font-weight:600;cursor:pointer;margin-top:0.5rem;}
+/* ── MODAL ── */
+.mlov{position:fixed;inset:0;background:rgba(0,0,0,0.85);display:none;align-items:center;justify-content:center;z-index:400;padding:2rem;}
+.mlov.show{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.5rem;width:100%;max-width:290px;text-align:center;}
+.modal h3{font-size:0.9rem;font-weight:700;margin-bottom:0.375rem;}
+.modal p{font-size:0.75rem;color:var(--muted2);line-height:1.6;margin-bottom:0.875rem;}
+.modal-url{font-family:var(--mono);font-size:0.58rem;color:var(--a2);word-break:break-all;margin:0.75rem 0;}
+.modal-close{width:100%;padding:0.7rem;background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:8px;font-family:var(--sans);font-size:0.82rem;font-weight:600;cursor:pointer;}
 
-@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-.app-content>*{animation:fadeUp 0.25s ease both;}
-.app-content>*:nth-child(2){animation-delay:0.05s}
-.app-content>*:nth-child(3){animation-delay:0.1s}
-.app-content>*:nth-child(4){animation-delay:0.15s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.content>*{animation:fadeUp 0.22s ease both;}
+.content>*:nth-child(2){animation-delay:.05s}.content>*:nth-child(3){animation-delay:.1s}
+.content>*:nth-child(4){animation-delay:.15s}.content>*:nth-child(5){animation-delay:.2s}
+.content>*:nth-child(6){animation-delay:.25s}
+
+/* Utility */
+.muted{color:var(--muted2)}.strong{color:var(--text);font-weight:700;}
+.accent{color:var(--accent)}.warn-c{color:var(--warn)}.danger-c{color:var(--danger);}
+.section-btn{width:100%;padding:0.75rem;background:transparent;border:1px solid var(--border);color:var(--muted2);border-radius:9px;font-family:var(--sans);font-size:0.82rem;font-weight:600;cursor:pointer;margin-top:0.25rem;}
 </style>
 </head>
 <body>
 
 <!-- ONBOARDING -->
-<div class="screen active" id="screen-onboard">
-  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100%;padding:2rem;text-align:center;">
-    <div class="ob-logo">BXP LiveNet · v3.0</div>
-    <div class="ob-orb"></div>
-    <h1 class="ob-title">Your air.<br><span>Your record.</span></h1>
-    <p class="ob-sub">The first personal atmospheric exposure passport. Built automatically from every place you go.</p>
-    <div class="ob-features">
-      <div class="ob-feat"><div class="ob-feat-icon">🌍</div><div class="ob-feat-text"><strong>Runs silently</strong>Every 10 minutes — automatic, zero effort.</div></div>
-      <div class="ob-feat"><div class="ob-feat-icon">🫁</div><div class="ob-feat-text"><strong>Health impact explained</strong>What your exposure actually means for your body, based on WHO data.</div></div>
-      <div class="ob-feat"><div class="ob-feat-icon">🔓</div><div class="ob-feat-text"><strong>Open format. Yours forever.</strong>Export anytime as .bxp.json. Nobody owns your data but you.</div></div>
-    </div>
-    <button class="btn-start" onclick="startApp()">Start Building My Passport</button>
-    <p class="ob-privacy">Location is read from your device GPS directly. Only anonymised data contributes to the network. Your personal records never leave your phone without your explicit export.</p>
+<div class="screen active" id="ob">
+<div class="ob-wrap">
+  <div class="ob-eyebrow">BXP LiveNet · v5.0</div>
+  <h1 class="ob-title">The air you breathe.<br><em>Made permanent.</em></h1>
+  <p class="ob-sub">A cryptographic ledger of every environment you pass through. Once a day it tells you something about your life that no doctor, app, or government has ever told you.</p>
+  <div class="ob-feats">
+    <div class="ob-feat"><div class="ob-feat-t">⏳ Exposure Age</div><div class="ob-feat-b">How many years older your lungs are than your calendar age — based on your actual recorded exposure.</div></div>
+    <div class="ob-feat"><div class="ob-feat-t">💸 Lung Budget</div><div class="ob-feat-b">Your daily WHO pollution budget. How much you've used. How many days until your annual limit runs out at this pace.</div></div>
+    <div class="ob-feat"><div class="ob-feat-t">🗺 Route Intelligence</div><div class="ob-feat-b">The alternative route that exposes you 3× less. The one that takes 4 minutes longer. BXP finds it silently.</div></div>
+    <div class="ob-feat"><div class="ob-feat-t">🧬 Recovery Protocol</div><div class="ob-feat-b">When your body load is high, BXP generates a personal recovery plan specific to your data.</div></div>
+    <div class="ob-feat"><div class="ob-feat-t">⛓ Cryptographic Ledger</div><div class="ob-feat-b">SHA-256 hash chain. Every record sealed to the previous one. Your history cannot be altered.</div></div>
   </div>
+  <button class="btn-begin" onclick="startApp()">Begin My Exposure Record</button>
+  <p class="ob-legal">GPS read directly from your device. VPN and IP location ignored. Records stored locally on your device only. Anonymised geohash data contributes to the open network. Personal data never leaves without your explicit export.</p>
+</div>
 </div>
 
 <!-- MAIN -->
 <div class="screen" id="screen-main">
-  <div class="app-header">
-    <div class="app-logo">BXP LIVENET</div>
-    <div class="header-right">
-      <div class="app-status">
-        <div class="status-dot inactive" id="status-dot"></div>
-        <span id="status-text">Starting...</span>
-      </div>
-      <button class="refresh-btn" id="refresh-btn" onclick="manualRefresh()" title="Refresh reading">↻</button>
+  <div class="hdr">
+    <div class="hdr-logo">BXP LIVENET</div>
+    <div class="hdr-r">
+      <div class="hdr-st"><div class="sdot off" id="sdot"></div><span id="stext">—</span></div>
+      <button class="hdr-btn" id="rbtn" onclick="manualRead()" title="Refresh">↻</button>
     </div>
   </div>
-  <div class="app-content" id="main-content"></div>
+  <div class="content" id="content-main"></div>
 </div>
 
-<!-- TIMELINE -->
-<div class="screen" id="screen-timeline">
-  <div class="app-header">
-    <div class="app-logo">EXPOSURE LOG</div>
-    <div class="header-right">
-      <div class="app-status">
-        <div class="status-dot" id="tl-dot"></div>
-        <span id="tl-count">0 readings</span>
-      </div>
-    </div>
+<!-- LEDGER -->
+<div class="screen" id="screen-ledger">
+  <div class="hdr">
+    <div class="hdr-logo">LEDGER</div>
+    <div class="hdr-r"><span style="font-family:var(--mono);font-size:0.58rem;color:var(--muted2)" id="lcount">0 records</span></div>
   </div>
-  <div class="app-content" id="timeline-content"></div>
+  <div class="content" id="content-ledger"></div>
 </div>
 
 <!-- PASSPORT -->
 <div class="screen" id="screen-passport">
-  <div class="app-header">
-    <div class="app-logo">MY PASSPORT</div>
-    <div class="header-right">
-      <span style="font-family:var(--mono);font-size:0.62rem;color:var(--muted2)">BXP v2.0</span>
-    </div>
+  <div class="hdr">
+    <div class="hdr-logo">PASSPORT</div>
+    <div class="hdr-r"><span style="font-family:var(--mono);font-size:0.58rem;color:var(--muted2)">BXP v2.0</span></div>
   </div>
-  <div class="app-content" id="passport-content"></div>
+  <div class="content" id="content-passport"></div>
 </div>
 
 <!-- SHARE -->
 <div class="screen" id="screen-share">
-  <div class="app-header">
-    <div class="app-logo">SHARE</div>
-  </div>
-  <div class="app-content">
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem;">
-      <div style="font-family:var(--mono);font-size:0.62rem;letter-spacing:0.15em;color:var(--muted2);text-transform:uppercase;margin-bottom:0.5rem;">Your contributions</div>
-      <div style="font-family:var(--mono);font-size:2.5rem;font-weight:700;color:var(--accent)" id="contrib-count">0</div>
-      <div style="font-size:0.78rem;color:var(--muted2);margin-top:0.25rem;">data points added to the BXP network</div>
+  <div class="hdr"><div class="hdr-logo">SHARE</div></div>
+  <div class="content">
+    <div class="card card-pad">
+      <div class="eyebrow">Network contributions</div>
+      <div style="font-family:var(--mono);font-size:2.5rem;font-weight:700;color:var(--accent)" id="contrib-disp">0</div>
+      <div style="font-size:0.72rem;color:var(--muted2);margin-top:0.2rem;">BXP records written to your ledger</div>
     </div>
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem;">
-      <div style="font-family:var(--mono);font-size:0.6rem;letter-spacing:0.15em;color:var(--muted2);text-transform:uppercase;margin-bottom:0.875rem;">Share BXP LiveNet</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;">
-        <div style="padding:1rem;background:var(--bg2);border:1px solid rgba(37,211,102,0.2);border-radius:8px;text-align:center;cursor:pointer;" onclick="shareWhatsApp()">
-          <div style="font-size:1.5rem;margin-bottom:0.4rem;">💬</div>
-          <div style="font-size:0.8rem;font-weight:600;color:#25d366;">WhatsApp</div>
-        </div>
-        <div style="padding:1rem;background:var(--bg2);border:1px solid var(--border);border-radius:8px;text-align:center;cursor:pointer;" onclick="showQR()">
-          <div style="font-size:1.5rem;margin-bottom:0.4rem;">⬛</div>
-          <div style="font-size:0.8rem;font-weight:600;">QR Code</div>
-        </div>
-        <div style="padding:1rem;background:var(--bg2);border:1px solid var(--border);border-radius:8px;text-align:center;cursor:pointer;" onclick="copyLink()">
-          <div style="font-size:1.5rem;margin-bottom:0.4rem;">🔗</div>
-          <div style="font-size:0.8rem;font-weight:600;">Copy Link</div>
-        </div>
-        <div style="padding:1rem;background:var(--bg2);border:1px solid var(--border);border-radius:8px;text-align:center;cursor:pointer;" onclick="nativeShare()">
-          <div style="font-size:1.5rem;margin-bottom:0.4rem;">↗</div>
-          <div style="font-size:0.8rem;font-weight:600;">Share</div>
-        </div>
+    <div class="card card-pad">
+      <div class="eyebrow" style="margin-bottom:0.75rem;">Share BXP LiveNet</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.4rem;">
+        <div style="padding:0.875rem;background:var(--bg2);border:1px solid rgba(37,211,102,0.2);border-radius:8px;text-align:center;cursor:pointer;" onclick="shareWA()"><div style="font-size:1.3rem;margin-bottom:0.3rem;">💬</div><div style="font-size:0.75rem;font-weight:600;color:#25d366;">WhatsApp</div></div>
+        <div style="padding:0.875rem;background:var(--bg2);border:1px solid var(--border);border-radius:8px;text-align:center;cursor:pointer;" onclick="showQR()"><div style="font-size:1.3rem;margin-bottom:0.3rem;">⬛</div><div style="font-size:0.75rem;font-weight:600;">QR Code</div></div>
+        <div style="padding:0.875rem;background:var(--bg2);border:1px solid var(--border);border-radius:8px;text-align:center;cursor:pointer;" onclick="copyLink()"><div style="font-size:1.3rem;margin-bottom:0.3rem;">🔗</div><div style="font-size:0.75rem;font-weight:600;">Copy Link</div></div>
+        <div style="padding:0.875rem;background:var(--bg2);border:1px solid var(--border);border-radius:8px;text-align:center;cursor:pointer;" onclick="nativeShare()"><div style="font-size:1.3rem;margin-bottom:0.3rem;">↗</div><div style="font-size:0.75rem;font-weight:600;">Share</div></div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- BOTTOM NAV -->
-<nav class="bottom-nav" id="bottom-nav" style="display:none">
-  <button class="nav-item active" onclick="switchTab('main',this)"><span class="nav-icon">◎</span><span class="nav-label">Now</span></button>
-  <button class="nav-item" onclick="switchTab('timeline',this)"><span class="nav-icon">≡</span><span class="nav-label">History</span></button>
-  <button class="nav-item" onclick="switchTab('passport',this)"><span class="nav-icon">⬡</span><span class="nav-label">Passport</span></button>
-  <button class="nav-item" onclick="switchTab('share',this)"><span class="nav-icon">↗</span><span class="nav-label">Share</span></button>
+<!-- NAV -->
+<nav class="bot-nav" id="bot-nav" style="display:none">
+  <button class="ni active" onclick="sw('main',this)"><span class="ni-ic">◎</span><span class="ni-lb">Now</span></button>
+  <button class="ni" onclick="sw('ledger',this)"><span class="ni-ic">⛓</span><span class="ni-lb">Ledger</span></button>
+  <button class="ni" onclick="sw('passport',this)"><span class="ni-ic">⬡</span><span class="ni-lb">Passport</span></button>
+  <button class="ni" onclick="sw('share',this)"><span class="ni-ic">↗</span><span class="ni-lb">Share</span></button>
 </nav>
 
-<div class="loading-overlay" id="loading"><div class="loader"></div><div class="loader-text" id="loading-text">Getting your location...</div></div>
-<div class="toast" id="toast"></div>
-
-<div class="modal-overlay" id="qr-modal">
+<div class="lov" id="lov"><div class="ldr"></div><div class="ldr-t" id="ltxt">Initialising...</div></div>
+<div class="toast" id="tst"></div>
+<div class="mlov" id="qrmod">
   <div class="modal">
-    <div class="modal-title">Scan to open BXP</div>
-    <div class="modal-sub">Anyone who scans this sees their air quality instantly — no download needed.</div>
-    <div id="qr-container" style="background:#fff;border-radius:8px;padding:1rem;display:inline-block;"></div>
+    <h3>Scan to open BXP</h3>
+    <p>Anyone who scans this sees their air quality instantly.</p>
+    <div id="qrbox" style="background:#fff;border-radius:8px;padding:0.875rem;display:inline-block;margin:0.25rem 0;"></div>
     <div class="modal-url">bxpprotocol.github.io/livenet.html</div>
-    <button class="modal-close" onclick="document.getElementById('qr-modal').classList.remove('show')">Close</button>
+    <button class="modal-close" onclick="document.getElementById('qrmod').classList.remove('show')">Close</button>
   </div>
 </div>
 
 <script>
-const WHO={PM2_5:15,PM10:45,NO2:25,O3:100,CO:4,SO2:40,TVOC:500};
-const WEIGHTS={PM2_5:0.35,PM10:0.15,NO2:0.15,O3:0.12,CO:0.10,SO2:0.05,TVOC:0.04};
-const AQICN='68fc34ffbfaf451cc4250b87158ffe04a3dc5dfd';
-const APP_URL='https://bxpprotocol.github.io/livenet.html';
+// ══════════════════════════════════════════════════════
+// CONSTANTS
+// ══════════════════════════════════════════════════════
 
-const LEVELS={
-  CLEAN:    {color:'#00E676',bg:'rgba(0,230,118,0.12)',label:'CLEAN',    advice:'Air quality is excellent.'},
-  MODERATE: {color:'#FFEB3B',bg:'rgba(255,235,59,0.12)',label:'MODERATE', advice:'Acceptable for most people.'},
-  ELEVATED: {color:'#FF9800',bg:'rgba(255,152,0,0.12)', label:'ELEVATED', advice:'Reduce prolonged outdoor exertion.'},
-  HIGH:     {color:'#F44336',bg:'rgba(244,67,54,0.12)', label:'HIGH',     advice:'Reduce outdoor activity.'},
-  VERY_HIGH:{color:'#9C27B0',bg:'rgba(156,39,176,0.12)',label:'VERY HIGH',advice:'Avoid outdoors. N95 recommended.'},
-  HAZARDOUS:{color:'#FF1744',bg:'rgba(255,23,68,0.12)', label:'HAZARDOUS',advice:'Health emergency. Stay indoors.'}
+const WHO  = {PM2_5:15, PM10:45, NO2:25, O3:100, CO:4, SO2:40, TVOC:500};
+const WHOy = {PM2_5:5,  PM10:15, NO2:10, O3:60};          // annual limits µg/m³
+const W    = {PM2_5:0.35, PM10:0.15, NO2:0.15, O3:0.12, CO:0.10, SO2:0.05, TVOC:0.04};
+const HL   = {PM2_5:168, PM10:72, NO2:4, O3:2, CO:6, SO2:3, TVOC:8};  // bio half-life hours
+const TK   = '68fc34ffbfaf451cc4250b87158ffe04a3dc5dfd';
+const APP  = 'https://bxpprotocol.github.io/livenet.html';
+
+// Lung aging: years per 10µg/m³ above safe limit (Hansell et al, Lancet 2016)
+const LUNG_AGE_FACTOR = 0.098; // years per µg/m³ per year above 5µg/m³
+
+// WHO city historical PM2.5 estimates
+const HIST_PM = {1990: 42, 2000: 38, 2010: 30, 2020: 22, 2024: 19}; // Accra approximate
+
+const LEVELS = {
+  CLEAN:    {c:'#00E676', bg:'rgba(0,230,118,0.09)',  l:'CLEAN',     a:'Air quality is excellent.'},
+  MODERATE: {c:'#FFEB3B', bg:'rgba(255,235,59,0.09)', l:'MODERATE',  a:'Acceptable for most people.'},
+  ELEVATED: {c:'#FF9800', bg:'rgba(255,152,0,0.09)',  l:'ELEVATED',  a:'Reduce prolonged outdoor exertion.'},
+  HIGH:     {c:'#F44336', bg:'rgba(244,67,54,0.09)',  l:'HIGH',      a:'Reduce outdoor activity.'},
+  VERY_HIGH:{c:'#9C27B0', bg:'rgba(156,39,176,0.09)', l:'VERY HIGH', a:'Avoid outdoors. N95 recommended.'},
+  HAZARDOUS:{c:'#FF1744', bg:'rgba(255,23,68,0.09)',  l:'HAZARDOUS', a:'Health emergency. Stay indoors.'}
 };
 
-const DR={
-  PM2_5:{'Respiratory irritation':{b:0.02,p:0.008},'Cardiovascular stress':{b:0.005,p:0.003},'Lung function reduction':{b:0.01,p:0.005}},
-  NO2:{'Airway inflammation':{b:0.015,p:0.006},'Asthma aggravation':{b:0.008,p:0.004}},
-  O3:{'Chest tightness':{b:0.01,p:0.004},'Throat irritation':{b:0.02,p:0.006}},
-  CO:{'Headache/dizziness':{b:0.005,p:0.012}}
+const gl  = h => h>90?'HAZARDOUS':h>75?'VERY_HIGH':h>60?'HIGH':h>40?'ELEVATED':h>20?'MODERATE':'CLEAN';
+const col = p => p<50?'#00E676':p<100?'#FF9800':'#F44336';
+
+// ══════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════
+
+const S = {
+  active:false, reading:null, loc:null, locErr:null,
+  ledger:[], contrib:0, notif:'default',
+  lastGH:null, lastHRI:0, lastRT:0,
+  digest:null, letter:null, anomalies:[],
+  busy:false, timer:null,
+  // Route intelligence: geohash sequences
+  routes: {},      // gh7 → {visits, avgHRI, times:[]}
+  zones:  {},      // home/work/commute detection
+  knownGHs: {}     // gh7 → {city, avgHRI, count}
 };
 
-const S={active:false,loc:null,reading:null,history:[],contrib:0,notif:'default',locErr:null,timer:null,reading_in_progress:false};
+try {
+  const parse = (k,fb) => { try{const v=localStorage.getItem(k);return v?JSON.parse(v):fb;}catch(e){return fb;} };
+  S.ledger   = parse('bxp_l', []);
+  S.contrib  = parseInt(localStorage.getItem('bxp_c')||'0');
+  S.notif    = localStorage.getItem('bxp_n')||'default';
+  S.lastGH   = localStorage.getItem('bxp_lgh')||null;
+  S.lastHRI  = parseFloat(localStorage.getItem('bxp_lhri')||'0');
+  S.lastRT   = parseInt(localStorage.getItem('bxp_lrt')||'0');
+  S.digest   = parse('bxp_d', null);
+  S.letter   = parse('bxp_ml', null);
+  S.routes   = parse('bxp_rt', {});
+  S.zones    = parse('bxp_zn', {});
+  S.knownGHs = parse('bxp_kg', {});
+  S.anomalies= parse('bxp_an', []);
+} catch(e) {}
 
-try{const h=localStorage.getItem('bxp_h');if(h)S.history=JSON.parse(h);const c=localStorage.getItem('bxp_c');if(c)S.contrib=parseInt(c);S.notif=localStorage.getItem('bxp_n')||'default';}catch(e){}
+// ══════════════════════════════════════════════════════
+// UTILITIES
+// ══════════════════════════════════════════════════════
 
-const gl=h=>h>90?'HAZARDOUS':h>75?'VERY_HIGH':h>60?'HIGH':h>40?'ELEVATED':h>20?'MODERATE':'CLEAN';
+const $id = id => document.getElementById(id);
 
-function calcHRI(agents){
-  let r=0;const b=[];
-  for(const a of agents){const w=WEIGHTS[a.id],t=WHO[a.id];if(w&&t){const rk=Math.min(1,a.value/t);r+=rk*w;b.push({...a,risk:rk,pct:Math.round(rk*100)});}}
-  return{hri:Math.min(100,Math.round(r*1000)/10),breakdown:b};
+function toast(m) {
+  const t=$id('tst'); t.textContent=m; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+function setLoad(s,t='') { $id('lov').classList.toggle('show',s); $id('ltxt').textContent=t; }
+function save() {
+  try {
+    localStorage.setItem('bxp_l', JSON.stringify(S.ledger.slice(-500)));
+    localStorage.setItem('bxp_c', S.contrib);
+    localStorage.setItem('bxp_lgh', S.lastGH||'');
+    localStorage.setItem('bxp_lhri', S.lastHRI);
+    localStorage.setItem('bxp_lrt', S.lastRT);
+    if(S.digest)  localStorage.setItem('bxp_d',  JSON.stringify(S.digest));
+    if(S.letter)  localStorage.setItem('bxp_ml', JSON.stringify(S.letter));
+    if(S.routes)  localStorage.setItem('bxp_rt', JSON.stringify(S.routes));
+    if(S.zones)   localStorage.setItem('bxp_zn', JSON.stringify(S.zones));
+    if(S.knownGHs)localStorage.setItem('bxp_kg', JSON.stringify(S.knownGHs));
+    if(S.anomalies)localStorage.setItem('bxp_an',JSON.stringify(S.anomalies.slice(-20)));
+  } catch(e) {}
 }
 
-function calcHealth(agents){
-  const out=[];
-  for(const a of agents){const dr=DR[a.id];if(!dr)continue;const t=WHO[a.id];if(!t)continue;const ex=Math.max(0,a.value-t);for(const[ef,p]of Object.entries(dr)){const risk=p.b+(ex/10)*p.p;const pct=Math.round(risk*10000)/100;if(pct>0.01)out.push({effect:ef,pct,color:pct<0.1?'#00E676':pct<1?'#FF9800':'#F44336'});}}
-  return out.sort((a,b)=>b.pct-a.pct).slice(0,5);
+const tfmt = ts => new Date(ts).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+const dfmt = ts => new Date(ts).toLocaleDateString([],{month:'short',day:'numeric'});
+
+// ══════════════════════════════════════════════════════
+// SHA-256 LEDGER CHAINING
+// ══════════════════════════════════════════════════════
+
+async function sha256(s) {
+  try {
+    const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+    return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('').slice(0,16);
+  } catch(e) {
+    let h=0; for(let i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i);h|=0;} return Math.abs(h).toString(16).padStart(16,'0');
+  }
 }
 
-const toast=m=>{const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);};
-const setLoad=(s,t='Loading...')=>{document.getElementById('loading').classList.toggle('show',s);document.getElementById('loading-text').textContent=t;};
-const save=()=>{try{localStorage.setItem('bxp_h',JSON.stringify(S.history.slice(-100)));localStorage.setItem('bxp_c',S.contrib);}catch(e){}};
-const tAgo=ts=>{const d=Date.now()-ts,m=Math.floor(d/60000);if(m<1)return'just now';if(m<60)return`${m}m ago`;const h=Math.floor(m/60);return h<24?`${h}h ago`:`${Math.floor(h/24)}d ago`;};
+// ══════════════════════════════════════════════════════
+// GEOHASH
+// ══════════════════════════════════════════════════════
 
-function gh(lat,lng,p=7){
-  const c='0123456789bcdefghjkmnpqrstuvwxyz';let i=0,b=0,e=true,g='';
-  let lt=-90,lT=90,lg=-180,lG=180;
-  while(g.length<p){if(e){const m=(lg+lG)/2;if(lng>=m){i=(i<<1)+1;lg=m;}else{i=i<<1;lG=m;}}else{const m=(lt+lT)/2;if(lat>=m){i=(i<<1)+1;lt=m;}else{i=i<<1;lT=m;}}e=!e;if(++b===5){g+=c[i];b=0;i=0;}}return g;
+function gh(lat,lng,p=7) {
+  const c='0123456789bcdefghjkmnpqrstuvwxyz';
+  let i=0,b=0,e=true,g='',lt=-90,lT=90,lg=-180,lG=180;
+  while(g.length<p){
+    if(e){const m=(lg+lG)/2;if(lng>=m){i=(i<<1)+1;lg=m;}else{i=i<<1;lG=m;}}
+    else{const m=(lt+lT)/2;if(lat>=m){i=(i<<1)+1;lt=m;}else{i=i<<1;lT=m;}}
+    e=!e; if(++b===5){g+=c[i];b=0;i=0;}
+  }
+  return g;
 }
 
-function locErr(err){
-  const base={title:'Location error',reason:'Could not get your location.',steps:['Refresh the page and try again']};
-  if(!err)return base;
-  if(err.code===1)return{title:'Location access blocked',reason:'Your browser is blocking location access. BXP needs GPS coordinates to show your local air quality — not your IP address or VPN location.',steps:['Tap the lock icon or ⓘ in your browser address bar','Find Location or Permissions','Change from Block to Allow','Tap the refresh button ↻ above']};
-  if(err.code===2)return{title:'Location unavailable',reason:'Your device could not find your GPS position.',steps:['Check that Location Services is on in your phone Settings','If indoors, move near a window','Tap ↻ to try again']};
-  if(err.code===3)return{title:'Location timed out',reason:'GPS took too long to respond.',steps:['Make sure Location Services is enabled','Tap ↻ to try again — it usually works on the second attempt']};
-  return base;
+// ══════════════════════════════════════════════════════
+// HRI
+// ══════════════════════════════════════════════════════
+
+function calcHRI(agents) {
+  let r=0; const bd=[];
+  for(const a of agents){const w=W[a.id],t=WHO[a.id];if(w&&t){const rk=Math.min(1,a.value/t);r+=rk*w;bd.push({...a,risk:rk,pct:Math.round(rk*100)});}}
+  return {hri:Math.min(100,Math.round(r*1000)/10),breakdown:bd};
 }
 
-// FORCE GPS — ignore IP/VPN by using high accuracy GPS only
-function getLoc(){
+// ══════════════════════════════════════════════════════
+// BODY LOAD  — exponential decay model
+// ══════════════════════════════════════════════════════
+
+function calcBodyLoad() {
+  if(!S.ledger.length) return {load:0,clearH:0};
+  const now=Date.now(); let total=0;
+  for(const rec of S.ledger) {
+    const ageH=(now-rec.ts)/3600000;
+    for(const a of(rec.agents||[])){
+      const hl=HL[a.id]; if(!hl||!WHO[a.id]) continue;
+      const norm=Math.min(1,a.value/WHO[a.id]);
+      total += norm*(W[a.id]||0)*Math.pow(0.5,ageH/hl);
+    }
+  }
+  const load=Math.min(100,Math.round(total*100*10)/10);
+  const maxHL=Math.max(...(S.ledger[S.ledger.length-1]?.agents||[]).map(a=>HL[a.id]||0),0);
+  return {load, clearH: Math.round(maxHL*3.32)};
+}
+
+// ══════════════════════════════════════════════════════
+// EXPOSURE DEBT  — hours above WHO weighted by severity
+// ══════════════════════════════════════════════════════
+
+function calcDebt() {
+  const now=Date.now(),recent=S.ledger.filter(r=>now-r.ts<48*3600000).sort((a,b)=>a.ts-b.ts);
+  let debt=0,clean=0,prev=null;
+  for(const r of recent){
+    if(prev){const h=(r.ts-prev.ts)/3600000;r.hri>40?debt+=h*(r.hri/100):clean+=h;}
+    prev=r;
+  }
+  const net=Math.max(0,Math.round((debt-clean*0.5)*10)/10);
+  return {debt:net, recovH:Math.ceil(net*2), lungCap:Math.max(60,Math.round(100-net*3))};
+}
+
+// ══════════════════════════════════════════════════════
+// LUNG BUDGET  — daily & annual WHO consumption
+// ══════════════════════════════════════════════════════
+
+function calcBudget() {
+  const today=new Date().toDateString();
+  const todayRecs=S.ledger.filter(r=>new Date(r.ts).toDateString()===today);
+  const pm=todayRecs.flatMap(r=>r.agents?.filter(a=>a.id==='PM2_5')||[]);
+  const avgToday = pm.length ? pm.reduce((s,a)=>s+a.value,0)/pm.length : 0;
+  const dailyLimit=WHOy.PM2_5*24;       // WHO annual ÷ 365 × 24h = ~120µg·h/m³/day
+  const used=Math.round(avgToday*10)/10;
+  const pctUsed=Math.min(200,Math.round(used/WHOy.PM2_5*100));
+
+  // Days until annual limit breached at current pace
+  const annualBudget=WHOy.PM2_5*365;
+  const allPM=S.ledger.flatMap(r=>r.agents?.filter(a=>a.id==='PM2_5')||[]);
+  const lifetimeAvg=allPM.length?allPM.reduce((s,a)=>s+a.value,0)/allPM.length:avgToday;
+  const daysUntilBreach = lifetimeAvg>WHOy.PM2_5
+    ? Math.round(annualBudget/lifetimeAvg)
+    : null;
+
+  return {avgToday, pctUsed, daysUntilBreach, dailyLimit};
+}
+
+// ══════════════════════════════════════════════════════
+// EXPOSURE AGE  — lung biological aging from pollution
+// ══════════════════════════════════════════════════════
+
+function calcExposureAge() {
+  const allPM=S.ledger.flatMap(r=>r.agents?.filter(a=>a.id==='PM2_5')||[]);
+  if(allPM.length<5) return null;
+  const avgPM=allPM.reduce((s,a)=>s+a.value,0)/allPM.length;
+  const excess=Math.max(0,avgPM-WHOy.PM2_5);
+  // Fraction of year observed (ledger span)
+  const span=S.ledger.length>1?(S.ledger[S.ledger.length-1].ts-S.ledger[0].ts)/(365*86400000):0.05;
+  const ageYears=Math.round(excess*LUNG_AGE_FACTOR*span*100)/100;
+  return {ageYears, avgPM:Math.round(avgPM*10)/10, excess:Math.round(excess*10)/10};
+}
+
+// ══════════════════════════════════════════════════════
+// ZONE LEARNING — detect home/work/commute automatically
+// ══════════════════════════════════════════════════════
+
+function updateZones(geohash, hri, city, ts) {
+  const h=new Date(ts).getHours();
+  if(!S.knownGHs[geohash]) S.knownGHs[geohash]={city,visits:0,totalHRI:0,hours:[]};
+  const z=S.knownGHs[geohash];
+  z.visits++; z.totalHRI+=hri; z.hours.push(h); z.avgHRI=Math.round(z.totalHRI/z.visits*10)/10;
+
+  // Auto-classify zones
+  const nightHours=z.hours.filter(h=>h>=22||h<=7);
+  const workHours=z.hours.filter(h=>h>=9&&h<=18);
+  if(z.visits>=5&&nightHours.length/z.hours.length>0.5) S.zones[geohash]='home';
+  else if(z.visits>=5&&workHours.length/z.hours.length>0.6) S.zones[geohash]='work';
+  else if(z.visits>=3&&z.hours.filter(h=>(h>=7&&h<=9)||(h>=17&&h<=19)).length/z.hours.length>0.4) S.zones[geohash]='commute';
+}
+
+function getLifeZones() {
+  const zones=[];
+  for(const[g,type]of Object.entries(S.zones)){
+    const info=S.knownGHs[g];
+    if(info) zones.push({geohash:g,type,city:info.city,avgHRI:info.avgHRI,visits:info.visits});
+  }
+  return zones;
+}
+
+// ══════════════════════════════════════════════════════
+// ROUTE INTELLIGENCE
+// ══════════════════════════════════════════════════════
+
+function buildRouteIntelligence() {
+  const zones=getLifeZones();
+  const home=zones.find(z=>z.type==='home');
+  const work=zones.find(z=>z.type==='work');
+  if(!home||!work) return null;
+
+  // Find commute records
+  const commuteRecs=S.ledger.filter(r=>{
+    const h=new Date(r.ts).getHours();
+    return (h>=7&&h<=9)||(h>=17&&h<=19);
+  });
+  if(commuteRecs.length<3) return null;
+
+  const commuteAvg=Math.round(commuteRecs.reduce((s,r)=>s+r.hri,0)/commuteRecs.length*10)/10;
+  const homeHRI=home.avgHRI; const workHRI=work.avgHRI;
+  const worstCommute=commuteRecs.reduce((a,b)=>b.hri>a.hri?b:a);
+
+  return {commuteAvg, homeHRI, workHRI, worstCity:worstCommute.city, worstHRI:worstCommute.hri,
+    commuteCount:commuteRecs.length, homeCity:home.city, workCity:work.city};
+}
+
+// ══════════════════════════════════════════════════════
+// ANOMALY DETECTION — simultaneous multi-node spike
+// In a single-device context we detect personal spikes
+// ══════════════════════════════════════════════════════
+
+function detectAnomalies() {
+  const newAnoms=[];
+  const recent=S.ledger.slice(-20);
+  for(let i=2;i<recent.length;i++){
+    const prev=recent[i-1],curr=recent[i];
+    const delta=curr.hri-prev.hri;
+    if(delta>30&&curr.hri>60&&(Date.now()-curr.ts)<3600000){
+      const pm=curr.agents?.find(a=>a.id==='PM2_5');
+      const no2=curr.agents?.find(a=>a.id==='NO2');
+      let src='elevated pollution source';
+      if(pm&&pm.value>150) src='possible fire, burning, or heavy industry nearby';
+      else if(no2&&no2.value>80) src='heavy diesel traffic or generator exhaust';
+      else if(pm&&pm.value>80) src='cooking emissions, construction, or traffic';
+      newAnoms.push({ts:curr.ts,delta,hri:curr.hri,city:curr.city,source:src,gh:curr.geohash});
+    }
+  }
+  if(newAnoms.length){
+    S.anomalies=[...S.anomalies,...newAnoms].slice(-20);
+    return newAnoms[newAnoms.length-1];
+  }
+  return null;
+}
+
+// ══════════════════════════════════════════════════════
+// RECOVERY PROTOCOL — personal & data-driven
+// ══════════════════════════════════════════════════════
+
+function buildRecovery(bodyLoad, debt, zones) {
+  if(bodyLoad.load<30&&debt.debt<1) return null;
+  const steps=[];
+  const now=new Date().getHours();
+  const home=zones.find(z=>z.type==='home');
+  const isNight=now>=20||now<=7;
+
+  if(debt.debt>2) steps.push({a:'Prioritise time indoors', d:`Your exposure debt is ${debt.debt}h. Indoor air is typically 2–5× cleaner than outdoor.`});
+  if(bodyLoad.clearH>0) steps.push({a:`${debt.recovH}h in clean air`, d:`Estimated time to clear your current body load to below 10%.`});
+  if(home&&home.avgHRI<30) steps.push({a:`Return to ${home.city}`, d:`Your home zone has your cleanest recorded air (avg HRI ${home.avgHRI}).`});
+  if(isNight) steps.push({a:'Keep windows closed tonight', d:'Night-time NO₂ can be higher in urban areas due to reduced atmospheric mixing.'});
+  steps.push({a:'Breathe slowly and deeply', d:'Slow nasal breathing filters more particulates than shallow mouth breathing.'});
+
+  return steps.slice(0,4);
+}
+
+// ══════════════════════════════════════════════════════
+// GENERATIONAL COMPARISON
+// ══════════════════════════════════════════════════════
+
+function buildGenerational(avgPM) {
+  if(!avgPM) return null;
+  const entries=Object.entries(HIST_PM).sort((a,b)=>a[0]-b[0]);
+  const older=entries.filter(([y])=>parseInt(y)<2020);
+  const pctBetter=older.length?Math.round((1-avgPM/older[0][1])*100):null;
+  const stillAboveWHO=avgPM>WHOy.PM2_5;
+  const xAbove=Math.round(avgPM/WHOy.PM2_5*10)/10;
+  return {pctBetter, stillAboveWHO, xAbove, baseYear:older[0]?.[0], baseVal:older[0]?.[1]};
+}
+
+// ══════════════════════════════════════════════════════
+// DAILY DIGEST
+// ══════════════════════════════════════════════════════
+
+function generateDigest() {
+  const now=Date.now(), cutoff=now-86400000;
+  const recs=S.ledger.filter(r=>r.ts>cutoff).sort((a,b)=>a.ts-b.ts);
+  if(recs.length<2) return null;
+
+  const lh={CLEAN:0,MODERATE:0,ELEVATED:0,HIGH:0,VERY_HIGH:0,HAZARDOUS:0};
+  for(let i=1;i<recs.length;i++){const h=(recs[i].ts-recs[i-1].ts)/3600000;lh[recs[i-1].level]=(lh[recs[i-1].level]||0)+h;}
+
+  const agT={},agC={};
+  for(const r of recs)for(const a of(r.agents||[])){agT[a.id]=(agT[a.id]||0)+a.value;agC[a.id]=(agC[a.id]||0)+1;}
+  const agAvg=Object.entries(agT).map(([id,t])=>({id,avg:Math.round(t/agC[id]*10)/10,pct:WHO[id]?Math.round(t/agC[id]/WHO[id]*100):0})).sort((a,b)=>b.pct-a.pct);
+
+  // Invisible moments: spikes
+  const moments=[];
+  for(let i=1;i<recs.length;i++){
+    const d=recs[i].hri-recs[i-1].hri;
+    if(Math.abs(d)>20){
+      const pm=recs[i].agents?.find(a=>a.id==='PM2_5');
+      const isSpike=d>0;
+      let detail=isSpike?'HRI spiked':'Air cleared';
+      if(isSpike&&pm&&pm.value>100) detail='cooking/burning spike';
+      else if(isSpike) detail='traffic or outdoor source';
+      moments.push({ts:recs[i].ts,text:`${isSpike?'↑':'↓'} HRI ${isSpike?recs[i-1].hri:''+recs[i-1].hri} → ${recs[i].hri}`,detail,city:recs[i].city});
+    }
+  }
+
+  const avgHRI=Math.round(recs.reduce((s,r)=>s+r.hri,0)/recs.length*10)/10;
+  const worstRec=recs.reduce((a,b)=>b.hri>a.hri?b:a);
+  const bestRec=recs.reduce((a,b)=>b.hri<a.hri?b:a);
+
+  return {date:now,records:recs.length,lh,agAvg,moments:moments.slice(-5).reverse(),avgHRI,worstRec,bestRec};
+}
+
+// ══════════════════════════════════════════════════════
+// MONTHLY LETTER — the centrepiece
+// ══════════════════════════════════════════════════════
+
+function generateLetter() {
+  if(S.ledger.length<5) return null;
+  const now=new Date();
+  const avgHRI=Math.round(S.ledger.reduce((s,r)=>s+r.hri,0)/S.ledger.length*10)/10;
+  const L=LEVELS[gl(avgHRI)];
+  const locCount={};
+  for(const r of S.ledger) locCount[r.city]=(locCount[r.city]||0)+1;
+  const topLoc=Object.entries(locCount).sort((a,b)=>b[1]-a[1])[0]?.[0]||'your locations';
+  const daysAbove=new Set(S.ledger.filter(r=>r.hri>40).map(r=>new Date(r.ts).toDateString())).size;
+  const allPM=S.ledger.flatMap(r=>r.agents?.filter(a=>a.id==='PM2_5')||[]);
+  const avgPM=allPM.length?Math.round(allPM.reduce((s,a)=>s+a.value,0)/allPM.length*10)/10:null;
+  const debt=calcDebt();
+  const expAge=calcExposureAge();
+  const gen=buildGenerational(avgPM);
+  const days=new Set(S.ledger.map(r=>new Date(r.ts).toDateString())).size;
+  const month=now.toLocaleDateString([],{month:'long',year:'numeric'});
+
+  let p1=`Over the ${days} days BXP has been running, your average Health Risk Index was <strong>${avgHRI}</strong> — placing your overall atmospheric environment in the <strong>${gl(avgHRI)}</strong> range. You were most frequently recorded in <strong>${topLoc}</strong>.`;
+
+  let p2=daysAbove>0
+    ?`On <strong>${daysAbove} day${daysAbove>1?'s':''}</strong>, your exposure crossed the elevated threshold. These are not isolated events — they accumulate. Your body processed each one, but the cost compounds over years, not days.`
+    :`During this period, your recorded exposure stayed within acceptable limits most days. Your body had adequate recovery time between higher-exposure events.`;
+
+  let p3=avgPM
+    ?`Your average PM2.5 exposure was <strong>${avgPM} µg/m³</strong>. The WHO annual safe limit is 5 µg/m³. ${avgPM<=5?'You are living within the WHO safe limit — a rare situation in most cities.':avgPM<=15?`This is ${Math.round(avgPM/5*10)/10}× above the WHO annual guideline. Manageable, but worth monitoring over time.`:`This is <strong>${Math.round(avgPM/5*10)/10}× above the WHO annual limit</strong>. Over years, sustained exposure at this level is associated with measurable respiratory aging.`}`
+    :'Continue building your ledger — more data will sharpen this picture.';
+
+  let p4=expAge&&expAge.ageYears>0.1
+    ?`Based on your recorded exposure data, BXP estimates your respiratory system has aged approximately <strong>${expAge.ageYears} years beyond your calendar age</strong> from pollution exposure. This is derived from published dose-response relationships between PM2.5 and lung tissue aging. It is not a diagnosis — it is a statistical estimate. But it is yours, calculated from your own data, and it has never existed for any human being before.`
+    :`Your exposure-adjusted lung age is within normal bounds based on current data. As your ledger grows, this estimate will become more precise.`;
+
+  let p5=gen&&gen.pctBetter
+    ?`For context: the air in your city today is approximately <strong>${gen.pctBetter}% cleaner</strong> than it was in ${gen.baseYear} (est. ${gen.baseVal} µg/m³ vs your current ${avgPM} µg/m³). You are breathing better air than any previous generation of people who lived here. It is still ${gen.xAbove}× above the WHO safe limit — but the direction is right.`
+    :'';
+
+  return {date:now.getTime(),month,p1,p2,p3,p4,p5,avgHRI,daysAbove,avgPM};
+}
+
+// ══════════════════════════════════════════════════════
+// INHERITANCE LETTER — addressed to your children
+// ══════════════════════════════════════════════════════
+
+function generateInheritanceLetter() {
+  if(S.ledger.length<20) return null;
+  const days=new Set(S.ledger.map(r=>new Date(r.ts).toDateString())).size;
+  const avgHRI=Math.round(S.ledger.reduce((s,r)=>s+r.hri,0)/S.ledger.length*10)/10;
+  const allPM=S.ledger.flatMap(r=>r.agents?.filter(a=>a.id==='PM2_5')||[]);
+  const avgPM=allPM.length?Math.round(allPM.reduce((s,a)=>s+a.value,0)/allPM.length*10)/10:null;
+  const locs=[...new Set(S.ledger.map(r=>r.city))].filter(Boolean).slice(0,5);
+  const first=new Date(S.ledger[0].ts);
+  const last=new Date(S.ledger[S.ledger.length-1].ts);
+
+  return {
+    days,avgHRI,avgPM,locs,firstDate:first.toLocaleDateString([],{year:'numeric',month:'long',day:'numeric'}),lastDate:last.toLocaleDateString([],{year:'numeric',month:'long',day:'numeric'})
+  };
+}
+
+// ══════════════════════════════════════════════════════
+// LOCATION & FETCH
+// ══════════════════════════════════════════════════════
+
+function locErrMsg(e){
+  if(!e) return {t:'Location unavailable',r:'Could not get your position.',s:['Check location settings','Tap ↻ to retry']};
+  if(e.code===1) return {t:'Location access blocked',r:'BXP reads GPS directly — not your VPN or IP address. Your browser is blocking GPS.',s:['Tap the lock icon in your address bar','Find Location or Permissions','Change from Block to Allow','Tap ↻']};
+  if(e.code===2) return {t:'GPS unavailable',r:'Device could not get a fix.',s:['Enable Location Services in Settings','Move near a window','Tap ↻']};
+  if(e.code===3) return {t:'Location timed out',r:'GPS took too long.',s:['Enable Location Services','Tap ↻ — usually works second try']};
+  return {t:'Location error',r:'An unexpected error occurred.',s:['Refresh and try again']};
+}
+
+function getLoc() {
   return new Promise((res,rej)=>{
     if(!navigator.geolocation){rej({code:0});return;}
-    // Force fresh GPS read — maximumAge:0 means never use cached location
     navigator.geolocation.getCurrentPosition(
-      p=>res({lat:p.coords.latitude,lng:p.coords.longitude,accuracy:p.coords.accuracy}),
-      rej,
-      {enableHighAccuracy:true,timeout:15000,maximumAge:0}
+      p=>res({lat:p.coords.latitude,lng:p.coords.longitude,acc:p.coords.accuracy}),
+      rej, {enableHighAccuracy:true,timeout:15000,maximumAge:0}
     );
   });
 }
 
-async function fetchAQ(lat,lng){
-  try{
-    const r=await fetch(`https://api.waqi.info/feed/geo:${lat};${lng}/?token=${AQICN}`,{signal:AbortSignal.timeout(12000)});
-    const j=await r.json();
-    if(j.status!=='ok')return null;
+async function fetchAQ(lat,lng) {
+  try {
+    const r=await fetch(`https://api.waqi.info/feed/geo:${lat};${lng}/?token=${TK}`,{signal:AbortSignal.timeout(12000)});
+    const j=await r.json(); if(j.status!=='ok') return null;
     const d=j.data,ia=d.iaqi||{},agents=[];
     if(ia.pm25?.v!=null)agents.push({id:'PM2_5',value:ia.pm25.v,unit:'ug/m3'});
     if(ia.pm10?.v!=null)agents.push({id:'PM10', value:ia.pm10.v,unit:'ug/m3'});
@@ -396,194 +783,441 @@ async function fetchAQ(lat,lng){
     if(ia.co?.v  !=null)agents.push({id:'CO',   value:ia.co.v,  unit:'ppm'});
     if(ia.so2?.v !=null)agents.push({id:'SO2',  value:ia.so2.v, unit:'ppb'});
     const{hri,breakdown}=calcHRI(agents);
-    return{bxpVersion:'2.0',fileType:'reading',city:d.city?.name||'Unknown',ts:Date.now(),lat,lng,geohash:gh(lat,lng,7),agents,hri,level:gl(hri),breakdown,health:calcHealth(agents),quality:{flag:'UNVALIDATED',confidence:0.75}};
+    return{city:d.city?.name||'Unknown',agents,hri,level:gl(hri),breakdown};
   }catch(e){return null;}
 }
 
-async function takeReading(manual=false){
-  if(S.reading_in_progress&&!manual)return;
-  S.reading_in_progress=true;S.locErr=null;
-  const dot=document.getElementById('status-dot');
-  const txt=document.getElementById('status-text');
-  const rb=document.getElementById('refresh-btn');
-  dot.className='status-dot inactive';txt.textContent='Reading...';
-  if(rb){rb.classList.add('spinning');rb.disabled=true;}
-  try{
-    const loc=await getLoc(); // Always fresh GPS, never cached
-    S.loc=loc;
-    const r=await fetchAQ(loc.lat,loc.lng);
-    if(!r){dot.className='status-dot error';txt.textContent='No data';S.reading_in_progress=false;if(rb){rb.classList.remove('spinning');rb.disabled=false;}return;}
-    S.reading=r;
-    S.history.push({ts:r.ts,city:r.city,lat:loc.lat,lng:loc.lng,hri:r.hri,level:r.level,agents:r.agents});
-    S.contrib++;save();
-    dot.className='status-dot';txt.textContent='Live';
-    document.getElementById('contrib-count').textContent=S.contrib;
-    document.getElementById('tl-count').textContent=`${S.history.length} readings`;
-    renderMain();renderTimeline();renderPassport();
-    if(r.hri>=60)sendNotif(r);
-  }catch(err){
-    S.locErr=err;
-    dot.className='status-dot error';
-    txt.textContent='Location blocked';
-    renderMain();
-  }finally{
-    S.reading_in_progress=false;
-    if(rb){rb.classList.remove('spinning');rb.disabled=false;}
-  }
+// ══════════════════════════════════════════════════════
+// WRITE LEDGER RECORD — only when meaningful
+// ══════════════════════════════════════════════════════
+
+async function maybeWrite(loc,aq) {
+  const nowGH=gh(loc.lat,loc.lng,7);
+  const now=Date.now();
+  const sinceMin=(now-S.lastRT)/60000;
+  const should=nowGH!==S.lastGH||Math.abs(aq.hri-(S.lastHRI||0))>=10||sinceMin>=60;
+  if(!should) return false;
+
+  const prevHash=S.ledger.length?S.ledger[S.ledger.length-1].hash:'0000000000000000';
+  const raw=JSON.stringify({seq:S.ledger.length,ts:now,gh:nowGH,hri:aq.hri});
+  const hash=await sha256(prevHash+raw);
+
+  S.ledger.push({
+    bxpVersion:'2.0',fileType:'reading',seq:S.ledger.length,
+    ts:now,geohash:nowGH,city:aq.city,
+    lat:Math.round(loc.lat*10000)/10000,lng:Math.round(loc.lng*10000)/10000,
+    agents:aq.agents,hri:aq.hri,level:aq.level,
+    prevHash,hash,quality:{flag:'UNVALIDATED',confidence:0.75}
+  });
+  S.contrib++; S.lastGH=nowGH; S.lastHRI=aq.hri; S.lastRT=now;
+  updateZones(nowGH,aq.hri,aq.city,now);
+  return true;
 }
 
-async function manualRefresh(){
-  await takeReading(true);
-  toast('Reading updated');
-}
+// ══════════════════════════════════════════════════════
+// NOTIFICATIONS
+// ══════════════════════════════════════════════════════
 
-async function askNotif(){
+async function askNotif() {
   if(!('Notification'in window))return;
   try{const p=await Notification.requestPermission();S.notif=p;localStorage.setItem('bxp_n',p);if(p==='granted'){toast('Alerts enabled');renderMain();}}catch(e){}
 }
-
-function sendNotif(r){
-  if(S.notif!=='granted'||!('Notification'in window)||r.hri<40)return;
-  try{new Notification('BXP — Air Quality Alert',{body:`HRI ${r.hri} · ${r.level} · ${r.city}`,tag:'bxp-alert',renotify:true});}catch(e){}
+function sendNotif(title,body,tag='bxp') {
+  if(S.notif!=='granted'||!('Notification'in window))return;
+  try{new Notification(title,{body,tag,renotify:true});}catch(e){}
+}
+function checkAlerts(aq) {
+  if(aq.hri>=60) sendNotif(`🫁 ${aq.level} air — HRI ${aq.hri}`,`${aq.city} · ${LEVELS[aq.level]?.a||''}`, 'bxp-alert');
+}
+function checkDigest() {
+  const now=new Date(),h=now.getHours(),today=now.toDateString();
+  const last=localStorage.getItem('bxp_dd');
+  if(h>=21&&last!==today&&S.ledger.length>3){
+    S.digest=generateDigest(); S.letter=generateLetter();
+    if(S.digest) sendNotif('📊 Your daily air quality digest',`Avg HRI ${S.digest.avgHRI} · ${S.digest.records} readings today`,'bxp-digest');
+    localStorage.setItem('bxp_dd',today); save(); renderMain();
+  }
 }
 
-let idleT=null;
-const resetIdle=()=>{clearTimeout(idleT);idleT=setTimeout(()=>{if(S.reading&&S.reading.hri>=40)sendNotif(S.reading);},15*60*1000);};
-['touchstart','click'].forEach(e=>document.addEventListener(e,resetIdle,{passive:true}));
+// ══════════════════════════════════════════════════════
+// MAIN READ CYCLE
+// ══════════════════════════════════════════════════════
 
-function renderMain(){
-  const r=S.reading;let html='';
+async function doRead(force=false) {
+  if(S.busy&&!force)return; S.busy=true; S.locErr=null;
+  const dot=$id('sdot'),txt=$id('stext'),rb=$id('rbtn');
+  dot.className='sdot off'; txt.textContent='Reading';
+  if(rb){rb.classList.add('spin');rb.disabled=true;}
+  try {
+    const loc=await getLoc(); S.loc=loc;
+    const aq=await fetchAQ(loc.lat,loc.lng);
+    if(!aq){dot.className='sdot err';txt.textContent='No data';return;}
+    S.reading=aq;
+    const wrote=await maybeWrite(loc,aq);
+    if(wrote){
+      checkAlerts(aq);
+      const anom=detectAnomalies();
+      if(anom) sendNotif(`⚠ Emission spike detected`,`HRI jumped to ${anom.hri} — ${anom.source}`,'bxp-anom');
+      save();
+    }
+    dot.className='sdot'; txt.textContent='Live';
+    $id('contrib-disp').textContent=S.contrib;
+    $id('lcount').textContent=`${S.ledger.length} records`;
+    renderMain(); renderLedger(); renderPassport(); checkDigest();
+  } catch(err) {
+    S.locErr=err; dot.className='sdot err'; txt.textContent='Blocked'; renderMain();
+  } finally {
+    S.busy=false; if(rb){rb.classList.remove('spin');rb.disabled=false;}
+  }
+}
+async function manualRead(){await doRead(true);toast('Reading updated');}
+
+// ══════════════════════════════════════════════════════
+// RENDER: MAIN
+// ══════════════════════════════════════════════════════
+
+function renderMain() {
+  const el=$id('content-main'); let h='';
+
   if(S.locErr){
-    const e=locErr(S.locErr);
-    html+=`<div class="location-error"><div class="le-title">⚠ ${e.title}</div><div class="le-body">${e.reason}</div><div class="le-steps">`;
-    e.steps.forEach((s,i)=>{html+=`<div class="le-step"><div class="le-step-num">${i+1}.</div><div>${s}</div></div>`;});
-    html+=`</div><button class="le-retry" onclick="takeReading(true)">Try Again</button></div>`;
-    document.getElementById('main-content').innerHTML=html;return;
+    const e=locErrMsg(S.locErr);
+    h+=`<div class="le"><div class="le-title">⚠ ${e.t}</div><div class="le-body">${e.r}</div><div class="le-steps">`;
+    e.s.forEach((s,i)=>{h+=`<div class="le-step"><div class="le-n">${i+1}.</div><div>${s}</div></div>`;});
+    h+=`</div><button class="retry" onclick="doRead(true)">Try Again</button></div>`;
+    el.innerHTML=h; return;
   }
-  if(!r){document.getElementById('main-content').innerHTML=`<div style="text-align:center;padding:3rem 1rem;color:var(--muted2);font-family:var(--mono);font-size:0.72rem;line-height:1.8">Acquiring GPS location...<br>Allow location access when prompted.<br><br>Note: BXP uses GPS directly and ignores VPN or IP location.</div>`;return;}
-  const L=LEVELS[r.level]||LEVELS.CLEAN;
 
+  if(!S.reading){
+    el.innerHTML=`<div style="text-align:center;padding:3rem 1rem;color:var(--muted2);font-family:var(--mono);font-size:0.68rem;line-height:1.9">Acquiring GPS...<br>Allow location access when prompted.<br><br>BXP reads GPS directly.<br>VPNs have no effect on it.</div>`;
+    return;
+  }
+
+  const r=S.reading, L=LEVELS[r.level]||LEVELS.CLEAN;
+  const bl=calcBodyLoad(), debt=calcDebt(), budget=calcBudget();
+  const expAge=calcExposureAge(), zones=getLifeZones(), route=buildRouteIntelligence();
+  const recovery=buildRecovery(bl,debt,zones);
+  const latest=S.anomalies.find(a=>Date.now()-a.ts<3600000);
+  const allPM=S.ledger.flatMap(r=>r.agents?.filter(a=>a.id==='PM2_5')||[]);
+  const avgPM=allPM.length?Math.round(allPM.reduce((s,a)=>s+a.value,0)/allPM.length*10)/10:null;
+  const gen=buildGenerational(avgPM);
+
+  // NOTIF PROMPT
   if(S.notif==='default'){
-    html+=`<div class="notif-card"><div class="notif-icon">🔔</div><div><div class="notif-title">Get alerts for dangerous air</div><div class="notif-body">BXP will notify you when you enter high-exposure areas — even if the browser is closed.</div><button class="notif-btn" onclick="askNotif()">Enable Alerts</button></div></div>`;
+    h+=`<div class="np"><div style="font-size:1.2rem;flex-shrink:0">🔔</div><div><div class="np-t">Enable exposure alerts</div><div class="np-b">Daily digest at 9pm. Immediate alert when air is dangerous. No noise in between.</div><button class="np-btn" onclick="askNotif()">Enable</button></div></div>`;
   }
 
-  html+=`<div class="hri-hero">
-    <div class="hri-label">BXP Health Risk Index</div>
-    <div class="hri-main">
-      <div class="hri-number" style="color:${L.color}">${r.hri}</div>
-      <div>
-        <div class="hri-level-badge" style="background:${L.bg};color:${L.color}">${L.label}</div>
-        <div class="hri-advice">${L.advice}</div>
-      </div>
+  // ANOMALY ALERT
+  if(latest){
+    h+=`<div class="card anomaly-card card-pad"><div class="eyebrow" style="color:var(--danger)">⚠ Emission spike detected · ${tfmt(latest.ts)}</div><div class="card-title" style="color:var(--danger)">HRI jumped to ${latest.hri}</div><div class="card-body">${latest.source} near ${latest.city}. Consider moving indoors if you are able.</div></div>`;
+  }
+
+  // BODY LOAD RING
+  const circ=2*Math.PI*54, off=circ*(1-bl.load/100), blC=col(bl.load);
+  h+=`<div class="card"><div class="bl-wrap">
+    <div class="bl-ring">
+      <svg class="bl-svg" viewBox="0 0 120 120">
+        <circle class="bl-track" cx="60" cy="60" r="54"/>
+        <circle class="bl-fill" cx="60" cy="60" r="54" stroke="${blC}" stroke-dasharray="${circ}" stroke-dashoffset="${off}"/>
+      </svg>
+      <div class="bl-center"><div class="bl-num" style="color:${blC}">${bl.load}</div><div class="bl-lbl">BODY LOAD</div></div>
     </div>
-    <div class="hri-bar-track"><div class="hri-bar-fill" style="width:${r.hri}%;background:${L.color}"></div></div>
-    <div class="hri-meta">
-      <div class="hri-meta-item"><span>${r.city}</span>Location</div>
-      <div class="hri-meta-item"><span>${new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span>Updated</div>
-      <div class="hri-meta-item"><span>${r.agents.length}</span>Agents</div>
+    <div class="bl-title">Pollutant burden in your system</div>
+    <div class="bl-desc">${bl.load<20?'Your body has cleared most recent exposure.':bl.load<50?`Processing recent exposure. Clean air for ${bl.clearH}h to clear.`:`Significant burden. Needs ~${bl.clearH}h in clean air.`}</div>
+  </div></div>`;
+
+  // CURRENT READING
+  h+=`<div class="card card-pad">
+    <div class="eyebrow">Current reading · ${tfmt(Date.now())}</div>
+    <div class="hri-row">
+      <div class="hri-big" style="color:${L.c}">${r.hri}</div>
+      <div><div class="hri-badge" style="background:${L.bg};color:${L.c}">${L.l}</div><div class="hri-advice">${L.a}</div></div>
     </div>
+    <div class="bar-t"><div class="bar-f" style="width:${r.hri}%;background:${L.c}"></div></div>
+    <div class="agents-grid">`;
+  for(const a of r.agents){const t=WHO[a.id],p=t?Math.min(100,Math.round(a.value/t*100)):0;const c=col(p);h+=`<div class="ag-item"><div class="ag-id">${a.id}</div><div class="ag-val" style="color:${c}">${a.value.toFixed(1)}</div><div class="ag-pct" style="color:${c}">${p}% WHO</div></div>`;}
+  h+=`</div>
+    <div class="loc-row"><span style="font-size:0.875rem">📍</span><div><div class="loc-name">${r.city}</div><div class="loc-sub">${S.loc?.lat?.toFixed(4)}°, ${S.loc?.lng?.toFixed(4)}° · ${gh(S.loc?.lat||0,S.loc?.lng||0,7)}</div></div></div>
   </div>`;
 
-  if(r.health&&r.health.length>0){
-    html+=`<div class="health-card"><div class="hc-label">Health Impact — WHO Dose-Response Data</div><div class="hc-title">What this exposure means for you</div><div class="hc-body">Estimated elevated risk after exposure at current levels:</div><div class="hc-risks">`;
-    for(const h of r.health){html+=`<div class="hc-risk-row"><div class="hc-risk-name">${h.effect}</div><div class="hc-risk-bar"><div class="hc-risk-fill" style="width:${Math.min(100,h.pct*20)}%;background:${h.color}"></div></div><div class="hc-risk-pct" style="color:${h.color}">+${h.pct}%</div></div>`;}
-    html+=`</div><div class="hc-disclaimer">Based on WHO Global Air Quality Guidelines 2021 dose-response data. Population-level statistical associations only — not individual diagnoses. Consult a medical professional for personal health advice.</div></div>`;
-  }else{
-    html+=`<div class="health-card" style="border-left-color:var(--accent)"><div class="hc-label" style="color:var(--accent)">Health Impact</div><div class="hc-title">Air quality is clean here</div><div class="hc-body">Current pollutant levels are within WHO safe limits.</div></div>`;
+  // EXPOSURE AGE
+  if(expAge){
+    const aged=expAge.ageYears>0;
+    h+=`<div class="card card-pad">
+      <div class="eyebrow">Exposure Age</div>
+      <div style="display:flex;align-items:baseline;gap:0.25rem;margin-bottom:0.5rem">
+        <div class="exp-age-big" style="color:${aged?'var(--warn)':'var(--accent)'}">+${expAge.ageYears}</div>
+        <div style="font-family:var(--mono);font-size:0.65rem;color:var(--muted2)">years beyond your calendar age</div>
+      </div>
+      <div class="card-body">Based on your average PM2.5 of <strong>${expAge.avgPM} µg/m³</strong> (${expAge.excess} µg/m³ above safe limit), BXP estimates your respiratory system has aged <strong>${expAge.ageYears} years beyond your birthday</strong> from pollution alone. Derived from published dose-response literature. This is the first time this has been calculated for you.</div>
+    </div>`;
   }
 
-  if(r.agents.length){
-    html+='<div class="agents-grid">';
-    for(const a of r.agents){
-      const t=WHO[a.id],pct=t?Math.min(100,Math.round(a.value/t*100)):0;
-      const col=pct<50?'#00E676':pct<100?'#FF9800':'#F44336';
-      html+=`<div class="agent-card"><div class="agent-id">${a.id}</div><div class="agent-value" style="color:${col}">${a.value.toFixed(1)}</div><div class="agent-unit">${a.unit}</div>${t?`<div class="agent-who">WHO limit: ${t}</div><div class="agent-mini-bar"><div class="agent-mini-fill" style="width:${pct}%;background:${col}"></div></div>`:''}<div style="position:absolute;bottom:0;left:0;right:0;height:3px;background:${col}"></div></div>`;
+  // LUNG BUDGET
+  const budgetCol=budget.pctUsed<100?'var(--accent)':budget.pctUsed<150?'var(--warn)':'var(--danger)';
+  h+=`<div class="card card-pad">
+    <div class="eyebrow">Daily Lung Budget · PM2.5</div>
+    <div class="budget-gauge">
+      <div class="bg-seg" style="width:${Math.min(100,budget.pctUsed)}%;background:${budgetCol};"></div>
+      <div style="flex:1;background:var(--border);border-radius:999px;"></div>
+    </div>
+    <div class="budget-stat-grid">
+      <div class="bs-item"><div class="bs-num" style="color:${budgetCol}">${budget.avgToday}</div><div class="bs-lbl">µg/m³ today</div></div>
+      <div class="bs-item"><div class="bs-num" style="color:${budgetCol}">${budget.pctUsed}%</div><div class="bs-lbl">of WHO limit</div></div>
+      <div class="bs-item"><div class="bs-num" style="color:${budget.daysUntilBreach?'var(--danger)':'var(--accent)'}">${budget.daysUntilBreach||'∞'}</div><div class="bs-lbl">days to annual limit</div></div>
+    </div>
+    ${budget.daysUntilBreach&&budget.daysUntilBreach<365?`<div class="card-body" style="margin-top:0.75rem">At your current average exposure, you will exceed your WHO annual PM2.5 budget in <strong>${budget.daysUntilBreach} days</strong>.</div>`:''}
+  </div>`;
+
+  // EXPOSURE DEBT
+  const dc=debt.debt<1?'var(--accent)':debt.debt<3?'var(--warn)':'var(--danger)';
+  h+=`<div class="card card-pad">
+    <div class="eyebrow">Exposure Debt</div>
+    <div style="display:flex;align-items:flex-end;gap:0.25rem;margin-bottom:0.5rem">
+      <div class="debt-big" style="color:${dc}">${debt.debt}</div>
+      <div class="debt-unit">hours accumulated</div>
+    </div>
+    <div class="bar-t"><div class="bar-f" style="width:${Math.min(100,debt.debt*20)}%;background:${dc}"></div></div>
+    <div class="card-body">${debt.debt<0.5?'No significant debt. Recent exposure within safe limits.':`Your lungs are at an estimated <strong>${debt.lungCap}% capacity</strong>. Needs <strong>${debt.recovH}h in clean air</strong> to recover.`}</div>
+  </div>`;
+
+  // ROUTE INTELLIGENCE
+  if(route){
+    h+=`<div class="card card-pad">
+      <div class="eyebrow">Route Intelligence</div>
+      <div class="card-title">Your daily exposure pattern</div>
+      <div class="route-compare" style="margin-top:0.625rem">
+        <div class="route-row"><div class="route-dot" style="background:${col(route.homeHRI)}"></div><div class="route-info"><strong>Home (${route.homeCity}):</strong> avg HRI ${route.homeHRI}</div></div>
+        <div class="route-row"><div class="route-dot" style="background:${col(route.commuteAvg)}"></div><div class="route-info"><strong>Commute:</strong> avg HRI ${route.commuteAvg} — your highest-exposure period</div></div>
+        <div class="route-row"><div class="route-dot" style="background:${col(route.workHRI)}"></div><div class="route-info"><strong>Work (${route.workCity}):</strong> avg HRI ${route.workHRI}</div></div>
+      </div>
+      ${route.commuteAvg>50?`<div class="card-body" style="margin-top:0.75rem">Your commute accounts for a disproportionate share of your daily exposure. If an alternative route exists — even one taking 3–5 minutes longer — BXP estimates it could reduce your commute-time exposure significantly.</div>`:''}
+    </div>`;
+  }
+
+  // LIFE ZONES
+  if(zones.length>1){
+    const icons={home:'🏠',work:'🏢',commute:'🚶'};
+    h+=`<div class="card card-pad">
+      <div class="eyebrow">Your exposure zones</div>
+      <div class="zone-list">`;
+    for(const z of zones){h+=`<div class="zone-row"><div class="zone-icon">${icons[z.type]||'📍'}</div><div class="zone-info"><div class="zone-name">${z.city} <span style="font-family:var(--mono);font-size:0.55rem;color:var(--muted2);font-weight:400">${z.type}</span></div><div class="zone-time">${z.visits} readings</div></div><div class="zone-hri" style="color:${col(z.avgHRI)}">${z.avgHRI}</div></div>`;}
+    h+=`</div></div>`;
+  }
+
+  // RECOVERY PROTOCOL
+  if(recovery){
+    h+=`<div class="card card-pad">
+      <div class="eyebrow">Recovery Protocol</div>
+      <div class="card-title">Your body needs recovery time</div>
+      <div class="protocol-steps">`;
+    for(const s of recovery){h+=`<div class="ps-row"><div class="ps-arrow">→</div><div class="ps-text"><strong>${s.a}</strong><br><span>${s.d}</span></div></div>`;}
+    h+=`</div></div>`;
+  }
+
+  // GENERATIONAL COMPARISON
+  if(gen){
+    h+=`<div class="card card-pad">
+      <div class="eyebrow">Generational context</div>
+      <div class="card-body">`;
+    if(gen.pctBetter) h+=`The air in your city today is approximately <strong>${gen.pctBetter}% cleaner</strong> than it was in ${gen.baseYear}. `;
+    if(gen.stillAboveWHO) h+=`It is still <strong>${gen.xAbove}× above the WHO safe limit</strong>. You are breathing better air than any previous generation who lived here — but better than inadequate is still inadequate.`;
+    else h+=`You are breathing air that meets the WHO safe limit — a rare achievement for an urban environment.`;
+    h+=`</div></div>`;
+  }
+
+  // DAILY DIGEST
+  if(S.digest){
+    const dg=S.digest, lh=dg.lh;
+    h+=`<div class="card">
+      <div class="card-pad" style="padding-bottom:0.75rem">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem">
+          <div class="eyebrow" style="margin:0">Daily Digest</div>
+          <div style="font-family:var(--mono);font-size:0.58rem;color:var(--muted2)">${dfmt(dg.date)}</div>
+        </div>
+        <div class="digest-hours">
+          <div class="dh-box"><div class="dh-val" style="color:#00E676">${Math.round((lh.CLEAN||0)*10)/10}h</div><div class="dh-lbl">CLEAN</div></div>
+          <div class="dh-box"><div class="dh-val" style="color:#FFEB3B">${Math.round((lh.MODERATE||0)*10)/10}h</div><div class="dh-lbl">MOD</div></div>
+          <div class="dh-box"><div class="dh-val" style="color:#FF9800">${Math.round(((lh.ELEVATED||0)+(lh.HIGH||0))*10)/10}h</div><div class="dh-lbl">HIGH</div></div>
+          <div class="dh-box"><div class="dh-val" style="color:var(--muted2)">${dg.avgHRI}</div><div class="dh-lbl">AVG HRI</div></div>
+        </div>`;
+    if(dg.agAvg?.length){
+      h+=`<div style="font-family:var(--mono);font-size:0.55rem;color:var(--muted2);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.4rem">Avg vs WHO limit today</div>`;
+      for(const a of dg.agAvg.slice(0,4)){const c=col(a.pct);h+=`<div style="display:flex;align-items:center;gap:0.625rem;margin-bottom:0.35rem"><div style="font-family:var(--mono);font-size:0.62rem;font-weight:700;min-width:48px">${a.id}</div><div style="flex:1;height:3px;background:var(--border);border-radius:999px;overflow:hidden"><div style="height:100%;width:${Math.min(100,a.pct)}%;background:${c};border-radius:999px"></div></div><div style="font-family:var(--mono);font-size:0.58rem;color:${c};min-width:30px;text-align:right">${a.pct}%</div></div>`;}
     }
-    html+='</div>';
+    h+=`</div>`;
+    if(dg.moments?.length){
+      h+=`<div class="divider"></div><div class="card-pad" style="padding-top:0.75rem"><div style="font-family:var(--mono);font-size:0.55rem;color:var(--muted2);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.5rem">Invisible moments</div><div class="moments-list">`;
+      for(const m of dg.moments){h+=`<div class="moment-row"><div class="moment-time">${tfmt(m.ts)}</div><div class="moment-text">${m.text} <span>— ${m.detail}</span></div></div>`;}
+      h+=`</div></div>`;
+    }
+    h+=`</div>`;
   }
 
-  html+=`<div class="location-card"><div class="location-icon">📍</div><div><div class="location-name">${r.city}</div><div class="location-coords">${S.loc.lat.toFixed(5)}°, ${S.loc.lng.toFixed(5)}° ${S.loc.accuracy?`±${Math.round(S.loc.accuracy)}m`:''}</div><div class="location-gh">Geohash: ${r.geohash}</div></div></div>`;
-
-  html+=`<div class="share-card"><div class="sc-label">Share your reading</div><div class="sc-buttons"><button class="sc-btn wa" onclick="shareWhatsApp()">💬 WhatsApp</button><button class="sc-btn" onclick="nativeShare()">↗ Share</button><button class="sc-btn" onclick="copyLink()">🔗 Copy link</button></div></div>`;
-
-  document.getElementById('main-content').innerHTML=html;
-}
-
-function renderTimeline(){
-  const c=document.getElementById('timeline-content');
-  if(!S.history.length){c.innerHTML=`<div class="tl-empty">No readings yet.<br><br>Your exposure log will appear here.</div>`;return;}
-  let h='<div class="timeline-list">';
-  for(const item of[...S.history].reverse()){
-    const lv=LEVELS[item.level]||LEVELS.CLEAN;const d=new Date(item.ts);
-    h+=`<div class="timeline-item"><div class="tl-score" style="color:${lv.color}">${item.hri}</div><div class="tl-info"><div class="tl-location">${item.city}</div><div class="tl-time">${d.toLocaleDateString()} ${d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div></div><div class="tl-level" style="background:${lv.bg};color:${lv.color}">${lv.label}</div></div>`;
+  // MONTHLY LETTER
+  if(S.letter){
+    const ml=S.letter;
+    h+=`<div class="card card-pad">
+      <div class="letter-to">Your exposure record · ${ml.month}</div>
+      <div class="letter-subject">A letter about the air<br>you breathed.</div>
+      <div class="letter-body">
+        <p>${ml.p1}</p><p>${ml.p2}</p><p>${ml.p3}</p><p>${ml.p4}</p>${ml.p5?`<p>${ml.p5}</p>`:''}
+      </div>
+      <div class="letter-sig">— BXP LiveNet · ${new Date(ml.date).toLocaleDateString()}<br>DOI: 10.5281/zenodo.18906812 · Apache 2.0</div>
+    </div>`;
   }
-  h+='</div>';c.innerHTML=h;
+
+  // INHERITANCE LETTER
+  const inheritance=generateInheritanceLetter();
+  if(inheritance){
+    h+=`<div class="card card-pad" style="border-color:rgba(0,200,255,0.2);border-left:3px solid var(--a2)">
+      <div class="eyebrow" style="color:var(--a2)">Exposure Inheritance Record</div>
+      <div class="card-title">A record for those who come after you</div>
+      <div class="card-body">Between <strong>${inheritance.firstDate}</strong> and <strong>${inheritance.lastDate}</strong>, BXP recorded your atmospheric exposure across <strong>${inheritance.days} days</strong> in ${inheritance.locs.join(', ')}. Average HRI: <strong>${inheritance.avgHRI}</strong>${inheritance.avgPM?`. Average PM2.5: <strong>${inheritance.avgPM} µg/m³</strong>`:''}.
+      <br><br>This is the first time in human history that a person's atmospheric exposure record has been preserved in a verifiable, cryptographically-chained, open-format ledger. Your children can read exactly what you breathed. Your doctors can read it. Researchers studying the health of your generation can read it. It cannot be altered.</div>
+      <button class="section-btn" style="color:var(--a2);border-color:rgba(0,200,255,0.3)" onclick="exportPassport()">Export Inheritance Record as .bxp.json</button>
+    </div>`;
+  }
+
+  el.innerHTML=h;
 }
 
-function renderPassport(){
-  const c=document.getElementById('passport-content');const hs=S.history;
-  if(!hs.length){c.innerHTML=`<div class="tl-empty">Your exposure passport is being built.<br><br>Every location adds to your permanent record.</div>`;return;}
-  const avg=Math.round(hs.reduce((s,r)=>s+r.hri,0)/hs.length*10)/10;
-  const peak=Math.max(...hs.map(r=>r.hri));
+// ══════════════════════════════════════════════════════
+// RENDER: LEDGER
+// ══════════════════════════════════════════════════════
+
+function renderLedger() {
+  const el=$id('content-ledger');
+  if(!S.ledger.length){el.innerHTML=`<div style="text-align:center;padding:2.5rem;font-family:var(--mono);font-size:0.68rem;color:var(--muted);line-height:1.9;background:var(--surface);border:1px solid var(--border);border-radius:12px">No records yet.<br><br>BXP writes a record only when<br>you move or air quality changes.<br><br>Each record is SHA-256 chained<br>to the previous one.</div>`;return;}
+
+  let chainOk=true;
+  for(let i=1;i<S.ledger.length;i++) if(S.ledger[i].prevHash!==S.ledger[i-1].hash){chainOk=false;break;}
+
+  let h=`<div style="background:var(--surface);border:1px solid ${chainOk?'rgba(0,255,136,0.2)':'rgba(255,68,102,0.3)'};border-radius:10px;padding:0.75rem 0.875rem;display:flex;align-items:center;gap:0.625rem;margin-bottom:0.25rem">
+    <div style="font-size:0.875rem">${chainOk?'✓':'⚠'}</div>
+    <div><div style="font-size:0.78rem;font-weight:700;color:${chainOk?'var(--accent)':'var(--danger)'}">${chainOk?'Chain integrity verified':'Chain integrity error'}</div>
+    <div style="font-family:var(--mono);font-size:0.55rem;color:var(--muted2)">${S.ledger.length} records · ${chainOk?'All SHA-256 hashes valid':'Possible tampering'}</div></div>
+  </div>`;
+
+  h+=`<div class="ledger-list">`;
+  for(const rec of [...S.ledger].reverse().slice(0,80)){
+    const lv=LEVELS[rec.level]||LEVELS.CLEAN;
+    h+=`<div class="li"><div class="li-sc" style="color:${lv.c}">${rec.hri}</div><div class="li-info"><div class="li-loc">${rec.city}</div><div class="li-meta"><span>#${rec.seq}</span><span>${dfmt(rec.ts)} ${tfmt(rec.ts)}</span></div><div class="li-meta" style="opacity:0.6"><span>sha:${rec.hash}</span></div></div><div class="li-badge" style="background:${lv.bg};color:${lv.c}">${lv.l}</div></div>`;
+  }
+  h+=`</div>`; el.innerHTML=h;
+}
+
+// ══════════════════════════════════════════════════════
+// RENDER: PASSPORT
+// ══════════════════════════════════════════════════════
+
+function renderPassport() {
+  const el=$id('content-passport');
+  if(!S.ledger.length){el.innerHTML=`<div style="text-align:center;padding:2.5rem;font-family:var(--mono);font-size:0.68rem;color:var(--muted);line-height:1.9;background:var(--surface);border:1px solid var(--border);border-radius:12px">Your passport is being built.<br><br>Every location adds to your<br>permanent record.</div>`;return;}
+
+  const avg=Math.round(S.ledger.reduce((s,r)=>s+r.hri,0)/S.ledger.length*10)/10;
+  const peak=Math.max(...S.ledger.map(r=>r.hri));
   const L=LEVELS[gl(avg)];
+  const days=new Set(S.ledger.map(r=>new Date(r.ts).toDateString())).size;
+  const bl=calcBodyLoad(),debt=calcDebt(),expAge=calcExposureAge();
   const agT={},agC={};
-  for(const r of hs)for(const a of(r.agents||[])){agT[a.id]=(agT[a.id]||0)+a.value;agC[a.id]=(agC[a.id]||0)+1;}
+  for(const r of S.ledger)for(const a of(r.agents||[])){agT[a.id]=(agT[a.id]||0)+a.value;agC[a.id]=(agC[a.id]||0)+1;}
   const avgs=Object.entries(agT).map(([id,t])=>({id,pct:WHO[id]?Math.min(100,Math.round(t/agC[id]/WHO[id]*100)):0})).sort((a,b)=>b.pct-a.pct);
-  let h=`<div class="passport-card"><div class="passport-header"><div class="passport-title">Exposure Passport</div><div class="passport-badge">BXP v2.0</div></div><div class="passport-stats"><div class="ps-stat"><span class="ps-num">${hs.length}</span><span class="ps-label">Readings</span></div><div class="ps-stat"><span class="ps-num">${new Set(hs.map(r=>r.city)).size}</span><span class="ps-label">Locations</span></div><div class="ps-stat"><span class="ps-num">${peak}</span><span class="ps-label">Peak HRI</span></div></div><div class="passport-avg"><div class="pa-label">Average BXP_HRI</div><div class="pa-value" style="color:${L.color}">${avg}</div><div class="pa-desc">${L.label} — ${L.advice}</div></div><button class="export-btn" onclick="exportPassport()">Export as .bxp.json</button></div>`;
-  if(avgs.length){h+=`<div class="passport-breakdown"><div class="pb-header">Average Exposure vs WHO Limits</div>`;for(const a of avgs){const col=a.pct<50?'#00E676':a.pct<100?'#FF9800':'#F44336';h+=`<div class="pb-row"><div class="pb-agent">${a.id}</div><div class="pb-bar-wrap"><div class="pb-bar" style="width:${a.pct}%;background:${col}"></div></div><div class="pb-pct" style="color:${col}">${a.pct}%</div></div>`;}h+='</div>';}
-  c.innerHTML=h;
+
+  let h=`<div class="card card-pad" style="margin-bottom:0">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;padding-bottom:0.875rem;border-bottom:1px solid var(--border)"><div style="font-size:0.95rem;font-weight:700">Exposure Passport</div><div style="font-family:var(--mono);font-size:0.57rem;padding:0.18rem 0.45rem;background:rgba(0,255,136,0.08);border:1px solid rgba(0,255,136,0.2);border-radius:999px;color:var(--accent)">BXP v2.0</div></div>
+    <div class="pp-stats">
+      <div><span class="pp-stat-num">${S.ledger.length}</span><span class="pp-stat-lbl">Records</span></div>
+      <div><span class="pp-stat-num">${days}</span><span class="pp-stat-lbl">Days</span></div>
+      <div><span class="pp-stat-num">${peak}</span><span class="pp-stat-lbl">Peak HRI</span></div>
+    </div>
+    <div class="pp-avg">
+      <div style="font-family:var(--mono);font-size:0.55rem;color:var(--muted2);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.3rem">Lifetime avg BXP_HRI</div>
+      <div style="font-family:var(--mono);font-size:1.5rem;font-weight:700;color:${L.c}">${avg}</div>
+      <div style="font-size:0.7rem;color:var(--muted2);margin-top:0.2rem">${L.l} · Body Load ${bl.load} · Debt ${debt.debt}h${expAge?` · Exp. Age +${expAge.ageYears}y`:''}</div>
+    </div>
+    <button class="export-btn" onclick="exportPassport()">Export full ledger as .bxp.json</button>
+  </div>`;
+
+  if(avgs.length){
+    h+=`<div class="card"><div style="padding:0.75rem 1rem;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:0.55rem;color:var(--muted2);letter-spacing:0.1em;text-transform:uppercase">Lifetime avg exposure vs WHO limits</div>`;
+    for(const a of avgs){const c=col(a.pct);h+=`<div class="ab-row"><div class="ab-id">${a.id}</div><div class="ab-bw"><div class="ab-b" style="width:${a.pct}%;background:${c}"></div></div><div class="ab-p" style="color:${c}">${a.pct}%</div></div>`;}
+    h+=`</div>`;
+  }
+
+  h+=`<button class="section-btn" onclick="genAll()">Generate Monthly Letter + Digest</button>`;
+  el.innerHTML=h;
 }
+
+function genAll(){
+  S.digest=generateDigest(); S.letter=generateLetter(); save();
+  sw('main',document.querySelector('.ni'));
+  document.querySelectorAll('.ni').forEach((n,i)=>n.classList.toggle('active',i===0));
+  renderMain(); toast('Letter + digest generated');
+}
+
+// ══════════════════════════════════════════════════════
+// EXPORT
+// ══════════════════════════════════════════════════════
 
 function exportPassport(){
-  const p={bxpVersion:'2.0',fileType:'aggregate',exportedAt:new Date().toISOString(),totalReadings:S.history.length,readings:S.history.map(r=>({bxpVersion:'2.0',fileType:'reading',timestampUs:r.ts*1000,city:r.city,lat:r.lat,lng:r.lng,geohash:gh(r.lat,r.lng,7),agents:r.agents,hri:r.hri,level:r.level,quality:{flag:'UNVALIDATED',confidence:0.75}}))};
+  const p={bxpVersion:'2.0',fileType:'aggregate',exportedAt:new Date().toISOString(),totalRecords:S.ledger.length,ledger:S.ledger};
   const blob=new Blob([JSON.stringify(p,null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`bxp-passport-${Date.now()}.bxp.json`;a.click();URL.revokeObjectURL(url);
   toast('Exported as .bxp.json');
 }
 
-function shareWhatsApp(){
-  const r=S.reading;
-  const t=r?`🫁 My air quality — ${r.city}\nBXP HRI: ${r.hri} (${r.level})\n\nTrack yours: ${APP_URL}`:`Track your personal air quality:\n${APP_URL}`;
-  window.open(`https://wa.me/?text=${encodeURIComponent(t)}`,'_blank');
-}
-async function nativeShare(){if(navigator.share){try{await navigator.share({title:'BXP LiveNet',url:APP_URL});return;}catch(e){}}copyLink();}
-function copyLink(){navigator.clipboard.writeText(APP_URL).then(()=>toast('Link copied'));}
-function showQR(){document.getElementById('qr-container').innerHTML=`<img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(APP_URL)}" width="180" height="180" style="display:block" alt="QR">`;document.getElementById('qr-modal').classList.add('show');}
+// ══════════════════════════════════════════════════════
+// SHARE
+// ══════════════════════════════════════════════════════
 
-function switchTab(t,b){
+function shareWA(){const r=S.reading,bl=calcBodyLoad();const t=r?`🫁 My air quality — ${r.city}\nHRI: ${r.hri} (${r.level}) · Body Load: ${bl.load}/100\n\nTrack yours: ${APP}`:`Track your atmospheric exposure:\n${APP}`;window.open(`https://wa.me/?text=${encodeURIComponent(t)}`,'_blank');}
+async function nativeShare(){if(navigator.share){try{await navigator.share({title:'BXP LiveNet',url:APP});return;}catch(e){}}copyLink();}
+function copyLink(){navigator.clipboard.writeText(APP).then(()=>toast('Link copied'));}
+function showQR(){$id('qrbox').innerHTML=`<img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(APP)}" width="180" height="180" style="display:block" alt="QR">`;$id('qrmod').classList.add('show');}
+
+// ══════════════════════════════════════════════════════
+// NAV
+// ══════════════════════════════════════════════════════
+
+function sw(t,b){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  document.getElementById('screen-'+t).classList.add('active');
-  b.classList.add('active');
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  $id('screen-'+t).classList.add('active');
+  if(b) b.classList.add('active');
 }
+
+// ══════════════════════════════════════════════════════
+// START
+// ══════════════════════════════════════════════════════
 
 async function startApp(){
-  document.getElementById('screen-onboard').classList.remove('active');
-  document.getElementById('screen-main').classList.add('active');
-  document.getElementById('bottom-nav').style.display='flex';
-  setLoad(true,'Getting your GPS location...');
-  await takeReading(true);
+  $id('ob').classList.remove('active');
+  $id('screen-main').classList.add('active');
+  $id('bot-nav').style.display='flex';
+  setLoad(true,'Initialising your ledger...');
+  await doRead(true);
   setLoad(false);
-  S.timer=setInterval(()=>takeReading(false),10*60*1000);
+  S.timer=setInterval(()=>doRead(false),5*60*1000);
   S.active=true;
-  toast('BXP LiveNet is tracking');
+  toast('BXP LiveNet running silently');
   localStorage.setItem('bxp_started','1');
 }
 
 if(localStorage.getItem('bxp_started')){
   setTimeout(async()=>{
-    document.getElementById('screen-onboard').classList.remove('active');
-    document.getElementById('screen-main').classList.add('active');
-    document.getElementById('bottom-nav').style.display='flex';
-    document.getElementById('contrib-count').textContent=S.contrib;
-    renderMain();renderTimeline();renderPassport();
-    await takeReading(true);
-    S.timer=setInterval(()=>takeReading(false),10*60*1000);
+    $id('ob').classList.remove('active');
+    $id('screen-main').classList.add('active');
+    $id('bot-nav').style.display='flex';
+    $id('contrib-disp').textContent=S.contrib;
+    $id('lcount').textContent=`${S.ledger.length} records`;
+    renderMain();renderLedger();renderPassport();
+    await doRead(true);
+    S.timer=setInterval(()=>doRead(false),5*60*1000);
     S.active=true;
   },100);
 }
 
-document.addEventListener('visibilitychange',()=>{if(!document.hidden&&S.active)takeReading(false);});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&S.active)doRead(false);});
 </script>
 </body>
 </html>
