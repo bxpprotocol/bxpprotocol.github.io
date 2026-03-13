@@ -1,0 +1,1610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="theme-color" content="#080b12">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="BXP LiveNet">
+<meta name="description" content="Your personal atmospheric exposure passport. Every breath. Every location. Forever yours.">
+<title>BXP LiveNet</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+
+:root{
+  --bg:#080b12;
+  --bg2:#0d1120;
+  --surface:#111827;
+  --surface2:#1a2235;
+  --border:#1e2d45;
+  --text:#e8edf5;
+  --muted:#4a5a78;
+  --muted2:#7a8ba8;
+  --accent:#00ff88;
+  --accent2:#00c8ff;
+  --warn:#ffaa00;
+  --danger:#ff4466;
+  --mono:'JetBrains Mono',monospace;
+  --sans:'Syne',sans-serif;
+}
+
+html,body{height:100%;overflow:hidden}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--sans);
+  display:flex;
+  flex-direction:column;
+  max-width:480px;
+  margin:0 auto;
+  position:relative;
+}
+
+/* Ambient background */
+body::before{
+  content:'';
+  position:fixed;
+  top:-20%;
+  left:-20%;
+  width:60%;
+  height:60%;
+  background:radial-gradient(circle,rgba(0,255,136,0.04) 0%,transparent 70%);
+  pointer-events:none;
+  z-index:0;
+}
+
+body::after{
+  content:'';
+  position:fixed;
+  bottom:-20%;
+  right:-20%;
+  width:60%;
+  height:60%;
+  background:radial-gradient(circle,rgba(0,200,255,0.04) 0%,transparent 70%);
+  pointer-events:none;
+  z-index:0;
+}
+
+/* ── SCREENS ── */
+.screen{
+  position:absolute;
+  inset:0;
+  display:none;
+  flex-direction:column;
+  z-index:1;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.screen.active{display:flex}
+
+/* ── ONBOARDING ── */
+#screen-onboard{
+  align-items:center;
+  justify-content:center;
+  padding:2rem;
+  text-align:center;
+  gap:0;
+}
+
+.ob-logo{
+  font-family:var(--mono);
+  font-size:0.7rem;
+  letter-spacing:0.2em;
+  color:var(--muted2);
+  margin-bottom:2.5rem;
+  text-transform:uppercase;
+}
+
+.ob-orb{
+  width:120px;
+  height:120px;
+  border-radius:50%;
+  background:radial-gradient(circle at 35% 35%, rgba(0,255,136,0.3), rgba(0,200,255,0.1), transparent);
+  border:1px solid rgba(0,255,136,0.2);
+  margin:0 auto 2.5rem;
+  position:relative;
+  animation:breathe 4s ease-in-out infinite;
+}
+
+.ob-orb::after{
+  content:'';
+  position:absolute;
+  inset:8px;
+  border-radius:50%;
+  border:1px solid rgba(0,255,136,0.1);
+  animation:breathe 4s ease-in-out infinite reverse;
+}
+
+@keyframes breathe{
+  0%,100%{transform:scale(1);box-shadow:0 0 30px rgba(0,255,136,0.1)}
+  50%{transform:scale(1.05);box-shadow:0 0 60px rgba(0,255,136,0.2)}
+}
+
+.ob-title{
+  font-size:2rem;
+  font-weight:800;
+  letter-spacing:-0.02em;
+  margin-bottom:0.75rem;
+  line-height:1.15;
+}
+
+.ob-title span{
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+
+.ob-sub{
+  font-size:0.9rem;
+  color:var(--muted2);
+  line-height:1.7;
+  max-width:300px;
+  margin:0 auto 2.5rem;
+}
+
+.ob-features{
+  width:100%;
+  max-width:320px;
+  display:flex;
+  flex-direction:column;
+  gap:0.75rem;
+  margin-bottom:2.5rem;
+  text-align:left;
+}
+
+.ob-feat{
+  display:flex;
+  align-items:flex-start;
+  gap:0.75rem;
+  padding:0.875rem 1rem;
+  background:var(--surface);
+  border-radius:10px;
+  border:1px solid var(--border);
+}
+
+.ob-feat-icon{
+  font-size:1.1rem;
+  flex-shrink:0;
+  margin-top:1px;
+}
+
+.ob-feat-text{
+  font-size:0.82rem;
+  color:var(--muted2);
+  line-height:1.5;
+}
+
+.ob-feat-text strong{
+  color:var(--text);
+  display:block;
+  margin-bottom:0.1rem;
+  font-size:0.85rem;
+}
+
+.btn-start{
+  width:100%;
+  max-width:320px;
+  padding:1.1rem;
+  background:var(--accent);
+  color:#080b12;
+  border:none;
+  border-radius:12px;
+  font-family:var(--sans);
+  font-size:1rem;
+  font-weight:800;
+  cursor:pointer;
+  letter-spacing:0.02em;
+  transition:all 0.2s;
+}
+.btn-start:active{transform:scale(0.98)}
+
+.ob-privacy{
+  font-family:var(--mono);
+  font-size:0.62rem;
+  color:var(--muted);
+  margin-top:1rem;
+  line-height:1.6;
+  max-width:280px;
+}
+
+/* ── HEADER ── */
+.app-header{
+  padding:1rem 1.25rem 0.75rem;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-shrink:0;
+  background:rgba(8,11,18,0.95);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  position:sticky;
+  top:0;
+  z-index:50;
+}
+
+.app-logo{
+  font-family:var(--mono);
+  font-size:0.75rem;
+  font-weight:700;
+  letter-spacing:0.1em;
+  color:var(--accent);
+}
+
+.app-status{
+  display:flex;
+  align-items:center;
+  gap:0.4rem;
+  font-family:var(--mono);
+  font-size:0.62rem;
+  color:var(--muted2);
+}
+
+.status-dot{
+  width:6px;height:6px;
+  border-radius:50%;
+  background:var(--accent);
+  animation:pulse-dot 2s infinite;
+}
+
+.status-dot.inactive{
+  background:var(--muted);
+  animation:none;
+}
+
+@keyframes pulse-dot{
+  0%,100%{opacity:1;transform:scale(1)}
+  50%{opacity:0.4;transform:scale(0.7)}
+}
+
+/* ── MAIN CONTENT ── */
+.app-content{
+  flex:1;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  padding:1.25rem;
+  padding-bottom:90px;
+  display:flex;
+  flex-direction:column;
+  gap:1rem;
+}
+
+/* ── HRI HERO CARD ── */
+.hri-hero{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:1.5rem;
+  position:relative;
+  overflow:hidden;
+}
+
+.hri-hero::before{
+  content:'';
+  position:absolute;
+  top:0;right:0;
+  width:200px;height:200px;
+  background:radial-gradient(circle,rgba(0,255,136,0.06),transparent 70%);
+  pointer-events:none;
+}
+
+.hri-label{
+  font-family:var(--mono);
+  font-size:0.62rem;
+  letter-spacing:0.15em;
+  color:var(--muted2);
+  text-transform:uppercase;
+  margin-bottom:0.75rem;
+}
+
+.hri-main{
+  display:flex;
+  align-items:flex-end;
+  gap:1rem;
+  margin-bottom:1rem;
+}
+
+.hri-number{
+  font-family:var(--mono);
+  font-size:4rem;
+  font-weight:700;
+  line-height:1;
+  transition:color 0.5s;
+}
+
+.hri-right{}
+
+.hri-level-badge{
+  display:inline-block;
+  font-size:0.7rem;
+  font-weight:700;
+  letter-spacing:0.1em;
+  padding:0.25rem 0.6rem;
+  border-radius:999px;
+  margin-bottom:0.4rem;
+}
+
+.hri-advice{
+  font-size:0.8rem;
+  color:var(--muted2);
+  line-height:1.5;
+  max-width:180px;
+}
+
+.hri-bar-track{
+  height:4px;
+  background:var(--border);
+  border-radius:999px;
+  overflow:hidden;
+  margin-bottom:0.75rem;
+}
+
+.hri-bar-fill{
+  height:100%;
+  border-radius:999px;
+  transition:width 1s cubic-bezier(0.16,1,0.3,1), background 0.5s;
+}
+
+.hri-meta{
+  display:flex;
+  gap:1.5rem;
+}
+
+.hri-meta-item{
+  font-family:var(--mono);
+  font-size:0.62rem;
+  color:var(--muted);
+  line-height:1.6;
+}
+
+.hri-meta-item span{
+  color:var(--muted2);
+  display:block;
+  font-size:0.7rem;
+}
+
+/* ── AGENTS GRID ── */
+.agents-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:0.75rem;
+}
+
+.agent-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:1rem;
+  position:relative;
+  overflow:hidden;
+}
+
+.agent-card::after{
+  content:'';
+  position:absolute;
+  bottom:0;left:0;right:0;
+  height:3px;
+  border-radius:0 0 12px 12px;
+  transition:background 0.5s;
+}
+
+.agent-id{
+  font-family:var(--mono);
+  font-size:0.62rem;
+  color:var(--muted2);
+  margin-bottom:0.3rem;
+  letter-spacing:0.05em;
+}
+
+.agent-value{
+  font-family:var(--mono);
+  font-size:1.4rem;
+  font-weight:700;
+  line-height:1;
+  margin-bottom:0.2rem;
+}
+
+.agent-unit{
+  font-family:var(--mono);
+  font-size:0.6rem;
+  color:var(--muted);
+}
+
+.agent-who{
+  font-family:var(--mono);
+  font-size:0.58rem;
+  color:var(--muted);
+  margin-top:0.4rem;
+}
+
+.agent-mini-bar{
+  height:2px;
+  background:var(--border);
+  border-radius:999px;
+  overflow:hidden;
+  margin-top:0.5rem;
+}
+
+.agent-mini-fill{
+  height:100%;
+  border-radius:999px;
+  transition:width 0.8s ease;
+}
+
+/* ── LOCATION CARD ── */
+.location-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:1rem 1.25rem;
+  display:flex;
+  align-items:center;
+  gap:1rem;
+}
+
+.location-icon{
+  font-size:1.5rem;
+  flex-shrink:0;
+}
+
+.location-info{}
+
+.location-name{
+  font-size:0.9rem;
+  font-weight:600;
+  margin-bottom:0.2rem;
+}
+
+.location-coords{
+  font-family:var(--mono);
+  font-size:0.62rem;
+  color:var(--muted2);
+}
+
+.location-time{
+  font-family:var(--mono);
+  font-size:0.62rem;
+  color:var(--muted);
+  margin-top:0.2rem;
+}
+
+/* ── TIMELINE ── */
+.timeline-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:0.75rem;
+}
+
+.timeline-title{
+  font-size:0.82rem;
+  font-weight:700;
+  color:var(--muted2);
+  letter-spacing:0.05em;
+  text-transform:uppercase;
+  font-family:var(--mono);
+  font-size:0.65rem;
+}
+
+.timeline-count{
+  font-family:var(--mono);
+  font-size:0.62rem;
+  color:var(--muted);
+}
+
+.timeline-list{
+  display:flex;
+  flex-direction:column;
+  gap:0.5rem;
+}
+
+.timeline-item{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:0.875rem 1rem;
+  display:flex;
+  align-items:center;
+  gap:1rem;
+}
+
+.tl-score{
+  font-family:var(--mono);
+  font-size:1.1rem;
+  font-weight:700;
+  min-width:36px;
+  text-align:center;
+}
+
+.tl-info{
+  flex:1;
+  min-width:0;
+}
+
+.tl-location{
+  font-size:0.82rem;
+  font-weight:600;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  margin-bottom:0.15rem;
+}
+
+.tl-time{
+  font-family:var(--mono);
+  font-size:0.6rem;
+  color:var(--muted);
+}
+
+.tl-level{
+  font-family:var(--mono);
+  font-size:0.6rem;
+  font-weight:700;
+  padding:0.2rem 0.5rem;
+  border-radius:999px;
+}
+
+.timeline-empty{
+  text-align:center;
+  padding:2rem;
+  font-family:var(--mono);
+  font-size:0.72rem;
+  color:var(--muted);
+  line-height:1.8;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;
+}
+
+/* ── PASSPORT SCREEN ── */
+.passport-card{
+  background:linear-gradient(135deg,var(--surface) 0%,var(--bg2) 100%);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:1.5rem;
+  margin-bottom:1rem;
+}
+
+.passport-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:1.25rem;
+  padding-bottom:1rem;
+  border-bottom:1px solid var(--border);
+}
+
+.passport-title{
+  font-size:1rem;
+  font-weight:700;
+}
+
+.passport-badge{
+  font-family:var(--mono);
+  font-size:0.6rem;
+  padding:0.25rem 0.6rem;
+  background:rgba(0,255,136,0.1);
+  border:1px solid rgba(0,255,136,0.3);
+  border-radius:999px;
+  color:var(--accent);
+  letter-spacing:0.05em;
+}
+
+.passport-stats{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:1rem;
+  margin-bottom:1.25rem;
+}
+
+.ps-stat{
+  text-align:center;
+}
+
+.ps-num{
+  font-family:var(--mono);
+  font-size:1.5rem;
+  font-weight:700;
+  color:var(--accent);
+  display:block;
+  margin-bottom:0.2rem;
+}
+
+.ps-label{
+  font-size:0.65rem;
+  color:var(--muted2);
+  line-height:1.4;
+}
+
+.passport-avg{
+  background:var(--bg);
+  border-radius:10px;
+  padding:1rem;
+  margin-bottom:1rem;
+}
+
+.pa-label{
+  font-family:var(--mono);
+  font-size:0.6rem;
+  color:var(--muted2);
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  margin-bottom:0.4rem;
+}
+
+.pa-value{
+  font-family:var(--mono);
+  font-size:1.75rem;
+  font-weight:700;
+}
+
+.pa-desc{
+  font-size:0.75rem;
+  color:var(--muted2);
+  margin-top:0.25rem;
+}
+
+.export-btn{
+  width:100%;
+  padding:1rem;
+  background:transparent;
+  border:1px solid var(--accent);
+  color:var(--accent);
+  border-radius:12px;
+  font-family:var(--sans);
+  font-size:0.9rem;
+  font-weight:700;
+  cursor:pointer;
+  transition:all 0.2s;
+  letter-spacing:0.02em;
+}
+.export-btn:active{background:rgba(0,255,136,0.1)}
+
+.passport-breakdown{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;
+  overflow:hidden;
+}
+
+.pb-header{
+  padding:0.875rem 1rem;
+  border-bottom:1px solid var(--border);
+  font-family:var(--mono);
+  font-size:0.62rem;
+  color:var(--muted2);
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+}
+
+.pb-row{
+  padding:0.875rem 1rem;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  gap:1rem;
+}
+.pb-row:last-child{border-bottom:none}
+
+.pb-agent{
+  font-family:var(--mono);
+  font-size:0.75rem;
+  font-weight:700;
+  min-width:55px;
+  color:var(--text);
+}
+
+.pb-bar-wrap{
+  flex:1;
+  height:4px;
+  background:var(--border);
+  border-radius:999px;
+  overflow:hidden;
+}
+
+.pb-bar{
+  height:100%;
+  border-radius:999px;
+}
+
+.pb-pct{
+  font-family:var(--mono);
+  font-size:0.62rem;
+  color:var(--muted2);
+  min-width:35px;
+  text-align:right;
+}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{
+  position:fixed;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:100%;
+  max-width:480px;
+  background:rgba(8,11,18,0.96);
+  backdrop-filter:blur(20px);
+  border-top:1px solid var(--border);
+  display:flex;
+  padding:0.5rem 0 calc(0.5rem + env(safe-area-inset-bottom));
+  z-index:100;
+}
+
+.nav-item{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:0.25rem;
+  padding:0.5rem;
+  cursor:pointer;
+  transition:all 0.15s;
+  border:none;
+  background:none;
+  color:var(--muted);
+}
+
+.nav-item.active{color:var(--accent)}
+
+.nav-icon{font-size:1.2rem}
+
+.nav-label{
+  font-family:var(--mono);
+  font-size:0.55rem;
+  letter-spacing:0.05em;
+  text-transform:uppercase;
+}
+
+/* ── LOADING STATE ── */
+.loading-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(8,11,18,0.85);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:200;
+  flex-direction:column;
+  gap:1rem;
+}
+
+.loading-overlay.show{display:flex}
+
+.loader{
+  width:40px;height:40px;
+  border:2px solid var(--border);
+  border-top-color:var(--accent);
+  border-radius:50%;
+  animation:spin 0.8s linear infinite;
+}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.loader-text{
+  font-family:var(--mono);
+  font-size:0.72rem;
+  color:var(--muted2);
+  letter-spacing:0.1em;
+}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;
+  bottom:90px;
+  left:50%;
+  transform:translateX(-50%) translateY(20px);
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:0.75rem 1.25rem;
+  font-family:var(--mono);
+  font-size:0.72rem;
+  color:var(--text);
+  white-space:nowrap;
+  opacity:0;
+  transition:all 0.3s;
+  z-index:300;
+  pointer-events:none;
+}
+
+.toast.show{
+  opacity:1;
+  transform:translateX(-50%) translateY(0);
+}
+
+/* ── MAP SCREEN ── */
+.map-placeholder{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:1rem;
+  padding:2rem;
+  text-align:center;
+}
+
+.map-coming{
+  font-size:3rem;
+  margin-bottom:0.5rem;
+}
+
+.map-title{
+  font-size:1.1rem;
+  font-weight:700;
+  margin-bottom:0.5rem;
+}
+
+.map-desc{
+  font-size:0.85rem;
+  color:var(--muted2);
+  line-height:1.7;
+  max-width:280px;
+}
+
+.map-contrib{
+  margin-top:1rem;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:1.25rem;
+  width:100%;
+  max-width:320px;
+}
+
+.mc-label{
+  font-family:var(--mono);
+  font-size:0.62rem;
+  color:var(--muted2);
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  margin-bottom:0.75rem;
+}
+
+.mc-number{
+  font-family:var(--mono);
+  font-size:2rem;
+  font-weight:700;
+  color:var(--accent);
+  margin-bottom:0.25rem;
+}
+
+.mc-desc{
+  font-size:0.78rem;
+  color:var(--muted2);
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(12px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.app-content > *{
+  animation:fadeUp 0.3s ease both;
+}
+.app-content > *:nth-child(2){animation-delay:0.05s}
+.app-content > *:nth-child(3){animation-delay:0.1s}
+.app-content > *:nth-child(4){animation-delay:0.15s}
+.app-content > *:nth-child(5){animation-delay:0.2s}
+
+/* Install banner */
+.install-banner{
+  background:rgba(0,255,136,0.08);
+  border:1px solid rgba(0,255,136,0.2);
+  border-radius:10px;
+  padding:0.875rem 1rem;
+  display:flex;
+  align-items:center;
+  gap:0.75rem;
+  cursor:pointer;
+}
+
+.ib-text{
+  flex:1;
+  font-size:0.78rem;
+  color:var(--muted2);
+  line-height:1.4;
+}
+
+.ib-text strong{color:var(--text);display:block;margin-bottom:0.1rem}
+
+.ib-btn{
+  font-family:var(--mono);
+  font-size:0.62rem;
+  font-weight:700;
+  color:var(--accent);
+  white-space:nowrap;
+  padding:0.35rem 0.75rem;
+  border:1px solid rgba(0,255,136,0.3);
+  border-radius:6px;
+  background:transparent;
+  cursor:pointer;
+}
+</style>
+</head>
+<body>
+
+<!-- ONBOARDING -->
+<div class="screen active" id="screen-onboard">
+  <div class="ob-logo">BXP LiveNet · v1.0</div>
+  <div class="ob-orb"></div>
+  <h1 class="ob-title">Your air.<br><span>Your record.</span></h1>
+  <p class="ob-sub">The first personal atmospheric exposure passport. Automatically built from every place you go.</p>
+  <div class="ob-features">
+    <div class="ob-feat">
+      <div class="ob-feat-icon">🌍</div>
+      <div class="ob-feat-text">
+        <strong>Runs in the background</strong>
+        Every 10 minutes — silent, automatic, zero effort from you.
+      </div>
+    </div>
+    <div class="ob-feat">
+      <div class="ob-feat-icon">🫁</div>
+      <div class="ob-feat-text">
+        <strong>Personal exposure history</strong>
+        See exactly what air you breathed, where, and when. No one has ever had this data.
+      </div>
+    </div>
+    <div class="ob-feat">
+      <div class="ob-feat-icon">🔓</div>
+      <div class="ob-feat-text">
+        <strong>Open format. Yours forever.</strong>
+        BXP is an open standard. Export your data anytime. Nobody owns it but you.
+      </div>
+    </div>
+    <div class="ob-feat">
+      <div class="ob-feat-icon">🌐</div>
+      <div class="ob-feat-text">
+        <strong>You become the network</strong>
+        Your movement contributes to a global map covering places no sensor has ever reached.
+      </div>
+    </div>
+  </div>
+  <button class="btn-start" onclick="startApp()">Start Building My Passport</button>
+  <p class="ob-privacy">Location data is processed locally on your device. Only anonymised aggregate data is contributed to the network. Your personal records never leave your phone without your explicit export.</p>
+</div>
+
+<!-- MAIN APP -->
+<div class="screen" id="screen-main">
+  <div class="app-header">
+    <div class="app-logo">BXP LIVENET</div>
+    <div class="app-status">
+      <div class="status-dot" id="status-dot"></div>
+      <span id="status-text">Locating...</span>
+    </div>
+  </div>
+  <div class="app-content" id="main-content">
+    <!-- Populated by JS -->
+  </div>
+</div>
+
+<!-- TIMELINE SCREEN -->
+<div class="screen" id="screen-timeline">
+  <div class="app-header">
+    <div class="app-logo">EXPOSURE LOG</div>
+    <div class="app-status">
+      <div class="status-dot" id="tl-status-dot"></div>
+      <span id="tl-count">0 readings</span>
+    </div>
+  </div>
+  <div class="app-content" id="timeline-content">
+  </div>
+</div>
+
+<!-- PASSPORT SCREEN -->
+<div class="screen" id="screen-passport">
+  <div class="app-header">
+    <div class="app-logo">MY PASSPORT</div>
+    <div class="app-status">
+      <span style="font-family:var(--mono);font-size:0.62rem;color:var(--muted2)">BXP v2.0</span>
+    </div>
+  </div>
+  <div class="app-content" id="passport-content">
+  </div>
+</div>
+
+<!-- MAP SCREEN -->
+<div class="screen" id="screen-map">
+  <div class="app-header">
+    <div class="app-logo">GLOBAL MAP</div>
+  </div>
+  <div class="map-placeholder">
+    <div class="map-coming">🗺</div>
+    <div class="map-title">The Living Map</div>
+    <div class="map-desc">As more people join BXP LiveNet, this map fills with real exposure data from every street, market, and neighbourhood — built entirely by people moving through the world.</div>
+    <div class="map-contrib">
+      <div class="mc-label">Your contribution</div>
+      <div class="mc-number" id="contrib-count">0</div>
+      <div class="mc-desc">data points contributed to the global network</div>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav" id="bottom-nav" style="display:none">
+  <button class="nav-item active" onclick="switchTab('main',this)">
+    <span class="nav-icon">◎</span>
+    <span class="nav-label">Now</span>
+  </button>
+  <button class="nav-item" onclick="switchTab('timeline',this)">
+    <span class="nav-icon">≡</span>
+    <span class="nav-label">History</span>
+  </button>
+  <button class="nav-item" onclick="switchTab('passport',this)">
+    <span class="nav-icon">⬡</span>
+    <span class="nav-label">Passport</span>
+  </button>
+  <button class="nav-item" onclick="switchTab('map',this)">
+    <span class="nav-icon">◈</span>
+    <span class="nav-label">Map</span>
+  </button>
+</nav>
+
+<!-- LOADING -->
+<div class="loading-overlay" id="loading">
+  <div class="loader"></div>
+  <div class="loader-text" id="loading-text">Getting your location...</div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── BXP CONSTANTS ──────────────────────────
+
+const WHO = {PM2_5:15,PM10:45,NO2:25,O3:100,CO:4,SO2:40,TVOC:500};
+const WEIGHTS = {PM2_5:0.35,PM10:0.15,NO2:0.15,O3:0.12,CO:0.10,SO2:0.05,TVOC:0.04};
+const AQICN_TOKEN = '68fc34ffbfaf451cc4250b87158ffe04a3dc5dfd';
+
+const LEVELS = {
+  CLEAN:    {color:'#00E676',bg:'rgba(0,230,118,0.12)',label:'CLEAN',    advice:'Air quality is excellent.'},
+  MODERATE: {color:'#FFEB3B',bg:'rgba(255,235,59,0.12)', label:'MODERATE', advice:'Acceptable for most people.'},
+  ELEVATED: {color:'#FF9800',bg:'rgba(255,152,0,0.12)', label:'ELEVATED', advice:'Reduce prolonged outdoor exertion.'},
+  HIGH:     {color:'#F44336',bg:'rgba(244,67,54,0.12)', label:'HIGH',     advice:'Reduce outdoor activity.'},
+  VERY_HIGH:{color:'#9C27B0',bg:'rgba(156,39,176,0.12)',label:'VERY HIGH',advice:'Avoid outdoors. N95 recommended.'},
+  HAZARDOUS:{color:'#FF1744',bg:'rgba(255,23,68,0.12)', label:'HAZARDOUS',advice:'Health emergency. Stay indoors.'}
+};
+
+// ── STATE ──────────────────────────────────
+
+const state = {
+  active: false,
+  location: null,
+  cityName: 'Unknown',
+  currentReading: null,
+  history: [],
+  intervalId: null,
+  contribCount: 0,
+  deferredPrompt: null
+};
+
+// Load saved state
+try {
+  const saved = localStorage.getItem('bxp_history');
+  if (saved) state.history = JSON.parse(saved);
+  const contrib = localStorage.getItem('bxp_contrib');
+  if (contrib) state.contribCount = parseInt(contrib);
+} catch(e){}
+
+// ── UTILS ──────────────────────────────────
+
+function getLevel(hri) {
+  if (hri > 90) return 'HAZARDOUS';
+  if (hri > 75) return 'VERY_HIGH';
+  if (hri > 60) return 'HIGH';
+  if (hri > 40) return 'ELEVATED';
+  if (hri > 20) return 'MODERATE';
+  return 'CLEAN';
+}
+
+function calcHRI(agents) {
+  let raw = 0;
+  const breakdown = [];
+  for (const a of agents) {
+    const w = WEIGHTS[a.id];
+    const t = WHO[a.id];
+    if (w && t) {
+      const risk = Math.min(1, a.value / t);
+      raw += risk * w;
+      breakdown.push({...a, risk, pct: Math.round(risk*100)});
+    }
+  }
+  return {hri: Math.min(100, Math.round(raw * 100 * 10)/10), breakdown};
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function setLoading(show, text='Loading...') {
+  document.getElementById('loading').classList.toggle('show', show);
+  document.getElementById('loading-text').textContent = text;
+}
+
+function saveHistory() {
+  try {
+    // Keep last 100 readings
+    const toSave = state.history.slice(-100);
+    localStorage.setItem('bxp_history', JSON.stringify(toSave));
+    localStorage.setItem('bxp_contrib', state.contribCount);
+  } catch(e){}
+}
+
+function timeAgo(ts) {
+  const diff = Date.now() - ts;
+  const m = Math.floor(diff/60000);
+  if (m < 1) return 'just now';
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m/60);
+  if (h < 24) return `${h}h ago`;
+  return `${Math.floor(h/24)}d ago`;
+}
+
+// ── AQICN API ─────────────────────────────
+
+async function fetchAirQuality(lat, lng) {
+  try {
+    const res = await fetch(
+      `https://api.waqi.info/feed/geo:${lat};${lng}/?token=${AQICN_TOKEN}`
+    );
+    const data = await res.json();
+    if (data.status !== 'ok') return null;
+    const d = data.data;
+
+    const agents = [];
+    const iaqi = d.iaqi || {};
+
+    if (iaqi.pm25?.v !== undefined) agents.push({id:'PM2_5', value:iaqi.pm25.v, unit:'ug/m3'});
+    if (iaqi.pm10?.v !== undefined) agents.push({id:'PM10',  value:iaqi.pm10.v, unit:'ug/m3'});
+    if (iaqi.no2?.v  !== undefined) agents.push({id:'NO2',   value:iaqi.no2.v,  unit:'ug/m3'});
+    if (iaqi.o3?.v   !== undefined) agents.push({id:'O3',    value:iaqi.o3.v,   unit:'ppb'});
+    if (iaqi.co?.v   !== undefined) agents.push({id:'CO',    value:iaqi.co.v,   unit:'ppm'});
+    if (iaqi.so2?.v  !== undefined) agents.push({id:'SO2',   value:iaqi.so2.v,  unit:'ppb'});
+
+    const {hri, breakdown} = calcHRI(agents);
+    const level = getLevel(hri);
+
+    return {
+      bxpVersion: '2.0',
+      fileType: 'reading',
+      city: d.city?.name || 'Unknown',
+      timestampUs: Date.now() * 1000,
+      lat, lng,
+      geohash: encodeGeohash(lat, lng, 7),
+      agents,
+      hri,
+      level,
+      breakdown,
+      quality: {flag:'UNVALIDATED', confidence:0.75, source:'AQICN'},
+      aqi: d.aqi
+    };
+  } catch(e) {
+    return null;
+  }
+}
+
+// Simple geohash encoder
+function encodeGeohash(lat, lng, precision=7) {
+  const chars = '0123456789bcdefghjkmnpqrstuvwxyz';
+  let idx=0, bit=0, evenBit=true, geohash='';
+  let minLat=-90, maxLat=90, minLng=-180, maxLng=180;
+  while (geohash.length < precision) {
+    if (evenBit) {
+      const midLng = (minLng+maxLng)/2;
+      if (lng >= midLng) {idx=(idx<<1)+1; minLng=midLng;}
+      else {idx=idx<<1; maxLng=midLng;}
+    } else {
+      const midLat = (minLat+maxLat)/2;
+      if (lat >= midLat) {idx=(idx<<1)+1; minLat=midLat;}
+      else {idx=idx<<1; maxLat=midLat;}
+    }
+    evenBit = !evenBit;
+    if (++bit === 5) {
+      geohash += chars[idx];
+      bit=0; idx=0;
+    }
+  }
+  return geohash;
+}
+
+// ── GET LOCATION ──────────────────────────
+
+function getLocation() {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) {
+      reject(new Error('Geolocation not supported'));
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      pos => resolve({lat: pos.coords.latitude, lng: pos.coords.longitude}),
+      err => reject(err),
+      {enableHighAccuracy:true, timeout:10000, maximumAge:60000}
+    );
+  });
+}
+
+// ── TAKE READING ──────────────────────────
+
+async function takeReading() {
+  try {
+    document.getElementById('status-dot').className = 'status-dot inactive';
+    document.getElementById('status-text').textContent = 'Reading...';
+
+    const loc = await getLocation();
+    state.location = loc;
+
+    const reading = await fetchAirQuality(loc.lat, loc.lng);
+    if (!reading) {
+      document.getElementById('status-text').textContent = 'No data';
+      return;
+    }
+
+    state.currentReading = reading;
+    state.cityName = reading.city;
+    state.history.push({
+      ts: Date.now(),
+      city: reading.city,
+      lat: loc.lat,
+      lng: loc.lng,
+      hri: reading.hri,
+      level: reading.level,
+      agents: reading.agents
+    });
+    state.contribCount++;
+    saveHistory();
+
+    document.getElementById('status-dot').className = 'status-dot';
+    document.getElementById('status-text').textContent = 'Live';
+    document.getElementById('contrib-count').textContent = state.contribCount;
+    document.getElementById('tl-count').textContent = `${state.history.length} readings`;
+
+    renderMain();
+    renderTimeline();
+    renderPassport();
+
+  } catch(e) {
+    document.getElementById('status-dot').className = 'status-dot inactive';
+    document.getElementById('status-text').textContent = 'Error';
+    console.error(e);
+  }
+}
+
+// ── RENDER MAIN ───────────────────────────
+
+function renderMain() {
+  const r = state.currentReading;
+  if (!r) {
+    document.getElementById('main-content').innerHTML = `
+      <div style="text-align:center;padding:3rem 1rem;color:var(--muted2);font-family:var(--mono);font-size:0.72rem;line-height:1.8">
+        Acquiring location...<br>Allow location access when prompted.
+      </div>`;
+    return;
+  }
+
+  const L = LEVELS[r.level] || LEVELS.CLEAN;
+  let html = '';
+
+  // Install banner
+  if (state.deferredPrompt) {
+    html += `<div class="install-banner" onclick="installApp()">
+      <div style="font-size:1.25rem">📲</div>
+      <div class="ib-text">
+        <strong>Add to Home Screen</strong>
+        Run BXP LiveNet as an app for background tracking
+      </div>
+      <button class="ib-btn">Install</button>
+    </div>`;
+  }
+
+  // HRI hero
+  html += `<div class="hri-hero">
+    <div class="hri-label">BXP Health Risk Index</div>
+    <div class="hri-main">
+      <div class="hri-number" style="color:${L.color}">${r.hri}</div>
+      <div class="hri-right">
+        <div class="hri-level-badge" style="background:${L.bg};color:${L.color}">${L.label}</div>
+        <div class="hri-advice">${L.advice}</div>
+      </div>
+    </div>
+    <div class="hri-bar-track">
+      <div class="hri-bar-fill" style="width:${r.hri}%;background:${L.color}"></div>
+    </div>
+    <div class="hri-meta">
+      <div class="hri-meta-item">
+        <span>${r.city}</span>
+        Location
+      </div>
+      <div class="hri-meta-item">
+        <span>${new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span>
+        Updated
+      </div>
+      <div class="hri-meta-item">
+        <span>${r.agents.length}</span>
+        Agents
+      </div>
+    </div>
+  </div>`;
+
+  // Agents grid
+  if (r.agents.length > 0) {
+    html += '<div class="agents-grid">';
+    for (const a of r.agents) {
+      const thresh = WHO[a.id];
+      const pct = thresh ? Math.min(100, Math.round((a.value/thresh)*100)) : 0;
+      const col = pct < 50 ? '#00E676' : pct < 100 ? '#FF9800' : '#F44336';
+      html += `<div class="agent-card" style="--bar-color:${col}">
+        <div class="agent-id">${a.id}</div>
+        <div class="agent-value" style="color:${col}">${typeof a.value === 'number' ? a.value.toFixed(1) : a.value}</div>
+        <div class="agent-unit">${a.unit}</div>
+        ${thresh ? `<div class="agent-who">WHO: ${thresh} ${a.unit}</div>
+        <div class="agent-mini-bar">
+          <div class="agent-mini-fill" style="width:${pct}%;background:${col}"></div>
+        </div>` : ''}
+        <div style="position:absolute;bottom:0;left:0;right:0;height:3px;background:${col};border-radius:0 0 12px 12px"></div>
+      </div>`;
+    }
+    html += '</div>';
+  }
+
+  // Location
+  html += `<div class="location-card">
+    <div class="location-icon">📍</div>
+    <div class="location-info">
+      <div class="location-name">${r.city}</div>
+      <div class="location-coords">${state.location.lat.toFixed(4)}°, ${state.location.lng.toFixed(4)}°</div>
+      <div class="location-time">Geohash: ${r.geohash}</div>
+    </div>
+  </div>`;
+
+  // Recent history snippet
+  if (state.history.length > 1) {
+    const recent = state.history.slice(-3).reverse();
+    html += `<div>
+      <div class="timeline-header">
+        <div class="timeline-title">Recent Readings</div>
+        <div class="timeline-count">${state.history.length} total</div>
+      </div>
+      <div class="timeline-list">`;
+    for (const item of recent) {
+      const lv = LEVELS[item.level] || LEVELS.CLEAN;
+      html += `<div class="timeline-item">
+        <div class="tl-score" style="color:${lv.color}">${item.hri}</div>
+        <div class="tl-info">
+          <div class="tl-location">${item.city}</div>
+          <div class="tl-time">${timeAgo(item.ts)}</div>
+        </div>
+        <div class="tl-level" style="background:${lv.bg};color:${lv.color}">${lv.label}</div>
+      </div>`;
+    }
+    html += '</div></div>';
+  }
+
+  document.getElementById('main-content').innerHTML = html;
+}
+
+// ── RENDER TIMELINE ───────────────────────
+
+function renderTimeline() {
+  const content = document.getElementById('timeline-content');
+  if (state.history.length === 0) {
+    content.innerHTML = `<div class="timeline-empty">
+      No readings yet.<br><br>
+      Your exposure history will appear here<br>as BXP LiveNet tracks your locations.
+    </div>`;
+    return;
+  }
+
+  const items = [...state.history].reverse();
+  let html = '<div class="timeline-list">';
+  for (const item of items) {
+    const lv = LEVELS[item.level] || LEVELS.CLEAN;
+    const date = new Date(item.ts);
+    html += `<div class="timeline-item">
+      <div class="tl-score" style="color:${lv.color}">${item.hri}</div>
+      <div class="tl-info">
+        <div class="tl-location">${item.city}</div>
+        <div class="tl-time">${date.toLocaleDateString()} ${date.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div>
+      </div>
+      <div class="tl-level" style="background:${lv.bg};color:${lv.color}">${lv.label}</div>
+    </div>`;
+  }
+  html += '</div>';
+  content.innerHTML = html;
+}
+
+// ── RENDER PASSPORT ───────────────────────
+
+function renderPassport() {
+  const content = document.getElementById('passport-content');
+  const h = state.history;
+
+  if (h.length === 0) {
+    content.innerHTML = `<div class="timeline-empty">
+      Your exposure passport is being built.<br><br>
+      Every location BXP LiveNet visits<br>adds to your permanent record.
+    </div>`;
+    return;
+  }
+
+  const avgHRI = Math.round(h.reduce((s,r) => s+r.hri, 0) / h.length * 10) / 10;
+  const maxHRI = Math.max(...h.map(r => r.hri));
+  const level = getLevel(avgHRI);
+  const L = LEVELS[level];
+
+  // Agent averages
+  const agentTotals = {};
+  const agentCounts = {};
+  for (const r of h) {
+    for (const a of (r.agents||[])) {
+      agentTotals[a.id] = (agentTotals[a.id]||0) + a.value;
+      agentCounts[a.id] = (agentCounts[a.id]||0) + 1;
+    }
+  }
+  const agentAvgs = Object.entries(agentTotals).map(([id,total]) => ({
+    id,
+    avg: total / agentCounts[id],
+    pct: WHO[id] ? Math.min(100, Math.round((total/agentCounts[id]/WHO[id])*100)) : 0
+  })).sort((a,b) => b.pct - a.pct);
+
+  let html = `
+  <div class="passport-card">
+    <div class="passport-header">
+      <div class="passport-title">Exposure Passport</div>
+      <div class="passport-badge">BXP v2.0</div>
+    </div>
+    <div class="passport-stats">
+      <div class="ps-stat">
+        <span class="ps-num">${h.length}</span>
+        <span class="ps-label">Readings</span>
+      </div>
+      <div class="ps-stat">
+        <span class="ps-num">${new Set(h.map(r=>r.city)).size}</span>
+        <span class="ps-label">Locations</span>
+      </div>
+      <div class="ps-stat">
+        <span class="ps-num">${maxHRI}</span>
+        <span class="ps-label">Peak HRI</span>
+      </div>
+    </div>
+    <div class="passport-avg">
+      <div class="pa-label">Average BXP_HRI</div>
+      <div class="pa-value" style="color:${L.color}">${avgHRI}</div>
+      <div class="pa-desc">${L.label} — ${L.advice}</div>
+    </div>
+    <button class="export-btn" onclick="exportPassport()">Export as .bxp.json</button>
+  </div>`;
+
+  if (agentAvgs.length > 0) {
+    html += `<div class="passport-breakdown">
+      <div class="pb-header">Average Agent Exposure vs WHO Limits</div>`;
+    for (const a of agentAvgs) {
+      const col = a.pct < 50 ? '#00E676' : a.pct < 100 ? '#FF9800' : '#F44336';
+      html += `<div class="pb-row">
+        <div class="pb-agent">${a.id}</div>
+        <div class="pb-bar-wrap">
+          <div class="pb-bar" style="width:${a.pct}%;background:${col}"></div>
+        </div>
+        <div class="pb-pct" style="color:${col}">${a.pct}%</div>
+      </div>`;
+    }
+    html += '</div>';
+  }
+
+  content.innerHTML = html;
+}
+
+// ── EXPORT ────────────────────────────────
+
+function exportPassport() {
+  const passport = {
+    bxpVersion: '2.0',
+    fileType: 'aggregate',
+    exportedAt: new Date().toISOString(),
+    totalReadings: state.history.length,
+    uniqueLocations: new Set(state.history.map(r=>r.city)).size,
+    readings: state.history.map(r => ({
+      bxpVersion: '2.0',
+      fileType: 'reading',
+      timestampUs: r.ts * 1000,
+      city: r.city,
+      lat: r.lat,
+      lng: r.lng,
+      geohash: encodeGeohash(r.lat, r.lng, 7),
+      agents: r.agents,
+      hri: r.hri,
+      level: r.level,
+      quality: {flag:'UNVALIDATED', confidence:0.75, source:'AQICN'}
+    }))
+  };
+
+  const blob = new Blob([JSON.stringify(passport, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `bxp-passport-${Date.now()}.bxp.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Passport exported as .bxp.json');
+}
+
+// ── NAV ───────────────────────────────────
+
+function switchTab(tab, btn) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('screen-' + tab).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── START APP ─────────────────────────────
+
+async function startApp() {
+  document.getElementById('screen-onboard').classList.remove('active');
+  document.getElementById('screen-main').classList.add('active');
+  document.getElementById('bottom-nav').style.display = 'flex';
+
+  setLoading(true, 'Getting your location...');
+
+  try {
+    await takeReading();
+  } catch(e) {}
+
+  setLoading(false);
+
+  // Schedule readings every 10 minutes
+  state.intervalId = setInterval(async () => {
+    await takeReading();
+  }, 10 * 60 * 1000);
+
+  state.active = true;
+  showToast('BXP LiveNet is now tracking');
+  localStorage.setItem('bxp_started', '1');
+}
+
+// ── PWA INSTALL ───────────────────────────
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  state.deferredPrompt = e;
+});
+
+async function installApp() {
+  if (!state.deferredPrompt) return;
+  state.deferredPrompt.prompt();
+  const result = await state.deferredPrompt.userChoice;
+  state.deferredPrompt = null;
+  if (result.outcome === 'accepted') showToast('BXP LiveNet installed!');
+}
+
+// ── AUTO RESUME ───────────────────────────
+
+if (localStorage.getItem('bxp_started')) {
+  // Resume automatically
+  setTimeout(async () => {
+    document.getElementById('screen-onboard').classList.remove('active');
+    document.getElementById('screen-main').classList.add('active');
+    document.getElementById('bottom-nav').style.display = 'flex';
+    renderMain();
+    renderTimeline();
+    renderPassport();
+    document.getElementById('contrib-count').textContent = state.contribCount;
+    await takeReading();
+    state.intervalId = setInterval(takeReading, 10 * 60 * 1000);
+  }, 100);
+}
+
+// Page visibility — re-read when app comes back to foreground
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && state.active) takeReading();
+});
+</script>
+</body>
+</html>
