@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="BXP LiveNet">
-<meta name="description" content="Your personal atmospheric exposure passport. Every breath. Every location. Forever yours.">
+<meta name="description" content="Your personal atmospheric exposure passport.">
 <title>BXP LiveNet</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -22,8 +22,11 @@ html,body{height:100%;overflow:hidden}
 body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex;flex-direction:column;max-width:480px;margin:0 auto;position:relative;}
 body::before{content:'';position:fixed;top:-20%;left:-20%;width:60%;height:60%;background:radial-gradient(circle,rgba(0,255,136,0.04) 0%,transparent 70%);pointer-events:none;z-index:0;}
 body::after{content:'';position:fixed;bottom:-20%;right:-20%;width:60%;height:60%;background:radial-gradient(circle,rgba(0,200,255,0.04) 0%,transparent 70%);pointer-events:none;z-index:0;}
+
 .screen{position:absolute;inset:0;display:none;flex-direction:column;z-index:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 .screen.active{display:flex}
+
+/* ONBOARDING */
 #screen-onboard{align-items:center;justify-content:center;padding:2rem;text-align:center;}
 .ob-logo{font-family:var(--mono);font-size:0.7rem;letter-spacing:0.2em;color:var(--muted2);margin-bottom:2rem;text-transform:uppercase;}
 .ob-orb{width:110px;height:110px;border-radius:50%;background:radial-gradient(circle at 35% 35%,rgba(0,255,136,0.3),rgba(0,200,255,0.1),transparent);border:1px solid rgba(0,255,136,0.2);margin:0 auto 2rem;animation:breathe 4s ease-in-out infinite;}
@@ -39,14 +42,26 @@ body::after{content:'';position:fixed;bottom:-20%;right:-20%;width:60%;height:60
 .btn-start{width:100%;max-width:320px;padding:1rem;background:var(--accent);color:#080b12;border:none;border-radius:12px;font-family:var(--sans);font-size:1rem;font-weight:800;cursor:pointer;letter-spacing:0.02em;}
 .btn-start:active{transform:scale(0.98)}
 .ob-privacy{font-family:var(--mono);font-size:0.6rem;color:var(--muted);margin-top:0.875rem;line-height:1.6;max-width:280px;}
-.app-header{padding:1rem 1.25rem 0.75rem;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:rgba(8,11,18,0.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;}
+
+/* HEADER */
+.app-header{padding:0.875rem 1.25rem;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:rgba(8,11,18,0.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;}
 .app-logo{font-family:var(--mono);font-size:0.75rem;font-weight:700;letter-spacing:0.1em;color:var(--accent);}
+.header-right{display:flex;align-items:center;gap:0.75rem;}
 .app-status{display:flex;align-items:center;gap:0.4rem;font-family:var(--mono);font-size:0.62rem;color:var(--muted2);}
 .status-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse-dot 2s infinite;}
 .status-dot.inactive{background:var(--muted);animation:none;}
 .status-dot.error{background:var(--danger);animation:none;}
 @keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.7)}}
+
+/* REFRESH BUTTON */
+.refresh-btn{background:none;border:1px solid var(--border);border-radius:8px;color:var(--muted2);padding:0.35rem 0.6rem;font-size:0.9rem;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;}
+.refresh-btn:active{border-color:var(--accent);color:var(--accent);transform:rotate(180deg);}
+.refresh-btn.spinning{animation:spin 0.8s linear;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
 .app-content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:1.25rem;padding-bottom:90px;display:flex;flex-direction:column;gap:1rem;}
+
+/* HRI HERO */
 .hri-hero{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.5rem;position:relative;overflow:hidden;}
 .hri-hero::before{content:'';position:absolute;top:0;right:0;width:200px;height:200px;background:radial-gradient(circle,rgba(0,255,136,0.06),transparent 70%);pointer-events:none;}
 .hri-label{font-family:var(--mono);font-size:0.62rem;letter-spacing:0.15em;color:var(--muted2);text-transform:uppercase;margin-bottom:0.75rem;}
@@ -59,6 +74,8 @@ body::after{content:'';position:fixed;bottom:-20%;right:-20%;width:60%;height:60
 .hri-meta{display:flex;gap:1.5rem;}
 .hri-meta-item{font-family:var(--mono);font-size:0.62rem;color:var(--muted);line-height:1.6;}
 .hri-meta-item span{color:var(--muted2);display:block;font-size:0.7rem;}
+
+/* HEALTH CARD */
 .health-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem;border-left:3px solid var(--warn);}
 .hc-label{font-family:var(--mono);font-size:0.6rem;letter-spacing:0.15em;color:var(--warn);text-transform:uppercase;margin-bottom:0.75rem;}
 .hc-title{font-size:0.95rem;font-weight:700;margin-bottom:0.5rem;}
@@ -68,15 +85,19 @@ body::after{content:'';position:fixed;bottom:-20%;right:-20%;width:60%;height:60
 .hc-risk-name{font-size:0.72rem;color:var(--text);min-width:130px;}
 .hc-risk-bar{flex:1;height:4px;background:var(--border);border-radius:999px;overflow:hidden;}
 .hc-risk-fill{height:100%;border-radius:999px;}
-.hc-risk-pct{font-family:var(--mono);font-size:0.62rem;color:var(--muted2);min-width:40px;text-align:right;}
+.hc-risk-pct{font-family:var(--mono);font-size:0.62rem;min-width:40px;text-align:right;}
 .hc-disclaimer{font-family:var(--mono);font-size:0.58rem;color:var(--muted);margin-top:0.875rem;line-height:1.6;border-top:1px solid var(--border);padding-top:0.75rem;}
+
+/* LOCATION ERROR */
 .location-error{background:var(--surface);border:1px solid rgba(255,68,102,0.3);border-radius:12px;padding:1.25rem;border-left:3px solid var(--danger);}
 .le-title{font-size:0.9rem;font-weight:700;color:var(--danger);margin-bottom:0.5rem;}
 .le-body{font-size:0.8rem;color:var(--muted2);line-height:1.7;margin-bottom:0.875rem;}
-.le-steps{display:flex;flex-direction:column;gap:0.4rem;}
+.le-steps{display:flex;flex-direction:column;gap:0.5rem;}
 .le-step{font-size:0.78rem;color:var(--text);display:flex;gap:0.5rem;align-items:flex-start;}
 .le-step-num{font-family:var(--mono);font-size:0.65rem;color:var(--accent);flex-shrink:0;margin-top:2px;}
-.le-retry{margin-top:0.875rem;width:100%;padding:0.75rem;background:transparent;border:1px solid var(--danger);color:var(--danger);border-radius:8px;font-family:var(--sans);font-size:0.85rem;font-weight:700;cursor:pointer;}
+.le-retry{margin-top:1rem;width:100%;padding:0.75rem;background:transparent;border:1px solid var(--danger);color:var(--danger);border-radius:8px;font-family:var(--sans);font-size:0.85rem;font-weight:700;cursor:pointer;}
+
+/* AGENTS */
 .agents-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;}
 .agent-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem;position:relative;overflow:hidden;}
 .agent-id{font-family:var(--mono);font-size:0.62rem;color:var(--muted2);margin-bottom:0.3rem;letter-spacing:0.05em;}
@@ -85,40 +106,47 @@ body::after{content:'';position:fixed;bottom:-20%;right:-20%;width:60%;height:60
 .agent-who{font-family:var(--mono);font-size:0.58rem;color:var(--muted);margin-top:0.4rem;}
 .agent-mini-bar{height:2px;background:var(--border);border-radius:999px;overflow:hidden;margin-top:0.5rem;}
 .agent-mini-fill{height:100%;border-radius:999px;}
+
+/* LOCATION CARD */
+.location-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;}
+.location-icon{font-size:1.5rem;flex-shrink:0;}
+.location-name{font-size:0.9rem;font-weight:600;margin-bottom:0.2rem;}
+.location-coords{font-family:var(--mono);font-size:0.62rem;color:var(--muted2);}
+.location-gh{font-family:var(--mono);font-size:0.62rem;color:var(--muted);margin-top:0.2rem;}
+
+/* SHARE */
 .share-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem;}
 .sc-label{font-family:var(--mono);font-size:0.6rem;letter-spacing:0.15em;color:var(--muted2);text-transform:uppercase;margin-bottom:0.875rem;}
 .sc-buttons{display:flex;gap:0.5rem;flex-wrap:wrap;}
-.sc-btn{flex:1;min-width:100px;padding:0.75rem 0.5rem;border-radius:8px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-family:var(--sans);font-size:0.78rem;font-weight:600;cursor:pointer;text-align:center;}
-.sc-btn.whatsapp{border-color:rgba(37,211,102,0.3);color:#25d366;}
+.sc-btn{flex:1;min-width:90px;padding:0.7rem 0.5rem;border-radius:8px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-family:var(--sans);font-size:0.78rem;font-weight:600;cursor:pointer;text-align:center;}
+.sc-btn.wa{border-color:rgba(37,211,102,0.3);color:#25d366;}
+
+/* NOTIFICATION */
 .notif-card{background:rgba(0,255,136,0.05);border:1px solid rgba(0,255,136,0.2);border-radius:12px;padding:1.25rem;display:flex;gap:1rem;align-items:flex-start;}
 .notif-icon{font-size:1.5rem;flex-shrink:0;}
 .notif-title{font-size:0.875rem;font-weight:700;margin-bottom:0.3rem;}
 .notif-body{font-size:0.78rem;color:var(--muted2);line-height:1.5;margin-bottom:0.75rem;}
 .notif-btn{padding:0.6rem 1.25rem;background:var(--accent);color:#080b12;border:none;border-radius:8px;font-family:var(--sans);font-size:0.82rem;font-weight:800;cursor:pointer;}
-.location-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;}
-.location-icon{font-size:1.5rem;flex-shrink:0;}
-.location-name{font-size:0.9rem;font-weight:600;margin-bottom:0.2rem;}
-.location-coords{font-family:var(--mono);font-size:0.62rem;color:var(--muted2);}
-.location-time{font-family:var(--mono);font-size:0.62rem;color:var(--muted);margin-top:0.2rem;}
-.timeline-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;}
-.timeline-title{font-family:var(--mono);font-size:0.65rem;color:var(--muted2);letter-spacing:0.1em;text-transform:uppercase;}
-.timeline-count{font-family:var(--mono);font-size:0.62rem;color:var(--muted);}
+
+/* TIMELINE */
 .timeline-list{display:flex;flex-direction:column;gap:0.5rem;}
 .timeline-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:0.875rem 1rem;display:flex;align-items:center;gap:1rem;}
 .tl-score{font-family:var(--mono);font-size:1.1rem;font-weight:700;min-width:36px;text-align:center;}
 .tl-info{flex:1;min-width:0;}
 .tl-location{font-size:0.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:0.15rem;}
 .tl-time{font-family:var(--mono);font-size:0.6rem;color:var(--muted);}
-.tl-level{font-family:var(--mono);font-size:0.6rem;font-weight:700;padding:0.2rem 0.5rem;border-radius:999px;}
-.timeline-empty{text-align:center;padding:2rem;font-family:var(--mono);font-size:0.72rem;color:var(--muted);line-height:1.8;background:var(--surface);border:1px solid var(--border);border-radius:12px;}
-.passport-card{background:linear-gradient(135deg,var(--surface) 0%,var(--bg2) 100%);border:1px solid var(--border);border-radius:16px;padding:1.5rem;margin-bottom:1rem;}
+.tl-level{font-family:var(--mono);font-size:0.6rem;font-weight:700;padding:0.2rem 0.5rem;border-radius:999px;white-space:nowrap;}
+.tl-empty{text-align:center;padding:2rem;font-family:var(--mono);font-size:0.72rem;color:var(--muted);line-height:1.8;background:var(--surface);border:1px solid var(--border);border-radius:12px;}
+
+/* PASSPORT */
+.passport-card{background:linear-gradient(135deg,var(--surface),var(--bg2));border:1px solid var(--border);border-radius:16px;padding:1.5rem;margin-bottom:1rem;}
 .passport-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:1px solid var(--border);}
 .passport-title{font-size:1rem;font-weight:700;}
 .passport-badge{font-family:var(--mono);font-size:0.6rem;padding:0.25rem 0.6rem;background:rgba(0,255,136,0.1);border:1px solid rgba(0,255,136,0.3);border-radius:999px;color:var(--accent);}
 .passport-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:1.25rem;}
 .ps-stat{text-align:center;}
 .ps-num{font-family:var(--mono);font-size:1.5rem;font-weight:700;color:var(--accent);display:block;margin-bottom:0.2rem;}
-.ps-label{font-size:0.65rem;color:var(--muted2);line-height:1.4;}
+.ps-label{font-size:0.65rem;color:var(--muted2);}
 .passport-avg{background:var(--bg);border-radius:10px;padding:1rem;margin-bottom:1rem;}
 .pa-label{font-family:var(--mono);font-size:0.6rem;color:var(--muted2);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.4rem;}
 .pa-value{font-family:var(--mono);font-size:1.75rem;font-weight:700;}
@@ -128,131 +156,145 @@ body::after{content:'';position:fixed;bottom:-20%;right:-20%;width:60%;height:60
 .pb-header{padding:0.875rem 1rem;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:0.62rem;color:var(--muted2);letter-spacing:0.1em;text-transform:uppercase;}
 .pb-row{padding:0.875rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1rem;}
 .pb-row:last-child{border-bottom:none}
-.pb-agent{font-family:var(--mono);font-size:0.75rem;font-weight:700;min-width:55px;color:var(--text);}
+.pb-agent{font-family:var(--mono);font-size:0.75rem;font-weight:700;min-width:55px;}
 .pb-bar-wrap{flex:1;height:4px;background:var(--border);border-radius:999px;overflow:hidden;}
 .pb-bar{height:100%;border-radius:999px;}
 .pb-pct{font-family:var(--mono);font-size:0.62rem;color:var(--muted2);min-width:35px;text-align:right;}
+
+/* BOTTOM NAV */
 .bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:rgba(8,11,18,0.96);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;padding:0.5rem 0 calc(0.5rem + env(safe-area-inset-bottom));z-index:100;}
 .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:0.25rem;padding:0.5rem;cursor:pointer;border:none;background:none;color:var(--muted);}
 .nav-item.active{color:var(--accent)}
 .nav-icon{font-size:1.2rem;}
 .nav-label{font-family:var(--mono);font-size:0.55rem;letter-spacing:0.05em;text-transform:uppercase;}
+
+/* LOADING */
 .loading-overlay{position:fixed;inset:0;background:rgba(8,11,18,0.85);display:none;align-items:center;justify-content:center;z-index:200;flex-direction:column;gap:1rem;}
 .loading-overlay.show{display:flex}
-.loader{width:40px;height:40px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg)}}
+.loader{width:40px;height:40px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:lspin 0.8s linear infinite;}
+@keyframes lspin{to{transform:rotate(360deg)}}
 .loader-text{font-family:var(--mono);font-size:0.72rem;color:var(--muted2);letter-spacing:0.1em;}
+
+/* TOAST */
 .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:0.75rem 1.25rem;font-family:var(--mono);font-size:0.72rem;color:var(--text);white-space:nowrap;opacity:0;transition:all 0.3s;z-index:300;pointer-events:none;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* QR MODAL */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);display:none;align-items:center;justify-content:center;z-index:400;padding:2rem;}
 .modal-overlay.show{display:flex;}
-.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.75rem;width:100%;max-width:320px;text-align:center;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.75rem;width:100%;max-width:300px;text-align:center;}
 .modal-title{font-size:1rem;font-weight:700;margin-bottom:0.5rem;}
-.modal-body{font-size:0.82rem;color:var(--muted2);line-height:1.6;margin-bottom:1.25rem;}
-.modal-url{font-family:var(--mono);font-size:0.65rem;color:var(--accent2);word-break:break-all;margin-bottom:1.25rem;}
-.modal-close{width:100%;padding:0.75rem;background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:8px;font-family:var(--sans);font-size:0.875rem;font-weight:600;cursor:pointer;}
-@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-.app-content>*{animation:fadeUp 0.3s ease both;}
+.modal-sub{font-size:0.82rem;color:var(--muted2);line-height:1.6;margin-bottom:1rem;}
+.modal-url{font-family:var(--mono);font-size:0.62rem;color:var(--accent2);word-break:break-all;margin:0.875rem 0;}
+.modal-close{width:100%;padding:0.75rem;background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:8px;font-family:var(--sans);font-size:0.875rem;font-weight:600;cursor:pointer;margin-top:0.5rem;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.app-content>*{animation:fadeUp 0.25s ease both;}
 .app-content>*:nth-child(2){animation-delay:0.05s}
 .app-content>*:nth-child(3){animation-delay:0.1s}
 .app-content>*:nth-child(4){animation-delay:0.15s}
-.app-content>*:nth-child(5){animation-delay:0.2s}
 </style>
 </head>
 <body>
 
+<!-- ONBOARDING -->
 <div class="screen active" id="screen-onboard">
   <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100%;padding:2rem;text-align:center;">
-    <div class="ob-logo">BXP LiveNet · v2.0</div>
+    <div class="ob-logo">BXP LiveNet · v3.0</div>
     <div class="ob-orb"></div>
     <h1 class="ob-title">Your air.<br><span>Your record.</span></h1>
     <p class="ob-sub">The first personal atmospheric exposure passport. Built automatically from every place you go.</p>
     <div class="ob-features">
       <div class="ob-feat"><div class="ob-feat-icon">🌍</div><div class="ob-feat-text"><strong>Runs silently</strong>Every 10 minutes — automatic, zero effort.</div></div>
-      <div class="ob-feat"><div class="ob-feat-icon">🫁</div><div class="ob-feat-text"><strong>Health impact in plain language</strong>What your exposure actually means for your body — based on WHO data.</div></div>
-      <div class="ob-feat"><div class="ob-feat-icon">🔓</div><div class="ob-feat-text"><strong>Open format. Yours forever.</strong>Export anytime as .bxp.json. Nobody owns your data.</div></div>
-      <div class="ob-feat"><div class="ob-feat-icon">🌐</div><div class="ob-feat-text"><strong>You become the network</strong>Your movement builds a global map no sensor has reached.</div></div>
+      <div class="ob-feat"><div class="ob-feat-icon">🫁</div><div class="ob-feat-text"><strong>Health impact explained</strong>What your exposure actually means for your body, based on WHO data.</div></div>
+      <div class="ob-feat"><div class="ob-feat-icon">🔓</div><div class="ob-feat-text"><strong>Open format. Yours forever.</strong>Export anytime as .bxp.json. Nobody owns your data but you.</div></div>
     </div>
     <button class="btn-start" onclick="startApp()">Start Building My Passport</button>
-    <p class="ob-privacy">Location processed locally on your device. Only anonymised aggregate data contributes to the network. Personal records never leave your phone without your explicit export.</p>
+    <p class="ob-privacy">Location is read from your device GPS directly. Only anonymised data contributes to the network. Your personal records never leave your phone without your explicit export.</p>
   </div>
 </div>
 
+<!-- MAIN -->
 <div class="screen" id="screen-main">
   <div class="app-header">
     <div class="app-logo">BXP LIVENET</div>
-    <div class="app-status"><div class="status-dot inactive" id="status-dot"></div><span id="status-text">Starting...</span></div>
+    <div class="header-right">
+      <div class="app-status">
+        <div class="status-dot inactive" id="status-dot"></div>
+        <span id="status-text">Starting...</span>
+      </div>
+      <button class="refresh-btn" id="refresh-btn" onclick="manualRefresh()" title="Refresh reading">↻</button>
+    </div>
   </div>
   <div class="app-content" id="main-content"></div>
 </div>
 
+<!-- TIMELINE -->
 <div class="screen" id="screen-timeline">
   <div class="app-header">
     <div class="app-logo">EXPOSURE LOG</div>
-    <div class="app-status"><div class="status-dot" id="tl-dot"></div><span id="tl-count">0 readings</span></div>
+    <div class="header-right">
+      <div class="app-status">
+        <div class="status-dot" id="tl-dot"></div>
+        <span id="tl-count">0 readings</span>
+      </div>
+    </div>
   </div>
   <div class="app-content" id="timeline-content"></div>
 </div>
 
+<!-- PASSPORT -->
 <div class="screen" id="screen-passport">
   <div class="app-header">
     <div class="app-logo">MY PASSPORT</div>
-    <div class="app-status"><span style="font-family:var(--mono);font-size:0.62rem;color:var(--muted2)">BXP v2.0</span></div>
+    <div class="header-right">
+      <span style="font-family:var(--mono);font-size:0.62rem;color:var(--muted2)">BXP v2.0</span>
+    </div>
   </div>
   <div class="app-content" id="passport-content"></div>
 </div>
 
-<div class="screen" id="screen-map">
-  <div class="app-header"><div class="app-logo">SPREAD</div></div>
+<!-- SHARE -->
+<div class="screen" id="screen-share">
+  <div class="app-header">
+    <div class="app-logo">SHARE</div>
+  </div>
   <div class="app-content">
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem;">
       <div style="font-family:var(--mono);font-size:0.62rem;letter-spacing:0.15em;color:var(--muted2);text-transform:uppercase;margin-bottom:0.5rem;">Your contributions</div>
       <div style="font-family:var(--mono);font-size:2.5rem;font-weight:700;color:var(--accent)" id="contrib-count">0</div>
-      <div style="font-size:0.78rem;color:var(--muted2);margin-top:0.25rem;">data points added to the global BXP network</div>
+      <div style="font-size:0.78rem;color:var(--muted2);margin-top:0.25rem;">data points added to the BXP network</div>
     </div>
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem;">
       <div style="font-family:var(--mono);font-size:0.6rem;letter-spacing:0.15em;color:var(--muted2);text-transform:uppercase;margin-bottom:0.875rem;">Share BXP LiveNet</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;">
-        <div style="padding:1rem;background:var(--bg2);border:1px solid var(--border);border-radius:8px;text-align:center;cursor:pointer;" onclick="shareWhatsApp()">
+        <div style="padding:1rem;background:var(--bg2);border:1px solid rgba(37,211,102,0.2);border-radius:8px;text-align:center;cursor:pointer;" onclick="shareWhatsApp()">
           <div style="font-size:1.5rem;margin-bottom:0.4rem;">💬</div>
-          <div style="font-size:0.8rem;font-weight:600;margin-bottom:0.2rem;">WhatsApp</div>
-          <div style="font-family:var(--mono);font-size:0.58rem;color:var(--muted2);">Share your reading</div>
+          <div style="font-size:0.8rem;font-weight:600;color:#25d366;">WhatsApp</div>
         </div>
         <div style="padding:1rem;background:var(--bg2);border:1px solid var(--border);border-radius:8px;text-align:center;cursor:pointer;" onclick="showQR()">
           <div style="font-size:1.5rem;margin-bottom:0.4rem;">⬛</div>
-          <div style="font-size:0.8rem;font-weight:600;margin-bottom:0.2rem;">QR Code</div>
-          <div style="font-family:var(--mono);font-size:0.58rem;color:var(--muted2);">Show to anyone nearby</div>
+          <div style="font-size:0.8rem;font-weight:600;">QR Code</div>
         </div>
         <div style="padding:1rem;background:var(--bg2);border:1px solid var(--border);border-radius:8px;text-align:center;cursor:pointer;" onclick="copyLink()">
           <div style="font-size:1.5rem;margin-bottom:0.4rem;">🔗</div>
-          <div style="font-size:0.8rem;font-weight:600;margin-bottom:0.2rem;">Copy Link</div>
-          <div style="font-family:var(--mono);font-size:0.58rem;color:var(--muted2);">Share anywhere</div>
+          <div style="font-size:0.8rem;font-weight:600;">Copy Link</div>
         </div>
         <div style="padding:1rem;background:var(--bg2);border:1px solid var(--border);border-radius:8px;text-align:center;cursor:pointer;" onclick="nativeShare()">
           <div style="font-size:1.5rem;margin-bottom:0.4rem;">↗</div>
-          <div style="font-size:0.8rem;font-weight:600;margin-bottom:0.2rem;">Any App</div>
-          <div style="font-family:var(--mono);font-size:0.58rem;color:var(--muted2);">All share options</div>
+          <div style="font-size:0.8rem;font-weight:600;">Share</div>
         </div>
-      </div>
-    </div>
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem;">
-      <div style="font-family:var(--mono);font-size:0.6rem;letter-spacing:0.15em;color:var(--muted2);text-transform:uppercase;margin-bottom:0.875rem;">How BXP reaches people</div>
-      <div style="display:flex;flex-direction:column;gap:0.75rem;">
-        <div style="padding:0.875rem;background:var(--bg2);border-radius:8px;font-size:0.8rem;color:var(--muted2);line-height:1.6;"><strong style="color:var(--text);display:block;margin-bottom:0.2rem;">📲 Web Push alerts</strong>Once you allow notifications, BXP alerts you when air is dangerous — even if the browser is closed.</div>
-        <div style="padding:0.875rem;background:var(--bg2);border-radius:8px;font-size:0.8rem;color:var(--muted2);line-height:1.6;"><strong style="color:var(--text);display:block;margin-bottom:0.2rem;">⬛ QR at any venue</strong>A printed QR code at a market, hospital, bus stop, or school. Anyone scans it and instantly sees their air quality.</div>
-        <div style="padding:0.875rem;background:var(--bg2);border-radius:8px;font-size:0.8rem;color:var(--muted2);line-height:1.6;"><strong style="color:var(--text);display:block;margin-bottom:0.2rem;">💬 WhatsApp chains</strong>One person shares their exposure card. Their contacts see real data. They join. The network grows itself.</div>
-        <div style="padding:0.875rem;background:var(--bg2);border-radius:8px;font-size:0.8rem;color:var(--muted2);line-height:1.6;"><strong style="color:var(--text);display:block;margin-bottom:0.2rem;">🌐 Any WiFi portal</strong>Airport, hospital, university, shopping mall — any WiFi login page can show BXP air quality for that location.</div>
-        <div style="padding:0.875rem;background:var(--bg2);border-radius:8px;font-size:0.8rem;color:var(--muted2);line-height:1.6;"><strong style="color:var(--text);display:block;margin-bottom:0.2rem;">📱 NFC tags</strong>A cheap sticker on a wall. Tap any phone to it. BXP LiveNet opens instantly with that location's air quality.</div>
       </div>
     </div>
   </div>
 </div>
 
+<!-- BOTTOM NAV -->
 <nav class="bottom-nav" id="bottom-nav" style="display:none">
   <button class="nav-item active" onclick="switchTab('main',this)"><span class="nav-icon">◎</span><span class="nav-label">Now</span></button>
   <button class="nav-item" onclick="switchTab('timeline',this)"><span class="nav-icon">≡</span><span class="nav-label">History</span></button>
   <button class="nav-item" onclick="switchTab('passport',this)"><span class="nav-icon">⬡</span><span class="nav-label">Passport</span></button>
-  <button class="nav-item" onclick="switchTab('map',this)"><span class="nav-icon">↗</span><span class="nav-label">Spread</span></button>
+  <button class="nav-item" onclick="switchTab('share',this)"><span class="nav-icon">↗</span><span class="nav-label">Share</span></button>
 </nav>
 
 <div class="loading-overlay" id="loading"><div class="loader"></div><div class="loader-text" id="loading-text">Getting your location...</div></div>
@@ -260,9 +302,9 @@ body::after{content:'';position:fixed;bottom:-20%;right:-20%;width:60%;height:60
 
 <div class="modal-overlay" id="qr-modal">
   <div class="modal">
-    <div class="modal-title">Share BXP LiveNet</div>
-    <div class="modal-body">Show this to anyone. They scan it and instantly see their air quality — no download needed.</div>
-    <div style="background:#fff;border-radius:8px;padding:1rem;margin:1rem auto;display:inline-block;" id="qr-container"></div>
+    <div class="modal-title">Scan to open BXP</div>
+    <div class="modal-sub">Anyone who scans this sees their air quality instantly — no download needed.</div>
+    <div id="qr-container" style="background:#fff;border-radius:8px;padding:1rem;display:inline-block;"></div>
     <div class="modal-url">bxpprotocol.github.io/livenet.html</div>
     <button class="modal-close" onclick="document.getElementById('qr-modal').classList.remove('show')">Close</button>
   </div>
@@ -271,8 +313,7 @@ body::after{content:'';position:fixed;bottom:-20%;right:-20%;width:60%;height:60
 <script>
 const WHO={PM2_5:15,PM10:45,NO2:25,O3:100,CO:4,SO2:40,TVOC:500};
 const WEIGHTS={PM2_5:0.35,PM10:0.15,NO2:0.15,O3:0.12,CO:0.10,SO2:0.05,TVOC:0.04};
-const BXP_NODE='https://bxp-node.onrender.com';
-const AQICN_TOKEN='68fc34ffbfaf451cc4250b87158ffe04a3dc5dfd';
+const AQICN='68fc34ffbfaf451cc4250b87158ffe04a3dc5dfd';
 const APP_URL='https://bxpprotocol.github.io/livenet.html';
 
 const LEVELS={
@@ -284,176 +325,248 @@ const LEVELS={
   HAZARDOUS:{color:'#FF1744',bg:'rgba(255,23,68,0.12)', label:'HAZARDOUS',advice:'Health emergency. Stay indoors.'}
 };
 
-const DOSE_RESPONSE={
-  PM2_5:{'Respiratory irritation':{b:0.02,p:0.008},'Cardiovascular stress':{b:0.005,p:0.003},'Reduced lung function':{b:0.01,p:0.005}},
+const DR={
+  PM2_5:{'Respiratory irritation':{b:0.02,p:0.008},'Cardiovascular stress':{b:0.005,p:0.003},'Lung function reduction':{b:0.01,p:0.005}},
   NO2:{'Airway inflammation':{b:0.015,p:0.006},'Asthma aggravation':{b:0.008,p:0.004}},
   O3:{'Chest tightness':{b:0.01,p:0.004},'Throat irritation':{b:0.02,p:0.006}},
   CO:{'Headache/dizziness':{b:0.005,p:0.012}}
 };
 
-const state={active:false,location:null,currentReading:null,history:[],contribCount:0,notifPermission:'default',locationError:null,intervalId:null};
+const S={active:false,loc:null,reading:null,history:[],contrib:0,notif:'default',locErr:null,timer:null,reading_in_progress:false};
 
-try{const s=localStorage.getItem('bxp_history');if(s)state.history=JSON.parse(s);const c=localStorage.getItem('bxp_contrib');if(c)state.contribCount=parseInt(c);state.notifPermission=localStorage.getItem('bxp_notif')||'default';}catch(e){}
+try{const h=localStorage.getItem('bxp_h');if(h)S.history=JSON.parse(h);const c=localStorage.getItem('bxp_c');if(c)S.contrib=parseInt(c);S.notif=localStorage.getItem('bxp_n')||'default';}catch(e){}
 
-function getLevel(h){if(h>90)return'HAZARDOUS';if(h>75)return'VERY_HIGH';if(h>60)return'HIGH';if(h>40)return'ELEVATED';if(h>20)return'MODERATE';return'CLEAN';}
+const gl=h=>h>90?'HAZARDOUS':h>75?'VERY_HIGH':h>60?'HIGH':h>40?'ELEVATED':h>20?'MODERATE':'CLEAN';
 
-function calcHRI(agents){let r=0;const b=[];for(const a of agents){const w=WEIGHTS[a.id],t=WHO[a.id];if(w&&t){const risk=Math.min(1,a.value/t);r+=risk*w;b.push({...a,risk,pct:Math.round(risk*100)});}}return{hri:Math.min(100,Math.round(r*100*10)/10),breakdown:b};}
-
-function calcHealth(agents,dur=10){const out=[];for(const a of agents){const dr=DOSE_RESPONSE[a.id];if(!dr)continue;const t=WHO[a.id];if(!t)continue;const ex=Math.max(0,a.value-t);const df=Math.min(3,dur/60);for(const[ef,p]of Object.entries(dr)){const risk=p.b+(ex/10)*p.p*df;const pct=Math.round(risk*10000)/100;if(pct>0.01)out.push({effect:ef,pct,agent:a.id,color:pct<0.1?'#00E676':pct<1?'#FF9800':'#F44336'});}}return out.sort((a,b)=>b.pct-a.pct).slice(0,5);}
-
-function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
-function setLoading(s,t='Loading...'){document.getElementById('loading').classList.toggle('show',s);document.getElementById('loading-text').textContent=t;}
-function saveHistory(){try{localStorage.setItem('bxp_history',JSON.stringify(state.history.slice(-100)));localStorage.setItem('bxp_contrib',state.contribCount);}catch(e){}}
-function timeAgo(ts){const d=Date.now()-ts,m=Math.floor(d/60000);if(m<1)return'just now';if(m<60)return`${m}m ago`;const h=Math.floor(m/60);if(h<24)return`${h}h ago`;return`${Math.floor(h/24)}d ago`;}
-
-function encodeGeohash(lat,lng,p=7){const c='0123456789bcdefghjkmnpqrstuvwxyz';let idx=0,bit=0,even=true,gh='';let mnLt=-90,mxLt=90,mnLg=-180,mxLg=180;while(gh.length<p){if(even){const m=(mnLg+mxLg)/2;if(lng>=m){idx=(idx<<1)+1;mnLg=m;}else{idx=idx<<1;mxLg=m;}}else{const m=(mnLt+mxLt)/2;if(lat>=m){idx=(idx<<1)+1;mnLt=m;}else{idx=idx<<1;mxLt=m;}}even=!even;if(++bit===5){gh+=c[idx];bit=0;idx=0;}}return gh;}
-
-function getLocationError(err){
-  if(!err)return{title:'Location unavailable',reason:'Could not get your location.',steps:['Enable location on your device','Refresh and try again']};
-  const fixes={
-    1:{title:'Location access blocked',reason:'Your browser is blocking location access. BXP needs this to show your local air quality.',steps:['Tap the lock icon or ⓘ in your browser address bar','Find "Location" or "Permissions"','Change it from Block to Allow','Refresh this page']},
-    2:{title:'Location unavailable',reason:'Your device could not find your location right now.',steps:['Make sure you have WiFi or mobile data','If indoors, move near a window','Check Location Services is on in Settings']},
-    3:{title:'Location timed out',reason:'It took too long to get your location.',steps:['Make sure location services are enabled','Try again — it often works on the second attempt']}
-  };
-  return fixes[err.code]||{title:'Location error',reason:'An unexpected error occurred.',steps:['Refresh the page and try again']};
+function calcHRI(agents){
+  let r=0;const b=[];
+  for(const a of agents){const w=WEIGHTS[a.id],t=WHO[a.id];if(w&&t){const rk=Math.min(1,a.value/t);r+=rk*w;b.push({...a,risk:rk,pct:Math.round(rk*100)});}}
+  return{hri:Math.min(100,Math.round(r*1000)/10),breakdown:b};
 }
 
-async function fetchAirQuality(lat,lng){
-  try{
-    const r=await fetch(`https://api.waqi.info/feed/geo:${lat};${lng}/?token=${AQICN_TOKEN}`,{signal:AbortSignal.timeout(10000)});
-    const j=await r.json();
-    if(j.status!=='ok')return null;
-    const d=j.data,iaqi=d.iaqi||{};
-    const agents=[];
-    if(iaqi.pm25?.v!==undefined)agents.push({id:'PM2_5',value:iaqi.pm25.v,unit:'ug/m3'});
-    if(iaqi.pm10?.v!==undefined)agents.push({id:'PM10', value:iaqi.pm10.v,unit:'ug/m3'});
-    if(iaqi.no2?.v !==undefined)agents.push({id:'NO2',  value:iaqi.no2.v, unit:'ug/m3'});
-    if(iaqi.o3?.v  !==undefined)agents.push({id:'O3',   value:iaqi.o3.v,  unit:'ppb'});
-    if(iaqi.co?.v  !==undefined)agents.push({id:'CO',   value:iaqi.co.v,  unit:'ppm'});
-    if(iaqi.so2?.v !==undefined)agents.push({id:'SO2',  value:iaqi.so2.v, unit:'ppb'});
-    const{hri,breakdown}=calcHRI(agents);
-    return{bxpVersion:'2.0',fileType:'reading',city:d.city?.name||'Unknown',timestampUs:Date.now()*1000,lat,lng,geohash:encodeGeohash(lat,lng,7),agents,hri,level:getLevel(hri),breakdown,healthImpact:calcHealth(agents),quality:{flag:'UNVALIDATED',confidence:0.75,source:'AQICN'}};
-  }catch(e){return null;}
+function calcHealth(agents){
+  const out=[];
+  for(const a of agents){const dr=DR[a.id];if(!dr)continue;const t=WHO[a.id];if(!t)continue;const ex=Math.max(0,a.value-t);for(const[ef,p]of Object.entries(dr)){const risk=p.b+(ex/10)*p.p;const pct=Math.round(risk*10000)/100;if(pct>0.01)out.push({effect:ef,pct,color:pct<0.1?'#00E676':pct<1?'#FF9800':'#F44336'});}}
+  return out.sort((a,b)=>b.pct-a.pct).slice(0,5);
 }
 
-function getLocation(){
+const toast=m=>{const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);};
+const setLoad=(s,t='Loading...')=>{document.getElementById('loading').classList.toggle('show',s);document.getElementById('loading-text').textContent=t;};
+const save=()=>{try{localStorage.setItem('bxp_h',JSON.stringify(S.history.slice(-100)));localStorage.setItem('bxp_c',S.contrib);}catch(e){}};
+const tAgo=ts=>{const d=Date.now()-ts,m=Math.floor(d/60000);if(m<1)return'just now';if(m<60)return`${m}m ago`;const h=Math.floor(m/60);return h<24?`${h}h ago`:`${Math.floor(h/24)}d ago`;};
+
+function gh(lat,lng,p=7){
+  const c='0123456789bcdefghjkmnpqrstuvwxyz';let i=0,b=0,e=true,g='';
+  let lt=-90,lT=90,lg=-180,lG=180;
+  while(g.length<p){if(e){const m=(lg+lG)/2;if(lng>=m){i=(i<<1)+1;lg=m;}else{i=i<<1;lG=m;}}else{const m=(lt+lT)/2;if(lat>=m){i=(i<<1)+1;lt=m;}else{i=i<<1;lT=m;}}e=!e;if(++b===5){g+=c[i];b=0;i=0;}}return g;
+}
+
+function locErr(err){
+  const base={title:'Location error',reason:'Could not get your location.',steps:['Refresh the page and try again']};
+  if(!err)return base;
+  if(err.code===1)return{title:'Location access blocked',reason:'Your browser is blocking location access. BXP needs GPS coordinates to show your local air quality — not your IP address or VPN location.',steps:['Tap the lock icon or ⓘ in your browser address bar','Find Location or Permissions','Change from Block to Allow','Tap the refresh button ↻ above']};
+  if(err.code===2)return{title:'Location unavailable',reason:'Your device could not find your GPS position.',steps:['Check that Location Services is on in your phone Settings','If indoors, move near a window','Tap ↻ to try again']};
+  if(err.code===3)return{title:'Location timed out',reason:'GPS took too long to respond.',steps:['Make sure Location Services is enabled','Tap ↻ to try again — it usually works on the second attempt']};
+  return base;
+}
+
+// FORCE GPS — ignore IP/VPN by using high accuracy GPS only
+function getLoc(){
   return new Promise((res,rej)=>{
-    if(!navigator.geolocation){rej({code:0,message:'Not supported'});return;}
-    navigator.geolocation.getCurrentPosition(p=>res({lat:p.coords.latitude,lng:p.coords.longitude}),rej,{enableHighAccuracy:true,timeout:12000,maximumAge:120000});
+    if(!navigator.geolocation){rej({code:0});return;}
+    // Force fresh GPS read — maximumAge:0 means never use cached location
+    navigator.geolocation.getCurrentPosition(
+      p=>res({lat:p.coords.latitude,lng:p.coords.longitude,accuracy:p.coords.accuracy}),
+      rej,
+      {enableHighAccuracy:true,timeout:15000,maximumAge:0}
+    );
   });
 }
 
-async function requestNotifications(){
-  if(!('Notification'in window))return;
+async function fetchAQ(lat,lng){
   try{
-    const p=await Notification.requestPermission();
-    state.notifPermission=p;
-    localStorage.setItem('bxp_notif',p);
-    if(p==='granted'){showToast('Alerts enabled');renderMain();}
-  }catch(e){}
+    const r=await fetch(`https://api.waqi.info/feed/geo:${lat};${lng}/?token=${AQICN}`,{signal:AbortSignal.timeout(12000)});
+    const j=await r.json();
+    if(j.status!=='ok')return null;
+    const d=j.data,ia=d.iaqi||{},agents=[];
+    if(ia.pm25?.v!=null)agents.push({id:'PM2_5',value:ia.pm25.v,unit:'ug/m3'});
+    if(ia.pm10?.v!=null)agents.push({id:'PM10', value:ia.pm10.v,unit:'ug/m3'});
+    if(ia.no2?.v !=null)agents.push({id:'NO2',  value:ia.no2.v, unit:'ug/m3'});
+    if(ia.o3?.v  !=null)agents.push({id:'O3',   value:ia.o3.v,  unit:'ppb'});
+    if(ia.co?.v  !=null)agents.push({id:'CO',   value:ia.co.v,  unit:'ppm'});
+    if(ia.so2?.v !=null)agents.push({id:'SO2',  value:ia.so2.v, unit:'ppb'});
+    const{hri,breakdown}=calcHRI(agents);
+    return{bxpVersion:'2.0',fileType:'reading',city:d.city?.name||'Unknown',ts:Date.now(),lat,lng,geohash:gh(lat,lng,7),agents,hri,level:gl(hri),breakdown,health:calcHealth(agents),quality:{flag:'UNVALIDATED',confidence:0.75}};
+  }catch(e){return null;}
+}
+
+async function takeReading(manual=false){
+  if(S.reading_in_progress&&!manual)return;
+  S.reading_in_progress=true;S.locErr=null;
+  const dot=document.getElementById('status-dot');
+  const txt=document.getElementById('status-text');
+  const rb=document.getElementById('refresh-btn');
+  dot.className='status-dot inactive';txt.textContent='Reading...';
+  if(rb){rb.classList.add('spinning');rb.disabled=true;}
+  try{
+    const loc=await getLoc(); // Always fresh GPS, never cached
+    S.loc=loc;
+    const r=await fetchAQ(loc.lat,loc.lng);
+    if(!r){dot.className='status-dot error';txt.textContent='No data';S.reading_in_progress=false;if(rb){rb.classList.remove('spinning');rb.disabled=false;}return;}
+    S.reading=r;
+    S.history.push({ts:r.ts,city:r.city,lat:loc.lat,lng:loc.lng,hri:r.hri,level:r.level,agents:r.agents});
+    S.contrib++;save();
+    dot.className='status-dot';txt.textContent='Live';
+    document.getElementById('contrib-count').textContent=S.contrib;
+    document.getElementById('tl-count').textContent=`${S.history.length} readings`;
+    renderMain();renderTimeline();renderPassport();
+    if(r.hri>=60)sendNotif(r);
+  }catch(err){
+    S.locErr=err;
+    dot.className='status-dot error';
+    txt.textContent='Location blocked';
+    renderMain();
+  }finally{
+    S.reading_in_progress=false;
+    if(rb){rb.classList.remove('spinning');rb.disabled=false;}
+  }
+}
+
+async function manualRefresh(){
+  await takeReading(true);
+  toast('Reading updated');
+}
+
+async function askNotif(){
+  if(!('Notification'in window))return;
+  try{const p=await Notification.requestPermission();S.notif=p;localStorage.setItem('bxp_n',p);if(p==='granted'){toast('Alerts enabled');renderMain();}}catch(e){}
 }
 
 function sendNotif(r){
-  if(state.notifPermission!=='granted'||!('Notification'in window)||r.hri<40)return;
+  if(S.notif!=='granted'||!('Notification'in window)||r.hri<40)return;
   try{new Notification('BXP — Air Quality Alert',{body:`HRI ${r.hri} · ${r.level} · ${r.city}`,tag:'bxp-alert',renotify:true});}catch(e){}
 }
 
-let idleTimer=null;
-function resetIdle(){clearTimeout(idleTimer);idleTimer=setTimeout(()=>{if(state.currentReading&&state.currentReading.hri>=40)sendNotif(state.currentReading);},15*60*1000);}
-['touchstart','click','keypress'].forEach(e=>document.addEventListener(e,resetIdle,{passive:true}));
-
-async function takeReading(){
-  state.locationError=null;
-  const dot=document.getElementById('status-dot');
-  const txt=document.getElementById('status-text');
-  dot.className='status-dot inactive';txt.textContent='Reading...';
-  try{
-    const loc=await getLocation();
-    state.location=loc;
-    const reading=await fetchAirQuality(loc.lat,loc.lng);
-    if(!reading){dot.className='status-dot error';txt.textContent='No data';return;}
-    state.currentReading=reading;
-    state.history.push({ts:Date.now(),city:reading.city,lat:loc.lat,lng:loc.lng,hri:reading.hri,level:reading.level,agents:reading.agents});
-    state.contribCount++;saveHistory();
-    dot.className='status-dot';txt.textContent='Live';
-    document.getElementById('contrib-count').textContent=state.contribCount;
-    document.getElementById('tl-count').textContent=`${state.history.length} readings`;
-    renderMain();renderTimeline();renderPassport();
-    if(reading.hri>=60)sendNotif(reading);
-    resetIdle();
-  }catch(err){
-    state.locationError=err;
-    dot.className='status-dot error';txt.textContent='Location blocked';
-    renderMain();
-  }
-}
+let idleT=null;
+const resetIdle=()=>{clearTimeout(idleT);idleT=setTimeout(()=>{if(S.reading&&S.reading.hri>=40)sendNotif(S.reading);},15*60*1000);};
+['touchstart','click'].forEach(e=>document.addEventListener(e,resetIdle,{passive:true}));
 
 function renderMain(){
-  const r=state.currentReading;
-  let html='';
-  if(state.locationError){
-    const e=getLocationError(state.locationError);
+  const r=S.reading;let html='';
+  if(S.locErr){
+    const e=locErr(S.locErr);
     html+=`<div class="location-error"><div class="le-title">⚠ ${e.title}</div><div class="le-body">${e.reason}</div><div class="le-steps">`;
     e.steps.forEach((s,i)=>{html+=`<div class="le-step"><div class="le-step-num">${i+1}.</div><div>${s}</div></div>`;});
-    html+=`</div><button class="le-retry" onclick="takeReading()">Try Again</button></div>`;
+    html+=`</div><button class="le-retry" onclick="takeReading(true)">Try Again</button></div>`;
     document.getElementById('main-content').innerHTML=html;return;
   }
-  if(!r){document.getElementById('main-content').innerHTML=`<div style="text-align:center;padding:3rem 1rem;color:var(--muted2);font-family:var(--mono);font-size:0.72rem;line-height:1.8">Acquiring location...<br>Allow location access when prompted.</div>`;return;}
+  if(!r){document.getElementById('main-content').innerHTML=`<div style="text-align:center;padding:3rem 1rem;color:var(--muted2);font-family:var(--mono);font-size:0.72rem;line-height:1.8">Acquiring GPS location...<br>Allow location access when prompted.<br><br>Note: BXP uses GPS directly and ignores VPN or IP location.</div>`;return;}
   const L=LEVELS[r.level]||LEVELS.CLEAN;
-  if(state.notifPermission==='default'){html+=`<div class="notif-card"><div class="notif-icon">🔔</div><div><div class="notif-title">Get alerts for dangerous air</div><div class="notif-body">BXP will notify you when you enter high-exposure areas — even if the app is closed.</div><button class="notif-btn" onclick="requestNotifications()">Enable Alerts</button></div></div>`;}
-  html+=`<div class="hri-hero"><div class="hri-label">BXP Health Risk Index</div><div class="hri-main"><div class="hri-number" style="color:${L.color}">${r.hri}</div><div><div class="hri-level-badge" style="background:${L.bg};color:${L.color}">${L.label}</div><div class="hri-advice">${L.advice}</div></div></div><div class="hri-bar-track"><div class="hri-bar-fill" style="width:${r.hri}%;background:${L.color}"></div></div><div class="hri-meta"><div class="hri-meta-item"><span>${r.city}</span>Location</div><div class="hri-meta-item"><span>${new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span>Updated</div><div class="hri-meta-item"><span>${r.agents.length}</span>Agents</div></div></div>`;
-  if(r.healthImpact&&r.healthImpact.length>0){
-    html+=`<div class="health-card"><div class="hc-label">Health Impact — WHO Dose-Response Data</div><div class="hc-title">What this exposure means for you</div><div class="hc-body">After ~10 minutes at current levels, your estimated elevated risk for:</div><div class="hc-risks">`;
-    for(const imp of r.healthImpact){html+=`<div class="hc-risk-row"><div class="hc-risk-name">${imp.effect}</div><div class="hc-risk-bar"><div class="hc-risk-fill" style="width:${Math.min(100,imp.pct*20)}%;background:${imp.color}"></div></div><div class="hc-risk-pct" style="color:${imp.color}">+${imp.pct}%</div></div>`;}
-    html+=`</div><div class="hc-disclaimer">Based on WHO Global Air Quality Guidelines (2021) dose-response coefficients. Population-level statistical associations, not individual diagnoses. Consult a medical professional for personal health advice.</div></div>`;
-  }else if(r.hri<21){html+=`<div class="health-card" style="border-left-color:var(--accent)"><div class="hc-label" style="color:var(--accent)">Health Impact</div><div class="hc-title">Air quality is clean here</div><div class="hc-body">Current levels are within WHO safe limits. No elevated health risks detected.</div></div>`;}
-  if(r.agents.length>0){html+='<div class="agents-grid">';for(const a of r.agents){const t=WHO[a.id],pct=t?Math.min(100,Math.round((a.value/t)*100)):0;const col=pct<50?'#00E676':pct<100?'#FF9800':'#F44336';html+=`<div class="agent-card"><div class="agent-id">${a.id}</div><div class="agent-value" style="color:${col}">${typeof a.value==='number'?a.value.toFixed(1):a.value}</div><div class="agent-unit">${a.unit}</div>${t?`<div class="agent-who">WHO: ${t} ${a.unit}</div><div class="agent-mini-bar"><div class="agent-mini-fill" style="width:${pct}%;background:${col}"></div></div>`:''}<div style="position:absolute;bottom:0;left:0;right:0;height:3px;background:${col};border-radius:0 0 12px 12px"></div></div>`;}html+='</div>';}
-  html+=`<div class="location-card"><div class="location-icon">📍</div><div><div class="location-name">${r.city}</div><div class="location-coords">${state.location.lat.toFixed(4)}°, ${state.location.lng.toFixed(4)}°</div><div class="location-time">Geohash: ${r.geohash}</div></div></div>`;
-  html+=`<div class="share-card"><div class="sc-label">Share your reading</div><div class="sc-buttons"><button class="sc-btn whatsapp" onclick="shareWhatsApp()">💬 WhatsApp</button><button class="sc-btn" onclick="nativeShare()">↗ Share</button><button class="sc-btn" onclick="copyLink()">🔗 Copy link</button></div></div>`;
+
+  if(S.notif==='default'){
+    html+=`<div class="notif-card"><div class="notif-icon">🔔</div><div><div class="notif-title">Get alerts for dangerous air</div><div class="notif-body">BXP will notify you when you enter high-exposure areas — even if the browser is closed.</div><button class="notif-btn" onclick="askNotif()">Enable Alerts</button></div></div>`;
+  }
+
+  html+=`<div class="hri-hero">
+    <div class="hri-label">BXP Health Risk Index</div>
+    <div class="hri-main">
+      <div class="hri-number" style="color:${L.color}">${r.hri}</div>
+      <div>
+        <div class="hri-level-badge" style="background:${L.bg};color:${L.color}">${L.label}</div>
+        <div class="hri-advice">${L.advice}</div>
+      </div>
+    </div>
+    <div class="hri-bar-track"><div class="hri-bar-fill" style="width:${r.hri}%;background:${L.color}"></div></div>
+    <div class="hri-meta">
+      <div class="hri-meta-item"><span>${r.city}</span>Location</div>
+      <div class="hri-meta-item"><span>${new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span>Updated</div>
+      <div class="hri-meta-item"><span>${r.agents.length}</span>Agents</div>
+    </div>
+  </div>`;
+
+  if(r.health&&r.health.length>0){
+    html+=`<div class="health-card"><div class="hc-label">Health Impact — WHO Dose-Response Data</div><div class="hc-title">What this exposure means for you</div><div class="hc-body">Estimated elevated risk after exposure at current levels:</div><div class="hc-risks">`;
+    for(const h of r.health){html+=`<div class="hc-risk-row"><div class="hc-risk-name">${h.effect}</div><div class="hc-risk-bar"><div class="hc-risk-fill" style="width:${Math.min(100,h.pct*20)}%;background:${h.color}"></div></div><div class="hc-risk-pct" style="color:${h.color}">+${h.pct}%</div></div>`;}
+    html+=`</div><div class="hc-disclaimer">Based on WHO Global Air Quality Guidelines 2021 dose-response data. Population-level statistical associations only — not individual diagnoses. Consult a medical professional for personal health advice.</div></div>`;
+  }else{
+    html+=`<div class="health-card" style="border-left-color:var(--accent)"><div class="hc-label" style="color:var(--accent)">Health Impact</div><div class="hc-title">Air quality is clean here</div><div class="hc-body">Current pollutant levels are within WHO safe limits.</div></div>`;
+  }
+
+  if(r.agents.length){
+    html+='<div class="agents-grid">';
+    for(const a of r.agents){
+      const t=WHO[a.id],pct=t?Math.min(100,Math.round(a.value/t*100)):0;
+      const col=pct<50?'#00E676':pct<100?'#FF9800':'#F44336';
+      html+=`<div class="agent-card"><div class="agent-id">${a.id}</div><div class="agent-value" style="color:${col}">${a.value.toFixed(1)}</div><div class="agent-unit">${a.unit}</div>${t?`<div class="agent-who">WHO limit: ${t}</div><div class="agent-mini-bar"><div class="agent-mini-fill" style="width:${pct}%;background:${col}"></div></div>`:''}<div style="position:absolute;bottom:0;left:0;right:0;height:3px;background:${col}"></div></div>`;
+    }
+    html+='</div>';
+  }
+
+  html+=`<div class="location-card"><div class="location-icon">📍</div><div><div class="location-name">${r.city}</div><div class="location-coords">${S.loc.lat.toFixed(5)}°, ${S.loc.lng.toFixed(5)}° ${S.loc.accuracy?`±${Math.round(S.loc.accuracy)}m`:''}</div><div class="location-gh">Geohash: ${r.geohash}</div></div></div>`;
+
+  html+=`<div class="share-card"><div class="sc-label">Share your reading</div><div class="sc-buttons"><button class="sc-btn wa" onclick="shareWhatsApp()">💬 WhatsApp</button><button class="sc-btn" onclick="nativeShare()">↗ Share</button><button class="sc-btn" onclick="copyLink()">🔗 Copy link</button></div></div>`;
+
   document.getElementById('main-content').innerHTML=html;
 }
 
 function renderTimeline(){
   const c=document.getElementById('timeline-content');
-  if(!state.history.length){c.innerHTML=`<div class="timeline-empty">No readings yet.<br><br>Your exposure history will appear here as BXP LiveNet tracks your locations.</div>`;return;}
-  let html='<div class="timeline-list">';
-  for(const item of[...state.history].reverse()){const lv=LEVELS[item.level]||LEVELS.CLEAN;const d=new Date(item.ts);html+=`<div class="timeline-item"><div class="tl-score" style="color:${lv.color}">${item.hri}</div><div class="tl-info"><div class="tl-location">${item.city}</div><div class="tl-time">${d.toLocaleDateString()} ${d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div></div><div class="tl-level" style="background:${lv.bg};color:${lv.color}">${lv.label}</div></div>`;}
-  html+='</div>';c.innerHTML=html;
+  if(!S.history.length){c.innerHTML=`<div class="tl-empty">No readings yet.<br><br>Your exposure log will appear here.</div>`;return;}
+  let h='<div class="timeline-list">';
+  for(const item of[...S.history].reverse()){
+    const lv=LEVELS[item.level]||LEVELS.CLEAN;const d=new Date(item.ts);
+    h+=`<div class="timeline-item"><div class="tl-score" style="color:${lv.color}">${item.hri}</div><div class="tl-info"><div class="tl-location">${item.city}</div><div class="tl-time">${d.toLocaleDateString()} ${d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div></div><div class="tl-level" style="background:${lv.bg};color:${lv.color}">${lv.label}</div></div>`;
+  }
+  h+='</div>';c.innerHTML=h;
 }
 
 function renderPassport(){
-  const c=document.getElementById('passport-content');const h=state.history;
-  if(!h.length){c.innerHTML=`<div class="timeline-empty">Your exposure passport is being built.<br><br>Every location adds to your permanent record.</div>`;return;}
-  const avg=Math.round(h.reduce((s,r)=>s+r.hri,0)/h.length*10)/10;const peak=Math.max(...h.map(r=>r.hri));const L=LEVELS[getLevel(avg)];
-  const agT={},agC={};for(const r of h)for(const a of(r.agents||[])){agT[a.id]=(agT[a.id]||0)+a.value;agC[a.id]=(agC[a.id]||0)+1;}
-  const avgs=Object.entries(agT).map(([id,t])=>({id,pct:WHO[id]?Math.min(100,Math.round((t/agC[id]/WHO[id])*100)):0})).sort((a,b)=>b.pct-a.pct);
-  let html=`<div class="passport-card"><div class="passport-header"><div class="passport-title">Exposure Passport</div><div class="passport-badge">BXP v2.0</div></div><div class="passport-stats"><div class="ps-stat"><span class="ps-num">${h.length}</span><span class="ps-label">Readings</span></div><div class="ps-stat"><span class="ps-num">${new Set(h.map(r=>r.city)).size}</span><span class="ps-label">Locations</span></div><div class="ps-stat"><span class="ps-num">${peak}</span><span class="ps-label">Peak HRI</span></div></div><div class="passport-avg"><div class="pa-label">Average BXP_HRI</div><div class="pa-value" style="color:${L.color}">${avg}</div><div class="pa-desc">${L.label} — ${L.advice}</div></div><button class="export-btn" onclick="exportPassport()">Export as .bxp.json</button></div>`;
-  if(avgs.length){html+=`<div class="passport-breakdown"><div class="pb-header">Average Exposure vs WHO Limits</div>`;for(const a of avgs){const col=a.pct<50?'#00E676':a.pct<100?'#FF9800':'#F44336';html+=`<div class="pb-row"><div class="pb-agent">${a.id}</div><div class="pb-bar-wrap"><div class="pb-bar" style="width:${a.pct}%;background:${col}"></div></div><div class="pb-pct" style="color:${col}">${a.pct}%</div></div>`;}html+='</div>';}
-  c.innerHTML=html;
+  const c=document.getElementById('passport-content');const hs=S.history;
+  if(!hs.length){c.innerHTML=`<div class="tl-empty">Your exposure passport is being built.<br><br>Every location adds to your permanent record.</div>`;return;}
+  const avg=Math.round(hs.reduce((s,r)=>s+r.hri,0)/hs.length*10)/10;
+  const peak=Math.max(...hs.map(r=>r.hri));
+  const L=LEVELS[gl(avg)];
+  const agT={},agC={};
+  for(const r of hs)for(const a of(r.agents||[])){agT[a.id]=(agT[a.id]||0)+a.value;agC[a.id]=(agC[a.id]||0)+1;}
+  const avgs=Object.entries(agT).map(([id,t])=>({id,pct:WHO[id]?Math.min(100,Math.round(t/agC[id]/WHO[id]*100)):0})).sort((a,b)=>b.pct-a.pct);
+  let h=`<div class="passport-card"><div class="passport-header"><div class="passport-title">Exposure Passport</div><div class="passport-badge">BXP v2.0</div></div><div class="passport-stats"><div class="ps-stat"><span class="ps-num">${hs.length}</span><span class="ps-label">Readings</span></div><div class="ps-stat"><span class="ps-num">${new Set(hs.map(r=>r.city)).size}</span><span class="ps-label">Locations</span></div><div class="ps-stat"><span class="ps-num">${peak}</span><span class="ps-label">Peak HRI</span></div></div><div class="passport-avg"><div class="pa-label">Average BXP_HRI</div><div class="pa-value" style="color:${L.color}">${avg}</div><div class="pa-desc">${L.label} — ${L.advice}</div></div><button class="export-btn" onclick="exportPassport()">Export as .bxp.json</button></div>`;
+  if(avgs.length){h+=`<div class="passport-breakdown"><div class="pb-header">Average Exposure vs WHO Limits</div>`;for(const a of avgs){const col=a.pct<50?'#00E676':a.pct<100?'#FF9800':'#F44336';h+=`<div class="pb-row"><div class="pb-agent">${a.id}</div><div class="pb-bar-wrap"><div class="pb-bar" style="width:${a.pct}%;background:${col}"></div></div><div class="pb-pct" style="color:${col}">${a.pct}%</div></div>`;}h+='</div>';}
+  c.innerHTML=h;
 }
 
 function exportPassport(){
-  const p={bxpVersion:'2.0',fileType:'aggregate',exportedAt:new Date().toISOString(),totalReadings:state.history.length,readings:state.history.map(r=>({bxpVersion:'2.0',fileType:'reading',timestampUs:r.ts*1000,city:r.city,lat:r.lat,lng:r.lng,geohash:encodeGeohash(r.lat,r.lng,7),agents:r.agents,hri:r.hri,level:r.level,quality:{flag:'UNVALIDATED',confidence:0.75}}))};
-  const blob=new Blob([JSON.stringify(p,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`bxp-passport-${Date.now()}.bxp.json`;a.click();URL.revokeObjectURL(url);showToast('Exported as .bxp.json');
+  const p={bxpVersion:'2.0',fileType:'aggregate',exportedAt:new Date().toISOString(),totalReadings:S.history.length,readings:S.history.map(r=>({bxpVersion:'2.0',fileType:'reading',timestampUs:r.ts*1000,city:r.city,lat:r.lat,lng:r.lng,geohash:gh(r.lat,r.lng,7),agents:r.agents,hri:r.hri,level:r.level,quality:{flag:'UNVALIDATED',confidence:0.75}}))};
+  const blob=new Blob([JSON.stringify(p,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`bxp-passport-${Date.now()}.bxp.json`;a.click();URL.revokeObjectURL(url);
+  toast('Exported as .bxp.json');
 }
 
-function shareWhatsApp(){const r=state.currentReading;const t=r?`🫁 My air right now — ${r.city}\nBXP HRI: ${r.hri} (${r.level})\n\nSee yours: ${APP_URL}`:`Track your personal air quality with BXP LiveNet:\n${APP_URL}`;window.open(`https://wa.me/?text=${encodeURIComponent(t)}`,'_blank');}
-async function nativeShare(){if(navigator.share){try{await navigator.share({title:'BXP LiveNet',text:'My atmospheric exposure tracker',url:APP_URL});return;}catch(e){}}copyLink();}
-function copyLink(){navigator.clipboard.writeText(APP_URL).then(()=>showToast('Link copied'));}
-function showQR(){document.getElementById('qr-container').innerHTML=`<img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(APP_URL)}" width="160" height="160" style="display:block" alt="QR">`;document.getElementById('qr-modal').classList.add('show');}
+function shareWhatsApp(){
+  const r=S.reading;
+  const t=r?`🫁 My air quality — ${r.city}\nBXP HRI: ${r.hri} (${r.level})\n\nTrack yours: ${APP_URL}`:`Track your personal air quality:\n${APP_URL}`;
+  window.open(`https://wa.me/?text=${encodeURIComponent(t)}`,'_blank');
+}
+async function nativeShare(){if(navigator.share){try{await navigator.share({title:'BXP LiveNet',url:APP_URL});return;}catch(e){}}copyLink();}
+function copyLink(){navigator.clipboard.writeText(APP_URL).then(()=>toast('Link copied'));}
+function showQR(){document.getElementById('qr-container').innerHTML=`<img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(APP_URL)}" width="180" height="180" style="display:block" alt="QR">`;document.getElementById('qr-modal').classList.add('show');}
 
-function switchTab(t,b){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));document.getElementById('screen-'+t).classList.add('active');b.classList.add('active');}
+function switchTab(t,b){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('screen-'+t).classList.add('active');
+  b.classList.add('active');
+}
 
 async function startApp(){
   document.getElementById('screen-onboard').classList.remove('active');
   document.getElementById('screen-main').classList.add('active');
   document.getElementById('bottom-nav').style.display='flex';
-  setLoading(true,'Getting your location...');
-  await takeReading();
-  setLoading(false);
-  state.intervalId=setInterval(takeReading,10*60*1000);
-  state.active=true;
-  showToast('BXP LiveNet is now tracking');
+  setLoad(true,'Getting your GPS location...');
+  await takeReading(true);
+  setLoad(false);
+  S.timer=setInterval(()=>takeReading(false),10*60*1000);
+  S.active=true;
+  toast('BXP LiveNet is tracking');
   localStorage.setItem('bxp_started','1');
 }
 
@@ -462,16 +575,15 @@ if(localStorage.getItem('bxp_started')){
     document.getElementById('screen-onboard').classList.remove('active');
     document.getElementById('screen-main').classList.add('active');
     document.getElementById('bottom-nav').style.display='flex';
+    document.getElementById('contrib-count').textContent=S.contrib;
     renderMain();renderTimeline();renderPassport();
-    document.getElementById('contrib-count').textContent=state.contribCount;
-    await takeReading();
-    state.intervalId=setInterval(takeReading,10*60*1000);
-    state.active=true;
+    await takeReading(true);
+    S.timer=setInterval(()=>takeReading(false),10*60*1000);
+    S.active=true;
   },100);
 }
 
-document.addEventListener('visibilitychange',()=>{if(!document.hidden&&state.active)takeReading();});
-window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&S.active)takeReading(false);});
 </script>
 </body>
 </html>
