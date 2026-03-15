@@ -4,8 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#080b12">
+<meta name="description" content="A personal cryptographic ledger of every environment you breathe through.">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="BXP LiveNet">
+<meta property="og:title" content="BXP LiveNet">
+<meta property="og:description" content="For the first time ever — you can prove what you breathed.">
+<meta property="og:url" content="https://bxpprotocol.github.io/livenet.html">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
 <title>BXP LiveNet</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <style>
@@ -16,327 +23,79 @@
   --ac:#00ff88;--a2:#00c8ff;--wa:#ffaa00;--da:#ff4466;
   --sans:'Syne',sans-serif;--mono:'JetBrains Mono',monospace;--serif:'Instrument Serif',serif;
 }
-
-/* ─── RESET ─── */
 html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font-family:var(--sans);}
-
-/* ─── APP SHELL ─── */
-#app{
-  display:grid;
-  height:100vh;
-  width:100%;
-  /* Mobile: stack vertically */
-  grid-template-rows:52px 1fr auto;
-  grid-template-columns:1fr;
-  grid-template-areas:
-    "topbar"
-    "main"
-    "nav";
-}
-
-/* ─── DESKTOP OVERRIDE ─── */
-@media(min-width:900px){
-  #app{
-    grid-template-rows:56px 1fr;
-    grid-template-columns:240px 1fr;
-    grid-template-areas:
-      "topbar topbar"
-      "sidebar main";
-    max-width:1400px;
-    margin:0 auto;
-    border-left:1px solid var(--bd);
-    border-right:1px solid var(--bd);
-  }
-  #nav{display:none!important;}
-  #sidebar{display:flex!important;}
-}
-
-/* ─── TOPBAR ─── */
-#topbar{
-  grid-area:topbar;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 1.5rem;
-  border-bottom:1px solid var(--bd);
-  background:rgba(8,11,18,0.97);
-  backdrop-filter:blur(24px);
-  z-index:50;
-}
-.logo{font-family:var(--mono);font-size:0.72rem;font-weight:700;letter-spacing:0.12em;color:var(--ac);}
-.topbar-right{display:flex;align-items:center;gap:0.875rem;}
-.status-pill{display:flex;align-items:center;gap:0.375rem;font-family:var(--mono);font-size:0.58rem;color:var(--m2);padding:0.3rem 0.7rem;border:1px solid var(--bd);border-radius:999px;background:var(--bg2);}
+#app{display:grid;height:100vh;width:100%;grid-template-rows:52px 1fr auto;grid-template-columns:1fr;grid-template-areas:"topbar" "main" "nav";}
+@media(min-width:900px){#app{grid-template-rows:56px 1fr;grid-template-columns:240px 1fr;grid-template-areas:"topbar topbar" "sidebar main";max-width:1400px;margin:0 auto;border-left:1px solid var(--bd);border-right:1px solid var(--bd);}#nav{display:none!important;}#sidebar{display:flex!important;}}
+#topbar{grid-area:topbar;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;border-bottom:1px solid var(--bd);background:rgba(8,11,18,.97);backdrop-filter:blur(24px);z-index:50;}
+.logo{font-family:var(--mono);font-size:.72rem;font-weight:700;letter-spacing:.12em;color:var(--ac);}
+.topbar-right{display:flex;align-items:center;gap:.875rem;}
+.status-pill{display:flex;align-items:center;gap:.375rem;font-family:var(--mono);font-size:.58rem;color:var(--m2);padding:.3rem .7rem;border:1px solid var(--bd);border-radius:999px;background:var(--bg2);}
 .sdot{width:5px;height:5px;border-radius:50%;background:var(--ac);animation:sd 2s infinite;flex-shrink:0;}
-.sdot.off{background:var(--mu);animation:none}
-.sdot.err{background:var(--da);animation:none}
+.sdot.off{background:var(--mu);animation:none}.sdot.err{background:var(--da);animation:none}
 @keyframes sd{0%,100%{opacity:1}50%{opacity:.2}}
 .hbtn{background:none;border:1px solid var(--bd);border-radius:7px;color:var(--m2);padding:.3rem .55rem;font-size:.9rem;cursor:pointer;transition:color .15s,border-color .15s;}
-.hbtn:hover{color:var(--ac);border-color:var(--ac)}
-.hbtn.spin{animation:hspin .6s linear}
+.hbtn:hover{color:var(--ac);border-color:var(--ac)}.hbtn.spin{animation:hspin .6s linear}
 @keyframes hspin{to{transform:rotate(360deg)}}
-
-/* ─── SIDEBAR (desktop) ─── */
-#sidebar{
-  grid-area:sidebar;
-  display:none;
-  flex-direction:column;
-  border-right:1px solid var(--bd);
-  padding:1.25rem 0;
-  overflow:hidden;
-}
+#sidebar{grid-area:sidebar;display:none;flex-direction:column;border-right:1px solid var(--bd);padding:1.25rem 0;overflow:hidden;}
 .snav{display:flex;flex-direction:column;gap:.2rem;padding:0 .75rem;}
-.sni{
-  display:flex;align-items:center;gap:.75rem;
-  padding:.7rem .9rem;border-radius:8px;
-  border:none;background:none;color:var(--m2);
-  width:100%;text-align:left;cursor:pointer;
-  transition:background .15s,color .15s;font-family:var(--sans);
-}
-.sni:hover{background:var(--bg2);color:var(--txt)}
-.sni.act{background:rgba(0,255,136,.07);color:var(--ac)}
-.sni-ic{font-size:1rem;flex-shrink:0;width:1.25rem;text-align:center;}
-.sni-lb{font-family:var(--mono);font-size:.63rem;letter-spacing:.04em;text-transform:uppercase;}
-.sidebar-foot{margin-top:auto;padding:.875rem .75rem;border-top:1px solid var(--bd);}
-.sf-stat{font-family:var(--mono);font-size:.6rem;color:var(--mu);line-height:1.8;}
-.sf-stat strong{color:var(--m2);display:block;}
-
-/* ─── MAIN AREA ─── */
-#main{
-  grid-area:main;
-  overflow-y:auto;
-  -webkit-overflow-scrolling:touch;
-  position:relative;
-}
-
-/* ─── MOBILE NAV ─── */
-#nav{
-  grid-area:nav;
-  display:flex;
-  border-top:1px solid var(--bd);
-  background:rgba(8,11,18,.97);
-  backdrop-filter:blur(24px);
-  z-index:50;
-}
-.bni{
-  flex:1;display:flex;flex-direction:column;align-items:center;
-  gap:.2rem;padding:.5rem .25rem calc(.5rem + env(safe-area-inset-bottom));
-  border:none;background:none;color:var(--mu);cursor:pointer;
-}
-.bni.act{color:var(--ac)}
-.bni-ic{font-size:1.1rem;}
-.bni-lb{font-family:var(--mono);font-size:.5rem;letter-spacing:.04em;text-transform:uppercase;}
-
-/* ─── SCREENS ─── */
-.scr{display:none;padding:1.5rem;}
-.scr.act{display:block;}
+.sni{display:flex;align-items:center;gap:.75rem;padding:.7rem .9rem;border-radius:8px;border:none;background:none;color:var(--m2);width:100%;text-align:left;cursor:pointer;transition:background .15s,color .15s;font-family:var(--sans);}
+.sni:hover{background:var(--bg2);color:var(--txt)}.sni.act{background:rgba(0,255,136,.07);color:var(--ac)}
+.sni-ic{font-size:1rem;flex-shrink:0;width:1.25rem;text-align:center;}.sni-lb{font-family:var(--mono);font-size:.63rem;letter-spacing:.04em;text-transform:uppercase;}
+.sidebar-foot{margin-top:auto;padding:.875rem .75rem;border-top:1px solid var(--bd);}.sf-stat{font-family:var(--mono);font-size:.6rem;color:var(--mu);line-height:1.8;}.sf-stat strong{color:var(--m2);display:block;}
+#main{grid-area:main;overflow-y:auto;-webkit-overflow-scrolling:touch;position:relative;}
+#nav{grid-area:nav;display:flex;border-top:1px solid var(--bd);background:rgba(8,11,18,.97);backdrop-filter:blur(24px);z-index:50;}
+.bni{flex:1;display:flex;flex-direction:column;align-items:center;gap:.2rem;padding:.5rem .25rem calc(.5rem + env(safe-area-inset-bottom));border:none;background:none;color:var(--mu);cursor:pointer;}
+.bni.act{color:var(--ac)}.bni-ic{font-size:1.1rem;}.bni-lb{font-family:var(--mono);font-size:.5rem;letter-spacing:.04em;text-transform:uppercase;}
+.scr{display:none;padding:1.5rem;animation:fup .2s ease both;}.scr.act{display:block;}
 @media(min-width:900px){.scr{padding:2rem 2.5rem;}}
-
-/* ─── ENTRY SCREEN ─── */
-#scr-entry{
-  display:flex!important;
-  min-height:calc(100vh - 52px);
-  align-items:center;justify-content:center;
-  text-align:center;padding:2rem;
-}
-@media(min-width:900px){
-  #scr-entry{min-height:calc(100vh - 56px);}
-}
+@keyframes fup{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+#scr-entry{display:flex!important;min-height:calc(100vh - 52px);align-items:center;justify-content:center;text-align:center;padding:2rem;}
+@media(min-width:900px){#scr-entry{min-height:calc(100vh - 56px);}}
 .entry-inner{max-width:320px;}
-.entry-title{
-  font-family:var(--serif);
-  font-size:clamp(2.4rem,6vw,4rem);
-  line-height:1.05;
-  font-weight:400;
-  margin-bottom:2rem;
-  letter-spacing:-.01em;
-}
+.entry-title{font-family:var(--serif);font-size:clamp(2.4rem,6vw,4rem);line-height:1.05;font-weight:400;margin-bottom:2rem;letter-spacing:-.01em;}
 .entry-title em{font-style:italic;color:var(--m2);}
-.entry-cta{
-  padding:.95rem 2.75rem;
-  background:var(--ac);color:#080b12;
-  border:none;border-radius:10px;
-  font-family:var(--sans);font-size:1rem;font-weight:800;
-  cursor:pointer;letter-spacing:.01em;
-  transition:opacity .15s,transform .1s;
-}
-.entry-cta:hover{opacity:.88}
-.entry-cta:active{transform:scale(.97)}
-
-/* ─── CARDS ─── */
-.card{
-  background:var(--sf);border:1px solid var(--bd);
-  border-radius:12px;overflow:hidden;
-  margin-bottom:.875rem;
-}
+.entry-cta{padding:.95rem 2.75rem;background:var(--ac);color:#080b12;border:none;border-radius:10px;font-family:var(--sans);font-size:1rem;font-weight:800;cursor:pointer;transition:opacity .15s,transform .1s;}
+.entry-cta:hover{opacity:.88}.entry-cta:active{transform:scale(.97)}
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:12px;overflow:hidden;margin-bottom:.875rem;}
 @media(min-width:900px){.card{border-radius:14px;margin-bottom:1rem;}}
-.cp{padding:1.25rem;}
-@media(min-width:900px){.cp{padding:1.5rem;}}
+.cp{padding:1.25rem;}@media(min-width:900px){.cp{padding:1.5rem;}}
 .ey{font-family:var(--mono);font-size:.57rem;letter-spacing:.15em;color:var(--m2);text-transform:uppercase;margin-bottom:.625rem;}
-.ct{font-size:.9rem;font-weight:700;margin-bottom:.375rem;}
-.cb{font-size:.78rem;color:var(--m2);line-height:1.75;}
-.cb strong{color:var(--txt);}
-.div{height:1px;background:var(--bd);}
-
-/* ─── DESKTOP 2-col grid ─── */
-@media(min-width:900px){
-  .g2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;}
-  .g2>.card{margin-bottom:0;}
-  .g2>.full{grid-column:1/-1;}
-}
-
-/* ─── BODY LOAD RING ─── */
+.ct{font-size:.9rem;font-weight:700;margin-bottom:.375rem;}.cb{font-size:.78rem;color:var(--m2);line-height:1.75;}.cb strong{color:var(--txt);}.div{height:1px;background:var(--bd);}
+@media(min-width:900px){.g2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;}.g2>.card{margin-bottom:0;}.g2>.full{grid-column:1/-1;}}
 .bl-wrap{display:flex;align-items:center;gap:1.5rem;padding:1.25rem;}
 @media(max-width:899px){.bl-wrap{flex-direction:column;align-items:center;text-align:center;padding:1.5rem 1.25rem;}}
-.bl-ring{position:relative;width:120px;height:120px;flex-shrink:0;}
-.bl-svg{position:absolute;inset:0;transform:rotate(-90deg);}
-.bl-tr{fill:none;stroke:var(--bd);stroke-width:7;}
-.bl-fi{fill:none;stroke-width:7;stroke-linecap:round;transition:stroke-dashoffset 1.8s cubic-bezier(.16,1,.3,1),stroke .5s;}
+.bl-ring{position:relative;width:120px;height:120px;flex-shrink:0;}.bl-svg{position:absolute;inset:0;transform:rotate(-90deg);}
+.bl-tr{fill:none;stroke:var(--bd);stroke-width:7;}.bl-fi{fill:none;stroke-width:7;stroke-linecap:round;transition:stroke-dashoffset 1.8s cubic-bezier(.16,1,.3,1),stroke .5s;}
 .bl-cen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
-.bl-num{font-family:var(--mono);font-size:1.9rem;font-weight:700;line-height:1;}
-.bl-sub{font-family:var(--mono);font-size:.5rem;color:var(--m2);letter-spacing:.1em;margin-top:.15rem;}
-
-/* ─── HRI ─── */
-.hri-row{display:flex;align-items:flex-end;gap:.875rem;margin-bottom:.875rem;}
-.hri-n{font-family:var(--mono);font-size:3rem;font-weight:700;line-height:1;}
+.bl-num{font-family:var(--mono);font-size:1.9rem;font-weight:700;line-height:1;}.bl-sub{font-family:var(--mono);font-size:.5rem;color:var(--m2);letter-spacing:.1em;margin-top:.15rem;}
+.hri-row{display:flex;align-items:flex-end;gap:.875rem;margin-bottom:.875rem;}.hri-n{font-family:var(--mono);font-size:3rem;font-weight:700;line-height:1;}
 .hri-badge{display:inline-block;font-family:var(--mono);font-size:.6rem;font-weight:700;letter-spacing:.08em;padding:.18rem .55rem;border-radius:999px;margin-bottom:.3rem;}
-.hri-adv{font-size:.73rem;color:var(--m2);line-height:1.5;}
-.bar-t{height:3px;background:var(--bd);border-radius:999px;overflow:hidden;margin-bottom:.875rem;}
-.bar-f{height:100%;border-radius:999px;transition:width 1s ease;}
-.ags{display:grid;grid-template-columns:repeat(3,1fr);gap:.375rem;}
-@media(min-width:900px){.ags{grid-template-columns:repeat(6,1fr);}}
-.ag{background:var(--bg2);border-radius:7px;padding:.5rem;text-align:center;}
-.ag-id{font-family:var(--mono);font-size:.5rem;color:var(--m2);margin-bottom:.12rem;}
-.ag-v{font-family:var(--mono);font-size:.85rem;font-weight:700;}
-.ag-p{font-family:var(--mono);font-size:.46rem;color:var(--mu);margin-top:.1rem;}
-.loc-row{display:flex;align-items:center;gap:.5rem;margin-top:.875rem;padding-top:.875rem;border-top:1px solid var(--bd);}
-.loc-n{font-size:.78rem;font-weight:600;}
-.loc-s{font-family:var(--mono);font-size:.58rem;color:var(--m2);}
-
-/* ─── BUDGET ─── */
-.bud-gauge{height:6px;background:var(--bd);border-radius:999px;overflow:hidden;margin:.75rem 0;}
-.bud-fill{height:100%;border-radius:999px;transition:width .9s ease;}
-.bud-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem;}
-.bs{background:var(--bg2);border-radius:8px;padding:.6rem;text-align:center;}
-.bs-n{font-family:var(--mono);font-size:1.05rem;font-weight:700;display:block;margin-bottom:.15rem;}
-.bs-l{font-family:var(--mono);font-size:.48rem;color:var(--m2);text-transform:uppercase;letter-spacing:.05em;}
-
-/* ─── PROTOCOL ─── */
-.ps-list{display:flex;flex-direction:column;gap:.45rem;margin-top:.625rem;}
-.ps-row{display:flex;gap:.75rem;align-items:flex-start;padding:.625rem .75rem;background:var(--bg2);border-radius:8px;}
-.ps-arr{font-family:var(--mono);font-size:.68rem;color:var(--ac);flex-shrink:0;margin-top:2px;}
-.ps-t{font-size:.77rem;color:var(--txt);line-height:1.55;}
-.ps-t span{color:var(--m2);}
-
-/* ─── ZONES ─── */
-.zone-list{display:flex;flex-direction:column;gap:.35rem;margin-top:.5rem;}
-.zone-row{display:flex;align-items:center;gap:.75rem;padding:.6rem .75rem;background:var(--bg2);border-radius:8px;}
-.zone-ic{font-size:.95rem;flex-shrink:0;}
-.zone-n{font-size:.77rem;font-weight:600;}
-.zone-s{font-family:var(--mono);font-size:.56rem;color:var(--m2);}
-.zone-hri{font-family:var(--mono);font-size:.78rem;font-weight:700;margin-left:auto;}
-
-/* ─── DIGEST ─── */
-.dig-hrs{display:grid;grid-template-columns:repeat(4,1fr);gap:.375rem;margin-bottom:.875rem;}
-.dh{text-align:center;padding:.5rem .2rem;border-radius:7px;background:var(--bg2);}
-.dh-v{font-family:var(--mono);font-size:.95rem;font-weight:700;}
-.dh-l{font-family:var(--mono);font-size:.48rem;color:var(--m2);margin-top:.12rem;}
-.mom-row{display:flex;gap:.6rem;padding:.55rem 0;border-bottom:1px solid var(--bd);}
-.mom-row:last-child{border-bottom:none}
-.mom-t{font-family:var(--mono);font-size:.56rem;color:var(--m2);min-width:36px;flex-shrink:0;margin-top:2px;}
-.mom-tx{font-size:.74rem;color:var(--txt);line-height:1.55;}
-.mom-tx span{color:var(--m2);}
-
-/* ─── LETTER ─── */
-.let-to{font-family:var(--mono);font-size:.56rem;color:var(--m2);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem;}
-.let-sub{font-family:var(--serif);font-size:clamp(1.1rem,3vw,1.5rem);line-height:1.25;font-weight:400;margin-bottom:1rem;}
-.let-body{font-size:.8rem;color:var(--m2);line-height:1.9;}
-.let-body p{margin-bottom:.875rem;}
-.let-body p:last-child{margin-bottom:0}
-.let-body strong{color:var(--txt);}
-.let-sig{font-family:var(--mono);font-size:.57rem;color:var(--mu);line-height:1.8;margin-top:1rem;padding-top:.875rem;border-top:1px solid var(--bd);}
-
-/* ─── LEDGER ─── */
-.led-list{display:flex;flex-direction:column;gap:.3rem;}
-@media(min-width:900px){.led-list{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;}}
-.li{background:var(--sf);border:1px solid var(--bd);border-radius:9px;padding:.7rem .875rem;display:flex;align-items:center;gap:.7rem;}
-.li-sc{font-family:var(--mono);font-size:.9rem;font-weight:700;min-width:28px;text-align:center;}
-.li-in{flex:1;min-width:0;}
-.li-lc{font-size:.77rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:.1rem;}
-.li-mt{font-family:var(--mono);font-size:.52rem;color:var(--mu);display:flex;gap:.6rem;flex-wrap:wrap;}
-.li-bd{font-family:var(--mono);font-size:.52rem;font-weight:700;padding:.12rem .38rem;border-radius:999px;white-space:nowrap;flex-shrink:0;}
-
-/* ─── ERR / NOTIF ─── */
-.le{background:var(--sf);border:1px solid rgba(255,68,102,.3);border-left:3px solid var(--da);border-radius:12px;padding:1.125rem;margin-bottom:.875rem;}
-.le-tit{font-size:.875rem;font-weight:700;color:var(--da);margin-bottom:.375rem;}
-.le-bod{font-size:.74rem;color:var(--m2);line-height:1.7;margin-bottom:.75rem;}
-.le-st{display:flex;flex-direction:column;gap:.32rem;margin-bottom:.75rem;}
-.le-s{display:flex;gap:.5rem;font-size:.72rem;color:var(--txt);}
-.le-sn{font-family:var(--mono);font-size:.58rem;color:var(--ac);flex-shrink:0;margin-top:1px;}
-.retry{width:100%;padding:.68rem;background:transparent;border:1px solid var(--da);color:var(--da);border-radius:8px;font-family:var(--sans);font-size:.8rem;font-weight:700;cursor:pointer;}
-
-.np{background:rgba(0,255,136,.04);border:1px solid rgba(0,255,136,.14);border-radius:12px;padding:1rem;display:flex;gap:.75rem;align-items:flex-start;margin-bottom:.875rem;}
-.np-t{font-size:.8rem;font-weight:700;margin-bottom:.18rem;}
-.np-b{font-size:.7rem;color:var(--m2);line-height:1.55;margin-bottom:.5rem;}
-.np-btn{padding:.42rem .875rem;background:var(--ac);color:#080b12;border:none;border-radius:7px;font-family:var(--sans);font-size:.73rem;font-weight:800;cursor:pointer;}
-
+.hri-adv{font-size:.73rem;color:var(--m2);line-height:1.5;}.bar-t{height:3px;background:var(--bd);border-radius:999px;overflow:hidden;margin-bottom:.875rem;}.bar-f{height:100%;border-radius:999px;transition:width 1s ease;}
+.ags{display:grid;grid-template-columns:repeat(3,1fr);gap:.375rem;}@media(min-width:900px){.ags{grid-template-columns:repeat(6,1fr);}}
+.ag{background:var(--bg2);border-radius:7px;padding:.5rem;text-align:center;}.ag-id{font-family:var(--mono);font-size:.5rem;color:var(--m2);margin-bottom:.12rem;}.ag-v{font-family:var(--mono);font-size:.85rem;font-weight:700;}.ag-p{font-family:var(--mono);font-size:.46rem;color:var(--mu);margin-top:.1rem;}
+.loc-row{display:flex;align-items:center;gap:.5rem;margin-top:.875rem;padding-top:.875rem;border-top:1px solid var(--bd);}.loc-n{font-size:.78rem;font-weight:600;}.loc-s{font-family:var(--mono);font-size:.58rem;color:var(--m2);}
+.bud-gauge{height:6px;background:var(--bd);border-radius:999px;overflow:hidden;margin:.75rem 0;}.bud-fill{height:100%;border-radius:999px;transition:width .9s ease;}
+.bud-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem;}.bs{background:var(--bg2);border-radius:8px;padding:.6rem;text-align:center;}.bs-n{font-family:var(--mono);font-size:1.05rem;font-weight:700;display:block;margin-bottom:.15rem;}.bs-l{font-family:var(--mono);font-size:.48rem;color:var(--m2);text-transform:uppercase;letter-spacing:.05em;}
+.ps-list{display:flex;flex-direction:column;gap:.45rem;margin-top:.625rem;}.ps-row{display:flex;gap:.75rem;align-items:flex-start;padding:.625rem .75rem;background:var(--bg2);border-radius:8px;}.ps-arr{font-family:var(--mono);font-size:.68rem;color:var(--ac);flex-shrink:0;margin-top:2px;}.ps-t{font-size:.77rem;color:var(--txt);line-height:1.55;}.ps-t span{color:var(--m2);}
+.zone-list{display:flex;flex-direction:column;gap:.35rem;margin-top:.5rem;}.zone-row{display:flex;align-items:center;gap:.75rem;padding:.6rem .75rem;background:var(--bg2);border-radius:8px;}.zone-ic{font-size:.95rem;flex-shrink:0;}.zone-n{font-size:.77rem;font-weight:600;}.zone-s{font-family:var(--mono);font-size:.56rem;color:var(--m2);}.zone-hri{font-family:var(--mono);font-size:.78rem;font-weight:700;margin-left:auto;}
+.dig-hrs{display:grid;grid-template-columns:repeat(4,1fr);gap:.375rem;margin-bottom:.875rem;}.dh{text-align:center;padding:.5rem .2rem;border-radius:7px;background:var(--bg2);}.dh-v{font-family:var(--mono);font-size:.95rem;font-weight:700;}.dh-l{font-family:var(--mono);font-size:.48rem;color:var(--m2);margin-top:.12rem;}
+.mom-row{display:flex;gap:.6rem;padding:.55rem 0;border-bottom:1px solid var(--bd);}.mom-row:last-child{border-bottom:none}.mom-t{font-family:var(--mono);font-size:.56rem;color:var(--m2);min-width:36px;flex-shrink:0;margin-top:2px;}.mom-tx{font-size:.74rem;color:var(--txt);line-height:1.55;}.mom-tx span{color:var(--m2);}
+.let-to{font-family:var(--mono);font-size:.56rem;color:var(--m2);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem;}.let-sub{font-family:var(--serif);font-size:clamp(1.1rem,3vw,1.5rem);line-height:1.25;font-weight:400;margin-bottom:1rem;}.let-body{font-size:.8rem;color:var(--m2);line-height:1.9;}.let-body p{margin-bottom:.875rem;}.let-body p:last-child{margin-bottom:0}.let-body strong{color:var(--txt);}.let-sig{font-family:var(--mono);font-size:.57rem;color:var(--mu);line-height:1.8;margin-top:1rem;padding-top:.875rem;border-top:1px solid var(--bd);}
+.led-list{display:flex;flex-direction:column;gap:.3rem;}@media(min-width:900px){.led-list{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;}}
+.li{background:var(--sf);border:1px solid var(--bd);border-radius:9px;padding:.7rem .875rem;display:flex;align-items:center;gap:.7rem;}.li-sc{font-family:var(--mono);font-size:.9rem;font-weight:700;min-width:28px;text-align:center;}.li-in{flex:1;min-width:0;}.li-lc{font-size:.77rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:.1rem;}.li-mt{font-family:var(--mono);font-size:.52rem;color:var(--mu);display:flex;gap:.6rem;flex-wrap:wrap;}.li-bd{font-family:var(--mono);font-size:.52rem;font-weight:700;padding:.12rem .38rem;border-radius:999px;white-space:nowrap;flex-shrink:0;}
+.le{background:var(--sf);border:1px solid rgba(255,68,102,.3);border-left:3px solid var(--da);border-radius:12px;padding:1.125rem;margin-bottom:.875rem;}.le-tit{font-size:.875rem;font-weight:700;color:var(--da);margin-bottom:.375rem;}.le-bod{font-size:.74rem;color:var(--m2);line-height:1.7;margin-bottom:.75rem;}.le-st{display:flex;flex-direction:column;gap:.32rem;margin-bottom:.75rem;}.le-s{display:flex;gap:.5rem;font-size:.72rem;color:var(--txt);}.le-sn{font-family:var(--mono);font-size:.58rem;color:var(--ac);flex-shrink:0;margin-top:1px;}.retry{width:100%;padding:.68rem;background:transparent;border:1px solid var(--da);color:var(--da);border-radius:8px;font-family:var(--sans);font-size:.8rem;font-weight:700;cursor:pointer;}
+.np{background:rgba(0,255,136,.04);border:1px solid rgba(0,255,136,.14);border-radius:12px;padding:1rem;display:flex;gap:.75rem;align-items:flex-start;margin-bottom:.875rem;}.np-t{font-size:.8rem;font-weight:700;margin-bottom:.18rem;}.np-b{font-size:.7rem;color:var(--m2);line-height:1.55;margin-bottom:.5rem;}.np-btn{padding:.42rem .875rem;background:var(--ac);color:#080b12;border:none;border-radius:7px;font-family:var(--sans);font-size:.73rem;font-weight:800;cursor:pointer;}
 .anom{background:rgba(255,68,102,.05);border:1px solid rgba(255,68,102,.22);border-left:3px solid var(--da);margin-bottom:.875rem;}
-
-/* ─── SHARE ─── */
-.share-warn{background:rgba(255,170,0,.05);border:1px solid rgba(255,170,0,.18);border-radius:10px;padding:.875rem 1rem;margin-bottom:1rem;font-size:.76rem;color:var(--m2);line-height:1.65;}
-.share-warn strong{color:var(--wa);}
-.share-opts{display:flex;flex-direction:column;gap:.625rem;}
-.sopt{
-  display:flex;align-items:center;gap:1rem;
-  padding:1rem 1.125rem;
-  background:var(--sf);border:1px solid var(--bd);border-radius:10px;
-  cursor:pointer;transition:border-color .15s;
-}
-.sopt:hover{border-color:var(--m2);}
-.sopt-ic{font-size:1.2rem;flex-shrink:0;width:1.5rem;text-align:center;}
-.sopt-inf{flex:1;}
-.sopt-t{font-size:.83rem;font-weight:700;margin-bottom:.15rem;}
-.sopt-d{font-size:.7rem;color:var(--m2);}
-.sopt-arr{color:var(--mu);font-size:.8rem;}
-
-/* ─── MODAL ─── */
-.mlov{position:fixed;inset:0;background:rgba(0,0,0,.86);display:none;align-items:center;justify-content:center;z-index:400;padding:1.5rem;}
-.mlov.show{display:flex;}
-.modal{background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:1.5rem;width:100%;max-width:360px;}
-.modal h3{font-size:.9rem;font-weight:700;margin-bottom:.4rem;}
-.modal-b{font-size:.76rem;color:var(--m2);line-height:1.65;margin-bottom:1rem;}
-.modal-prev{background:var(--bg);border-radius:8px;padding:.875rem;font-family:var(--mono);font-size:.63rem;color:var(--m2);line-height:1.7;margin-bottom:1rem;border:1px solid var(--bd);white-space:pre-wrap;word-break:break-word;}
-.modal-acts{display:flex;gap:.625rem;}
-.m-cancel{flex:1;padding:.7rem;background:transparent;border:1px solid var(--bd);color:var(--m2);border-radius:8px;font-family:var(--sans);font-size:.8rem;font-weight:600;cursor:pointer;}
-.m-confirm{flex:1;padding:.7rem;background:var(--ac);color:#080b12;border:none;border-radius:8px;font-family:var(--sans);font-size:.8rem;font-weight:800;cursor:pointer;}
-.qr-modal-in{text-align:center;}
-.qr-url{font-family:var(--mono);font-size:.58rem;color:var(--a2);word-break:break-all;margin:.75rem 0;}
-.m-close{width:100%;padding:.7rem;background:var(--bg2);border:1px solid var(--bd);color:var(--txt);border-radius:8px;font-family:var(--sans);font-size:.8rem;font-weight:600;cursor:pointer;}
-
-/* ─── LOADING / TOAST ─── */
-.lov{position:fixed;inset:0;background:rgba(8,11,18,.92);display:none;align-items:center;justify-content:center;z-index:200;flex-direction:column;gap:.875rem;}
-.lov.show{display:flex;}
-.ldr{width:32px;height:32px;border:2px solid var(--bd);border-top-color:var(--ac);border-radius:50%;animation:lsp .75s linear infinite;}
-@keyframes lsp{to{transform:rotate(360deg)}}
-.ldr-t{font-family:var(--mono);font-size:.63rem;color:var(--m2);}
-.toast{
-  position:fixed;bottom:calc(52px + 10px);left:50%;
-  transform:translateX(-50%) translateY(8px);
-  background:var(--s2);border:1px solid var(--bd);border-radius:9px;
-  padding:.575rem 1.125rem;font-family:var(--mono);font-size:.65rem;color:var(--txt);
-  white-space:nowrap;opacity:0;transition:all .22s;z-index:300;pointer-events:none;
-}
-@media(min-width:900px){.toast{bottom:1.25rem;}}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-
-/* ─── UTILITY ─── */
-.sec-btn{width:100%;padding:.78rem;background:transparent;border:1px solid var(--bd);color:var(--m2);border-radius:9px;font-family:var(--sans);font-size:.8rem;font-weight:600;cursor:pointer;transition:border-color .15s;margin-top:.5rem;}
-.sec-btn:hover{border-color:var(--m2);}
-.sec-btn.ac-btn{border-color:rgba(0,255,136,.25);color:var(--ac);}
-.sec-btn.ac-btn:hover{border-color:var(--ac);}
+.share-warn{background:rgba(255,170,0,.05);border:1px solid rgba(255,170,0,.18);border-radius:10px;padding:.875rem 1rem;margin-bottom:1rem;font-size:.76rem;color:var(--m2);line-height:1.65;}.share-warn strong{color:var(--wa);}
+.share-opts{display:flex;flex-direction:column;gap:.625rem;}.sopt{display:flex;align-items:center;gap:1rem;padding:1rem 1.125rem;background:var(--sf);border:1px solid var(--bd);border-radius:10px;cursor:pointer;transition:border-color .15s;}.sopt:hover{border-color:var(--m2);}.sopt-ic{font-size:1.2rem;flex-shrink:0;width:1.5rem;text-align:center;}.sopt-inf{flex:1;}.sopt-t{font-size:.83rem;font-weight:700;margin-bottom:.15rem;}.sopt-d{font-size:.7rem;color:var(--m2);}.sopt-arr{color:var(--mu);font-size:.8rem;}
+.mlov{position:fixed;inset:0;background:rgba(0,0,0,.86);display:none;align-items:center;justify-content:center;z-index:400;padding:1.5rem;}.mlov.show{display:flex;}.modal{background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:1.5rem;width:100%;max-width:360px;}.modal h3{font-size:.9rem;font-weight:700;margin-bottom:.4rem;}.modal-b{font-size:.76rem;color:var(--m2);line-height:1.65;margin-bottom:1rem;}.modal-prev{background:var(--bg);border-radius:8px;padding:.875rem;font-family:var(--mono);font-size:.63rem;color:var(--m2);line-height:1.7;margin-bottom:1rem;border:1px solid var(--bd);white-space:pre-wrap;word-break:break-word;}.modal-acts{display:flex;gap:.625rem;}.m-cancel{flex:1;padding:.7rem;background:transparent;border:1px solid var(--bd);color:var(--m2);border-radius:8px;font-family:var(--sans);font-size:.8rem;font-weight:600;cursor:pointer;}.m-confirm{flex:1;padding:.7rem;background:var(--ac);color:#080b12;border:none;border-radius:8px;font-family:var(--sans);font-size:.8rem;font-weight:800;cursor:pointer;}.qr-inner{text-align:center;}.qr-url{font-family:var(--mono);font-size:.58rem;color:var(--a2);word-break:break-all;margin:.75rem 0;}.m-close{width:100%;padding:.7rem;background:var(--bg2);border:1px solid var(--bd);color:var(--txt);border-radius:8px;font-family:var(--sans);font-size:.8rem;font-weight:600;cursor:pointer;}
+.lov{position:fixed;inset:0;background:rgba(8,11,18,.92);display:none;align-items:center;justify-content:center;z-index:200;flex-direction:column;gap:.875rem;}.lov.show{display:flex;}.ldr{width:32px;height:32px;border:2px solid var(--bd);border-top-color:var(--ac);border-radius:50%;animation:lsp .75s linear infinite;}@keyframes lsp{to{transform:rotate(360deg)}}.ldr-t{font-family:var(--mono);font-size:.63rem;color:var(--m2);}
+.toast{position:fixed;bottom:calc(52px + 10px);left:50%;transform:translateX(-50%) translateY(8px);background:var(--s2);border:1px solid var(--bd);border-radius:9px;padding:.575rem 1.125rem;font-family:var(--mono);font-size:.65rem;color:var(--txt);white-space:nowrap;opacity:0;transition:all .22s;z-index:300;pointer-events:none;}@media(min-width:900px){.toast{bottom:1.25rem;}}.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.sec-btn{width:100%;padding:.78rem;background:transparent;border:1px solid var(--bd);color:var(--m2);border-radius:9px;font-family:var(--sans);font-size:.8rem;font-weight:600;cursor:pointer;transition:border-color .15s;margin-top:.5rem;}.sec-btn:hover{border-color:var(--m2);}.sec-btn.ac-btn{border-color:rgba(0,255,136,.25);color:var(--ac);}.sec-btn.ac-btn:hover{border-color:var(--ac);}
 </style>
 </head>
 <body>
 <div id="app">
-
-  <!-- TOPBAR -->
   <header id="topbar">
     <div class="logo">BXP LIVENET</div>
     <div class="topbar-right">
@@ -344,8 +103,6 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font
       <button class="hbtn" id="rbtn" onclick="manualRead()" title="Refresh">↻</button>
     </div>
   </header>
-
-  <!-- SIDEBAR (desktop) -->
   <aside id="sidebar">
     <nav class="snav">
       <button class="sni act" onclick="go('now',this)"><span class="sni-ic">◎</span><span class="sni-lb">Now</span></button>
@@ -353,855 +110,32 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font
       <button class="sni" onclick="go('passport',this)"><span class="sni-ic">⬡</span><span class="sni-lb">Passport</span></button>
       <button class="sni" onclick="go('share',this)"><span class="sni-ic">↗</span><span class="sni-lb">Share</span></button>
     </nav>
-    <div class="sidebar-foot">
-      <div class="sf-stat">
-        <strong>BXP Ledger</strong>
-        <span id="sb-cnt">0 records</span><br>
-        <span id="sb-chain" style="color:var(--ac)">Chain: verified</span>
-      </div>
-    </div>
+    <div class="sidebar-foot"><div class="sf-stat"><strong>BXP Ledger</strong><span id="sb-cnt">0 records</span><br><span id="sb-chain" style="color:var(--ac)">Chain: verified</span></div></div>
   </aside>
-
-  <!-- MAIN -->
   <main id="main">
-
-    <!-- ENTRY: just two words and a button -->
     <div id="scr-entry" class="scr">
       <div class="entry-inner">
         <h1 class="entry-title">Every breath.<br><em>Recorded.</em></h1>
         <button class="entry-cta" onclick="startApp()">Begin</button>
       </div>
     </div>
-
-    <!-- NOW -->
     <div id="scr-now" class="scr"><div id="cn"></div></div>
-
-    <!-- LEDGER -->
     <div id="scr-ledger" class="scr"><div id="cl"></div></div>
-
-    <!-- PASSPORT -->
     <div id="scr-passport" class="scr"><div id="cpp"></div></div>
-
-    <!-- SHARE -->
     <div id="scr-share" class="scr"><div id="csh"></div></div>
-
   </main>
-
-  <!-- MOBILE NAV -->
   <nav id="nav">
     <button class="bni act" onclick="go('now',this)"><span class="bni-ic">◎</span><span class="bni-lb">Now</span></button>
     <button class="bni" onclick="go('ledger',this)"><span class="bni-ic">⛓</span><span class="bni-lb">Ledger</span></button>
     <button class="bni" onclick="go('passport',this)"><span class="bni-ic">⬡</span><span class="bni-lb">Passport</span></button>
     <button class="bni" onclick="go('share',this)"><span class="bni-ic">↗</span><span class="bni-lb">Share</span></button>
   </nav>
-
 </div>
-
-<!-- LOADING -->
 <div class="lov" id="lov"><div class="ldr"></div><div class="ldr-t" id="ltxt">—</div></div>
-
-<!-- TOAST -->
 <div class="toast" id="tst"></div>
-
-<!-- SHARE CONFIRM MODAL -->
-<div class="mlov" id="sm">
-  <div class="modal">
-    <h3 id="sm-title">—</h3>
-    <div class="modal-b" id="sm-body"></div>
-    <div class="modal-prev" id="sm-prev"></div>
-    <div class="modal-acts">
-      <button class="m-cancel" onclick="closeSM()">Cancel</button>
-      <button class="m-confirm" id="sm-ok">Send</button>
-    </div>
-  </div>
-</div>
-
-<!-- QR MODAL -->
-<div class="mlov" id="qrm">
-  <div class="modal qr-modal-in">
-    <h3>Scan to open BXP</h3>
-    <p style="font-size:.74rem;color:var(--m2);margin-top:.25rem">Opens the app — not your personal data.</p>
-    <div id="qrbox" style="background:#fff;border-radius:8px;padding:.875rem;display:inline-block;margin:1rem 0;"></div>
-    <div class="qr-url">bxpprotocol.github.io/livenet.html</div>
-    <button class="m-close" onclick="document.getElementById('qrm').classList.remove('show')">Close</button>
-  </div>
-</div>
-
-<script>
-// ════════════════════════════════════════════════════
-// CONSTANTS
-// ════════════════════════════════════════════════════
-
-const WHO  = {PM2_5:15, PM10:45, NO2:25, O3:100, CO:4,  SO2:40, TVOC:500};
-const WHOa = {PM2_5:5,  PM10:15, NO2:10, O3:60};
-const W    = {PM2_5:.35, PM10:.15, NO2:.15, O3:.12, CO:.10, SO2:.05, TVOC:.04};
-const HL   = {PM2_5:168, PM10:72, NO2:4, O3:2, CO:6, SO2:3, TVOC:8};
-const TK   = '68fc34ffbfaf451cc4250b87158ffe04a3dc5dfd';
-const APP  = 'https://bxpprotocol.github.io/livenet.html';
-const LUNG_AGING = .098; // yrs per µg/m³ per year above 5µg/m³
-
-const LV = {
-  CLEAN:    {c:'#00E676', bg:'rgba(0,230,118,.09)',  l:'CLEAN',    a:'Air quality excellent.'},
-  MODERATE: {c:'#FFEB3B', bg:'rgba(255,235,59,.09)', l:'MODERATE', a:'Acceptable for most people.'},
-  ELEVATED: {c:'#FF9800', bg:'rgba(255,152,0,.09)',  l:'ELEVATED', a:'Reduce prolonged outdoor exertion.'},
-  HIGH:     {c:'#F44336', bg:'rgba(244,67,54,.09)',  l:'HIGH',     a:'Reduce outdoor activity.'},
-  VERY_HIGH:{c:'#9C27B0', bg:'rgba(156,39,176,.09)', l:'VERY HIGH',a:'Avoid outdoors. N95 recommended.'},
-  HAZARDOUS:{c:'#FF1744', bg:'rgba(255,23,68,.09)',  l:'HAZARDOUS',a:'Health emergency. Stay indoors.'},
-};
-
-const gl  = h => h>90?'HAZARDOUS':h>75?'VERY_HIGH':h>60?'HIGH':h>40?'ELEVATED':h>20?'MODERATE':'CLEAN';
-const col = p => p<50?'#00E676':p<100?'#FF9800':'#F44336';
-const $   = id => document.getElementById(id);
-
-// ════════════════════════════════════════════════════
-// STATE — persisted to localStorage
-// ════════════════════════════════════════════════════
-
-const ld = (k,fb) => {try{const v=localStorage.getItem(k);return v?JSON.parse(v):fb;}catch{return fb;}};
-
-const S = {
-  reading:null, loc:null, locErr:null,
-  ledger:    ld('bxp_l',[]),
-  contrib:   parseInt(localStorage.getItem('bxp_c')||'0'),
-  notif:     localStorage.getItem('bxp_n')||'default',
-  lastGH:    localStorage.getItem('bxp_lgh')||null,
-  lastHRI:   parseFloat(localStorage.getItem('bxp_lhri')||'0'),
-  lastRT:    parseInt(localStorage.getItem('bxp_lrt')||'0'),
-  digest:    ld('bxp_d',null),
-  letter:    ld('bxp_ml',null),
-  zones:     ld('bxp_zn',{}),
-  knownGHs:  ld('bxp_kg',{}),
-  anomalies: ld('bxp_an',[]),
-  busy:false, active:false, timer:null,
-};
-
-function save(){
-  try{
-    localStorage.setItem('bxp_l',  JSON.stringify(S.ledger.slice(-500)));
-    localStorage.setItem('bxp_c',  S.contrib);
-    localStorage.setItem('bxp_lgh',S.lastGH||'');
-    localStorage.setItem('bxp_lhri',S.lastHRI);
-    localStorage.setItem('bxp_lrt', S.lastRT);
-    if(S.digest) localStorage.setItem('bxp_d',  JSON.stringify(S.digest));
-    if(S.letter) localStorage.setItem('bxp_ml', JSON.stringify(S.letter));
-    localStorage.setItem('bxp_zn', JSON.stringify(S.zones));
-    localStorage.setItem('bxp_kg', JSON.stringify(S.knownGHs));
-    localStorage.setItem('bxp_an', JSON.stringify(S.anomalies.slice(-20)));
-  }catch{}
-}
-
-// ════════════════════════════════════════════════════
-// UTILS
-// ════════════════════════════════════════════════════
-
-function toast(m){const t=$('tst');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3200);}
-function setLoad(s,t=''){$('lov').classList.toggle('show',s);$('ltxt').textContent=t;}
-const tfmt = ts => new Date(ts).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-const dfmt = ts => new Date(ts).toLocaleDateString([],{month:'short',day:'numeric'});
-const isDesktop = () => window.innerWidth >= 900;
-
-// ════════════════════════════════════════════════════
-// CRYPTO — SHA-256 chain
-// ════════════════════════════════════════════════════
-
-async function sha256(s){
-  try{
-    const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));
-    return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('').slice(0,16);
-  }catch{
-    let h=0;for(let i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i);h|=0;}
-    return Math.abs(h).toString(16).padStart(16,'0');
-  }
-}
-
-// ════════════════════════════════════════════════════
-// GEOHASH
-// ════════════════════════════════════════════════════
-
-function gh(lat,lng,p=7){
-  const c='0123456789bcdefghjkmnpqrstuvwxyz';
-  let i=0,b=0,e=true,g='',lt=-90,lT=90,lg=-180,lG=180;
-  while(g.length<p){
-    if(e){const m=(lg+lG)/2;if(lng>=m){i=(i<<1)+1;lg=m;}else{i=i<<1;lG=m;}}
-    else{const m=(lt+lT)/2;if(lat>=m){i=(i<<1)+1;lt=m;}else{i=i<<1;lT=m;}}
-    e=!e;if(++b===5){g+=c[i];b=0;i=0;}
-  }
-  return g;
-}
-
-// ════════════════════════════════════════════════════
-// CALCULATIONS
-// ════════════════════════════════════════════════════
-
-function calcHRI(agents){
-  let r=0,bd=[];
-  for(const a of agents){const w=W[a.id],t=WHO[a.id];if(w&&t){const rk=Math.min(1,a.value/t);r+=rk*w;bd.push({...a,risk:rk,pct:Math.round(rk*100)});}}
-  return{hri:Math.min(100,Math.round(r*1000)/10),breakdown:bd};
-}
-
-// Body load: exponential decay of each agent in biological tissue
-function calcBodyLoad(){
-  if(!S.ledger.length)return{load:0,clearH:0};
-  const now=Date.now();let total=0;
-  for(const rec of S.ledger){
-    const ageH=(now-rec.ts)/3600000;
-    for(const a of(rec.agents||[])){
-      const hl=HL[a.id];if(!hl||!WHO[a.id])continue;
-      total+=(Math.min(1,a.value/WHO[a.id]))*(W[a.id]||0)*Math.pow(.5,ageH/hl);
-    }
-  }
-  const load=Math.min(100,Math.round(total*100*10)/10);
-  const la=(S.ledger[S.ledger.length-1]?.agents||[]).map(a=>HL[a.id]||0);
-  return{load,clearH:Math.round(Math.max(0,...la)*3.32)};
-}
-
-// Exposure debt: hours above safe accumulated over 48h
-function calcDebt(){
-  const now=Date.now(),recs=S.ledger.filter(r=>now-r.ts<172800000).sort((a,b)=>a.ts-b.ts);
-  let debt=0,clean=0,prev=null;
-  for(const r of recs){
-    if(prev){const h=(r.ts-prev.ts)/3600000;r.hri>40?debt+=h*(r.hri/100):clean+=h;}
-    prev=r;
-  }
-  const net=Math.max(0,Math.round((debt-clean*.5)*10)/10);
-  return{debt:net,recovH:Math.ceil(net*2),lungCap:Math.max(60,Math.round(100-net*3))};
-}
-
-// Daily lung budget
-function calcBudget(){
-  const today=new Date().toDateString();
-  const pm=S.ledger.filter(r=>new Date(r.ts).toDateString()===today).flatMap(r=>r.agents?.filter(a=>a.id==='PM2_5')||[]);
-  const avgToday=pm.length?Math.round(pm.reduce((s,a)=>s+a.value,0)/pm.length*10)/10:0;
-  const pct=Math.min(250,Math.round(avgToday/WHOa.PM2_5*100));
-  const all=S.ledger.flatMap(r=>r.agents?.filter(a=>a.id==='PM2_5')||[]);
-  const avg=all.length?all.reduce((s,a)=>s+a.value,0)/all.length:avgToday;
-  const days=avg>WHOa.PM2_5?Math.round(WHOa.PM2_5*365/avg):null;
-  return{avgToday,pct,days};
-}
-
-// Exposure age: lung aging years beyond calendar age
-function calcExpAge(){
-  const pm=S.ledger.flatMap(r=>r.agents?.filter(a=>a.id==='PM2_5')||[]);
-  if(pm.length<5)return null;
-  const avg=pm.reduce((s,a)=>s+a.value,0)/pm.length;
-  const excess=Math.max(0,avg-WHOa.PM2_5);
-  const span=S.ledger.length>1?(S.ledger[S.ledger.length-1].ts-S.ledger[0].ts)/(365*86400000):.05;
-  return{yrs:Math.round(excess*LUNG_AGING*span*100)/100,avg:Math.round(avg*10)/10,excess:Math.round(excess*10)/10};
-}
-
-// ── NEW: Breath-moment fingerprinting
-// Detects your breathing pattern signature from HRI fluctuations
-// Reveals whether your exposure is random or patterned
-function calcExposurePattern(){
-  if(S.ledger.length<10)return null;
-  const hrs=Array(24).fill(0).map(()=>({sum:0,n:0}));
-  for(const r of S.ledger){const h=new Date(r.ts).getHours();hrs[h].sum+=r.hri;hrs[h].n++;}
-  const filled=hrs.map((h,i)=>h.n>0?{hr:i,avg:Math.round(h.sum/h.n*10)/10}:null).filter(Boolean);
-  if(filled.length<4)return null;
-  const worst=filled.reduce((a,b)=>b.avg>a.avg?b:a);
-  const best=filled.reduce((a,b)=>b.avg<a.avg?b:a);
-  const t=h=>`${h}:00`;
-  return{worst:{hr:worst.hr,hri:worst.avg,label:t(worst.hr)},best:{hr:best.hr,hri:best.avg,label:t(best.hr)},delta:Math.round(worst.avg-best.avg)};
-}
-
-// ── NEW: First-in-history record detection
-// Marks the exact moment a personal milestone was crossed
-function detectMilestones(){
-  const ms=[];
-  if(!S.ledger.length)return ms;
-  const first=S.ledger[0];
-  if(first)ms.push({ts:first.ts,text:`Your first BXP record. The first moment your exposure history began to exist.`});
-  const worstEver=S.ledger.reduce((a,b)=>b.hri>a.hri?b:a);
-  if(worstEver.hri>60)ms.push({ts:worstEver.ts,text:`Your highest recorded HRI: ${worstEver.hri} in ${worstEver.city}.`});
-  const pm=S.ledger.filter(r=>r.agents?.find(a=>a.id==='PM2_5'));
-  if(pm.length>0){
-    let cumPM=0;for(const r of pm){cumPM+=r.agents.find(a=>a.id==='PM2_5').value;}
-    const cigeq=Math.round(cumPM/22*10)/10;
-    if(cigeq>0.5)ms.push({ts:Date.now(),text:`Lifetime PM2.5 exposure equivalent to approximately ${cigeq} cigarettes.`});
-  }
-  return ms.slice(0,3);
-}
-
-// Zone learning
-function updateZones(geohash,hri,city,ts){
-  const h=new Date(ts).getHours();
-  if(!S.knownGHs[geohash])S.knownGHs[geohash]={city,visits:0,totalHRI:0,hours:[]};
-  const z=S.knownGHs[geohash];z.visits++;z.totalHRI+=hri;z.hours.push(h);z.avgHRI=Math.round(z.totalHRI/z.visits*10)/10;
-  const nh=z.hours.filter(h=>h>=22||h<=7).length/z.hours.length;
-  const wh=z.hours.filter(h=>h>=9&&h<=18).length/z.hours.length;
-  if(z.visits>=5&&nh>.5)S.zones[geohash]='home';
-  else if(z.visits>=5&&wh>.6)S.zones[geohash]='work';
-  else if(z.visits>=3)S.zones[geohash]='commute';
-}
-function getZones(){
-  return Object.entries(S.zones).map(([g,type])=>{
-    const info=S.knownGHs[g];
-    return info?{geohash:g,type,city:info.city,avgHRI:info.avgHRI,visits:info.visits}:null;
-  }).filter(Boolean);
-}
-
-// Recovery protocol
-function buildRecovery(bl,debt,zones){
-  if(bl.load<30&&debt.debt<1)return null;
-  const h=new Date().getHours(),night=h>=20||h<=7;
-  const home=zones.find(z=>z.type==='home');
-  const steps=[];
-  if(debt.debt>2)steps.push({a:'Prioritise indoor air',d:`Debt is ${debt.debt}h. Indoors is 2–5× cleaner.`});
-  if(bl.clearH>0)steps.push({a:`${debt.recovH}h in clean air`,d:'Clears current body load below 10%.'});
-  if(home&&home.avgHRI<30)steps.push({a:`Return to ${home.city}`,d:`Your home zone: avg HRI ${home.avgHRI}.`});
-  if(night)steps.push({a:'Windows closed tonight',d:'Night-time NO₂ is elevated in most cities.'});
-  return steps.slice(0,4);
-}
-
-// Anomaly detection
-function detectAnomalies(){
-  const recs=S.ledger.slice(-15),out=[];
-  for(let i=2;i<recs.length;i++){
-    const prev=recs[i-1],curr=recs[i],d=curr.hri-prev.hri;
-    if(d>28&&curr.hri>60&&Date.now()-curr.ts<3600000){
-      const pm=curr.agents?.find(a=>a.id==='PM2_5'),no2=curr.agents?.find(a=>a.id==='NO2');
-      let src='elevated pollution source';
-      if(pm&&pm.value>150)src='possible fire or burning nearby';
-      else if(no2&&no2.value>80)src='heavy diesel or generator exhaust';
-      else if(pm&&pm.value>80)src='cooking, construction, or traffic';
-      out.push({ts:curr.ts,hri:curr.hri,city:curr.city,source:src,delta:d});
-    }
-  }
-  if(out.length){S.anomalies=[...S.anomalies,...out].slice(-20);return out[out.length-1];}
-  return null;
-}
-
-// Generate digest
-function generateDigest(){
-  const recs=S.ledger.filter(r=>Date.now()-r.ts<86400000).sort((a,b)=>a.ts-b.ts);
-  if(recs.length<2)return null;
-  const lh={CLEAN:0,MODERATE:0,ELEVATED:0,HIGH:0,VERY_HIGH:0,HAZARDOUS:0};
-  for(let i=1;i<recs.length;i++){const h=(recs[i].ts-recs[i-1].ts)/3600000;lh[recs[i-1].level]=(lh[recs[i-1].level]||0)+h;}
-  const agT={},agC={};
-  for(const r of recs)for(const a of(r.agents||[])){agT[a.id]=(agT[a.id]||0)+a.value;agC[a.id]=(agC[a.id]||0)+1;}
-  const agAvg=Object.entries(agT).map(([id,t])=>({id,avg:Math.round(t/agC[id]*10)/10,pct:WHO[id]?Math.round(t/agC[id]/WHO[id]*100):0})).sort((a,b)=>b.pct-a.pct);
-  const moments=[];
-  for(let i=1;i<recs.length;i++){const d=recs[i].hri-recs[i-1].hri;if(Math.abs(d)>20){const sp=d>0;moments.push({ts:recs[i].ts,text:`${sp?'↑':'↓'} ${recs[i-1].hri} → ${recs[i].hri}`,detail:sp?'spike':'cleared'});}}
-  return{date:Date.now(),records:recs.length,lh,agAvg,moments:moments.slice(-5).reverse(),avgHRI:Math.round(recs.reduce((s,r)=>s+r.hri,0)/recs.length*10)/10};
-}
-
-// Generate monthly letter — stored inside the .bxp.json file on export
-function generateLetter(){
-  if(S.ledger.length<5)return null;
-  const now=new Date();
-  const avgHRI=Math.round(S.ledger.reduce((s,r)=>s+r.hri,0)/S.ledger.length*10)/10;
-  const lc={};for(const r of S.ledger)lc[r.city]=(lc[r.city]||0)+1;
-  const topLoc=Object.entries(lc).sort((a,b)=>b[1]-a[1])[0]?.[0]||'your area';
-  const daysAbove=new Set(S.ledger.filter(r=>r.hri>40).map(r=>new Date(r.ts).toDateString())).size;
-  const pm=S.ledger.flatMap(r=>r.agents?.filter(a=>a.id==='PM2_5')||[]);
-  const avgPM=pm.length?Math.round(pm.reduce((s,a)=>s+a.value,0)/pm.length*10)/10:null;
-  const debt=calcDebt(),ea=calcExpAge();
-  const days=new Set(S.ledger.map(r=>new Date(r.ts).toDateString())).size;
-  const month=now.toLocaleDateString([],{month:'long',year:'numeric'});
-  return{
-    date:now.getTime(),month,days,avgHRI,daysAbove,avgPM,
-    p1:`Over ${days} days, your average BXP Health Risk Index was <strong>${avgHRI}</strong> — <strong>${gl(avgHRI)}</strong> range. Most frequently in <strong>${topLoc}</strong>.`,
-    p2:daysAbove>0?`On <strong>${daysAbove} day${daysAbove>1?'s':''}</strong> your exposure crossed the elevated threshold. These accumulate. The cost compounds over years, not moments.`:`Exposure stayed within acceptable limits most days. Your body had recovery time between higher-exposure events.`,
-    p3:avgPM?`Average PM2.5: <strong>${avgPM} µg/m³</strong>. WHO annual guideline: 5 µg/m³. ${avgPM<=5?'Within the safe limit.':avgPM<=15?`${Math.round(avgPM/5*10)/10}× above WHO guideline.`:`<strong>${Math.round(avgPM/5*10)/10}× above the WHO annual limit.</strong> Sustained here, respiratory aging accelerates.`}`:'Build more ledger data for a precise picture.',
-    p4:ea&&ea.yrs>0.1?`Based on your recorded data, your respiratory system has aged an estimated <strong>${ea.yrs} years beyond your calendar age</strong> from pollution alone. Derived from published dose-response data applied to your personal ledger. This number has never existed before — for anyone.`:`Exposure-adjusted lung age is within normal bounds. More data will sharpen this estimate.`,
-  };
-}
-
-// ════════════════════════════════════════════════════
-// LOCATION + FETCH
-// ════════════════════════════════════════════════════
-
-function locErrMsg(e){
-  if(!e)return{t:'Location unavailable',r:'Could not get position.',s:['Check settings','Tap ↻']};
-  if(e.code===1)return{t:'Location blocked',r:'BXP reads GPS directly. VPNs have no effect. Your browser is blocking GPS access.',s:['Tap the lock icon in your address bar','Find Location → change to Allow','Tap ↻']};
-  if(e.code===2)return{t:'GPS unavailable',r:'Device could not get a fix.',s:['Enable Location Services in Settings','Move near a window','Tap ↻']};
-  if(e.code===3)return{t:'Location timed out',r:'GPS took too long.',s:['Enable Location Services','Tap ↻']};
-  return{t:'Location error',r:'Unexpected error.',s:['Refresh and try again']};
-}
-
-function getLoc(){
-  return new Promise((res,rej)=>{
-    if(!navigator.geolocation){rej({code:0});return;}
-    navigator.geolocation.getCurrentPosition(p=>res({lat:p.coords.latitude,lng:p.coords.longitude,acc:p.coords.accuracy}),rej,{enableHighAccuracy:true,timeout:15000,maximumAge:0});
-  });
-}
-
-async function fetchAQ(lat,lng){
-  try{
-    const r=await fetch(`https://api.waqi.info/feed/geo:${lat};${lng}/?token=${TK}`,{signal:AbortSignal.timeout(12000)});
-    const j=await r.json();if(j.status!=='ok')return null;
-    const d=j.data,ia=d.iaqi||{},agents=[];
-    if(ia.pm25?.v!=null)agents.push({id:'PM2_5',value:ia.pm25.v,unit:'ug/m3'});
-    if(ia.pm10?.v!=null)agents.push({id:'PM10', value:ia.pm10.v,unit:'ug/m3'});
-    if(ia.no2?.v !=null)agents.push({id:'NO2',  value:ia.no2.v, unit:'ug/m3'});
-    if(ia.o3?.v  !=null)agents.push({id:'O3',   value:ia.o3.v,  unit:'ppb'});
-    if(ia.co?.v  !=null)agents.push({id:'CO',   value:ia.co.v,  unit:'ppm'});
-    if(ia.so2?.v !=null)agents.push({id:'SO2',  value:ia.so2.v, unit:'ppb'});
-    const{hri}=calcHRI(agents);
-    return{city:d.city?.name||'Unknown',agents,hri,level:gl(hri)};
-  }catch{return null;}
-}
-
-// ════════════════════════════════════════════════════
-// LEDGER WRITE — only on meaningful change
-// Insights are embedded in the .bxp.json file itself
-// ════════════════════════════════════════════════════
-
-async function maybeWrite(loc,aq){
-  const nowGH=gh(loc.lat,loc.lng,7),now=Date.now();
-  if(nowGH===S.lastGH&&Math.abs(aq.hri-S.lastHRI)<10&&(now-S.lastRT)/60000<60)return false;
-  const prev=S.ledger.length?S.ledger[S.ledger.length-1].hash:'0000000000000000';
-  const hash=await sha256(prev+JSON.stringify({seq:S.ledger.length,ts:now,gh:nowGH,hri:aq.hri}));
-
-  // The record itself carries insight fields — this IS the spec output
-  const record = {
-    bxpVersion: '2.0',
-    fileType:   'reading',
-    seq:        S.ledger.length,
-    ts:         now,
-    geohash:    nowGH,
-    city:       aq.city,
-    lat:        Math.round(loc.lat*10000)/10000,
-    lng:        Math.round(loc.lng*10000)/10000,
-    agents:     aq.agents,
-    hri:        aq.hri,
-    level:      aq.level,
-    prevHash:   prev,
-    hash,
-    quality:    {flag:'UNVALIDATED', confidence:.75, source:'AQICN'},
-    // Insight fields — live in the file, not computed at display time
-    insights: {
-      bodyLoad:   calcBodyLoad().load,
-      debtH:      calcDebt().debt,
-      lungBudgetPct: calcBudget().pct,
-    }
-  };
-
-  S.ledger.push(record);
-  S.contrib++; S.lastGH=nowGH; S.lastHRI=aq.hri; S.lastRT=now;
-  updateZones(nowGH,aq.hri,aq.city,now);
-  return true;
-}
-
-// ════════════════════════════════════════════════════
-// NOTIFICATIONS — info finds the person, not vice versa
-// ════════════════════════════════════════════════════
-
-async function askNotif(){
-  if(!('Notification'in window))return;
-  const p=await Notification.requestPermission().catch(()=>'denied');
-  S.notif=p; localStorage.setItem('bxp_n',p);
-  if(p==='granted'){toast('Alerts on — daily digest at 9pm');renderNow();}
-}
-function notif(title,body,tag='bxp'){
-  if(S.notif!=='granted'||!('Notification'in window))return;
-  try{new Notification(title,{body,tag,renotify:true});}catch{}
-}
-function checkAlerts(aq){
-  if(aq.hri>=60) notif(`🫁 ${aq.level} · HRI ${aq.hri}`,`${aq.city} — ${LV[aq.level]?.a||''}`,'bxp-a');
-}
-function checkDigest(){
-  const h=new Date().getHours(),today=new Date().toDateString(),last=localStorage.getItem('bxp_dd');
-  if(h>=21&&last!==today&&S.ledger.length>3){
-    S.digest=generateDigest(); S.letter=generateLetter();
-    if(S.digest) notif('📊 Daily digest ready',`Avg HRI ${S.digest.avgHRI} · ${S.digest.records} readings — open BXP`,'bxp-d');
-    localStorage.setItem('bxp_dd',today); save(); renderNow();
-  }
-}
-
-// ── NEW: Milestone notifications — delivered silently at the right moment
-function checkMilestones(){
-  const ea=calcExpAge();
-  const lastEA=parseFloat(localStorage.getItem('bxp_last_ea')||'0');
-  if(ea&&ea.yrs>.1&&Math.abs(ea.yrs-lastEA)>.05){
-    notif('⏳ Exposure age updated',`Your lungs are now estimated ${ea.yrs}y older than your calendar age. Open BXP for details.`,'bxp-ea');
-    localStorage.setItem('bxp_last_ea',ea.yrs);
-  }
-  const budget=calcBudget();
-  if(budget.days&&budget.days<30&&!localStorage.getItem('bxp_budget_warn')){
-    notif('💸 Annual PM2.5 budget critical',`At current levels your WHO annual limit runs out in ${budget.days} days.`,'bxp-bud');
-    localStorage.setItem('bxp_budget_warn','1');
-  }
-}
-
-// Idle in high-exposure zone
-let idleT=null;
-const resetIdle=()=>{
-  clearTimeout(idleT);
-  idleT=setTimeout(()=>{
-    if(S.reading?.hri>=60) notif(`Still in ${S.reading.level} air`,`${S.reading.city} · HRI ${S.reading.hri} · 15 min. Consider moving indoors.`,'bxp-idle');
-  },15*60*1000);
-};
-['touchstart','click','keydown','mousemove'].forEach(e=>document.addEventListener(e,resetIdle,{passive:true}));
-
-// ════════════════════════════════════════════════════
-// READ CYCLE
-// ════════════════════════════════════════════════════
-
-async function doRead(force=false){
-  if(S.busy&&!force)return; S.busy=true; S.locErr=null;
-  const dot=$('sdot'),txt=$('stext'),rb=$('rbtn');
-  dot.className='sdot off'; txt.textContent='Reading';
-  if(rb){rb.classList.add('spin');rb.disabled=true;}
-  try{
-    const loc=await getLoc(); S.loc=loc;
-    const aq=await fetchAQ(loc.lat,loc.lng);
-    if(!aq){dot.className='sdot err';txt.textContent='No data';return;}
-    S.reading=aq;
-    const wrote=await maybeWrite(loc,aq);
-    if(wrote){
-      checkAlerts(aq);
-      const an=detectAnomalies();
-      if(an) notif('⚠ Spike detected',`HRI jumped to ${an.hri} · ${an.source}`,'bxp-an');
-      checkMilestones();
-      save();
-    }
-    dot.className='sdot'; txt.textContent='Live';
-    updateSBStats();
-    renderNow(); renderLedger(); renderPassport(); checkDigest(); resetIdle();
-  }catch(err){
-    S.locErr=err; dot.className='sdot err'; txt.textContent='Blocked'; renderNow();
-  }finally{
-    S.busy=false; if(rb){rb.classList.remove('spin');rb.disabled=false;}
-  }
-}
-async function manualRead(){await doRead(true);toast('Updated');}
-
-function updateSBStats(){
-  const c=$('sb-cnt'),ch=$('sb-chain');
-  if(c)c.textContent=`${S.ledger.length} records`;
-  if(ch){let ok=true;for(let i=1;i<S.ledger.length;i++)if(S.ledger[i].prevHash!==S.ledger[i-1].hash){ok=false;break;}ch.textContent=`Chain: ${ok?'verified':'error'}`;ch.style.color=ok?'var(--ac)':'var(--da)';}
-}
-
-// ════════════════════════════════════════════════════
-// RENDER: NOW
-// ════════════════════════════════════════════════════
-
-function renderNow(){
-  const el=$('cn');let h='';
-  if(S.locErr){
-    const e=locErrMsg(S.locErr);
-    h+=`<div class="le"><div class="le-tit">⚠ ${e.t}</div><div class="le-bod">${e.r}</div><div class="le-st">`;
-    e.s.forEach((s,i)=>{h+=`<div class="le-s"><div class="le-sn">${i+1}.</div><div>${s}</div></div>`;});
-    h+=`</div><button class="retry" onclick="doRead(true)">Try Again</button></div>`;
-    el.innerHTML=h;return;
-  }
-  if(!S.reading){
-    el.innerHTML=`<div style="height:55vh;display:flex;align-items:center;justify-content:center"><div style="font-family:var(--mono);font-size:.67rem;color:var(--m2);line-height:1.9;text-align:center">Acquiring GPS...<br>Allow location access when prompted.</div></div>`;
-    return;
-  }
-
-  const r=S.reading,L=LV[r.level]||LV.CLEAN;
-  const bl=calcBodyLoad(),debt=calcDebt(),budget=calcBudget();
-  const ea=calcExpAge(),zones=getZones(),rec=buildRecovery(bl,debt,zones);
-  const pat=calcExposurePattern(),ms=detectMilestones();
-  const anom=S.anomalies.find(a=>Date.now()-a.ts<3600000);
-  const desk=isDesktop();
-
-  // Notif prompt — minimal, one line
-  if(S.notif==='default'){
-    h+=`<div class="np"><div style="font-size:1rem;flex-shrink:0">🔔</div><div><div class="np-t">Enable alerts</div><div class="np-b">Daily digest at 9pm. Immediate alert in dangerous air. Milestone insights delivered silently.</div><button class="np-btn" onclick="askNotif()">Enable</button></div></div>`;
-  }
-
-  // Anomaly
-  if(anom){h+=`<div class="card anom cp"><div class="ey" style="color:var(--da)">⚠ Spike · ${tfmt(anom.ts)}</div><div class="ct" style="color:var(--da)">HRI jumped to ${anom.hri}</div><div class="cb">${anom.source} near ${anom.city}.</div></div>`;}
-
-  if(desk) h+=`<div class="g2">`;
-
-  // Body load ring
-  const circ=2*Math.PI*54,off=circ*(1-bl.load/100),blC=col(bl.load);
-  h+=`<div class="card"><div class="bl-wrap">
-    <div class="bl-ring">
-      <svg class="bl-svg" viewBox="0 0 120 120">
-        <circle class="bl-tr" cx="60" cy="60" r="54"/>
-        <circle class="bl-fi" cx="60" cy="60" r="54" stroke="${blC}" stroke-dasharray="${circ}" stroke-dashoffset="${off}"/>
-      </svg>
-      <div class="bl-cen"><div class="bl-num" style="color:${blC}">${bl.load}</div><div class="bl-sub">BODY LOAD</div></div>
-    </div>
-    <div>
-      <div class="ct">Pollutant burden</div>
-      <div class="cb">${bl.load<20?'Your body has cleared most recent exposure.':bl.load<50?`Processing. <strong>${bl.clearH}h</strong> in clean air to clear.`:`High burden. <strong>~${bl.clearH}h</strong> clean air needed.`}</div>
-    </div>
-  </div></div>`;
-
-  // Current reading
-  h+=`<div class="card cp">
-    <div class="ey">${tfmt(Date.now())} · ${r.city}</div>
-    <div class="hri-row"><div class="hri-n" style="color:${L.c}">${r.hri}</div><div><div class="hri-badge" style="background:${L.bg};color:${L.c}">${L.l}</div><div class="hri-adv">${L.a}</div></div></div>
-    <div class="bar-t"><div class="bar-f" style="width:${r.hri}%;background:${L.c}"></div></div>
-    <div class="ags">`;
-  for(const a of r.agents){const t=WHO[a.id],p=t?Math.min(100,Math.round(a.value/t*100)):0;const c=col(p);h+=`<div class="ag"><div class="ag-id">${a.id}</div><div class="ag-v" style="color:${c}">${a.value.toFixed(1)}</div><div class="ag-p" style="color:${c}">${p}% WHO</div></div>`;}
-  h+=`</div><div class="loc-row"><span>📍</span><div><div class="loc-n">${r.city}</div><div class="loc-s">${S.loc?.lat?.toFixed(4)}°, ${S.loc?.lng?.toFixed(4)}° · ${gh(S.loc?.lat||0,S.loc?.lng||0,7)}</div></div></div></div>`;
-
-  if(desk){h+=`</div><div class="g2">`;}
-
-  // Exposure age
-  if(ea){
-    const ac=ea.yrs>0?'var(--wa)':'var(--ac)';
-    h+=`<div class="card cp"><div class="ey">Exposure Age</div><div style="font-family:var(--serif);font-size:2.4rem;line-height:1;color:${ac};margin-bottom:.5rem">+${ea.yrs}<span style="font-family:var(--mono);font-size:.62rem;color:var(--m2);margin-left:.4rem">yrs</span></div><div class="cb">Respiratory aging beyond your calendar age from pollution alone. Avg PM2.5: <strong>${ea.avg} µg/m³</strong> · <strong>${ea.excess} µg/m³</strong> above safe limit. Derived from published dose-response literature applied to your ledger.</div></div>`;
-  }
-
-  // Lung budget
-  const bc=budget.pct<100?'var(--ac)':budget.pct<150?'var(--wa)':'var(--da)';
-  h+=`<div class="card cp"><div class="ey">Daily Lung Budget · PM2.5</div><div class="bud-gauge"><div class="bud-fill" style="width:${Math.min(100,budget.pct)}%;background:${bc}"></div></div><div class="bud-grid"><div class="bs"><div class="bs-n" style="color:${bc}">${budget.avgToday}</div><div class="bs-l">µg/m³ today</div></div><div class="bs"><div class="bs-n" style="color:${bc}">${budget.pct}%</div><div class="bs-l">of WHO limit</div></div><div class="bs"><div class="bs-n" style="color:${budget.days?'var(--da)':'var(--ac)'}">${budget.days||'∞'}</div><div class="bs-l">days to annual cap</div></div></div></div>`;
-
-  if(desk){h+=`</div><div class="g2">`;}
-
-  // Debt
-  const dc=debt.debt<1?'var(--ac)':debt.debt<3?'var(--wa)':'var(--da)';
-  h+=`<div class="card cp"><div class="ey">Exposure Debt</div><div style="display:flex;align-items:flex-end;gap:.25rem;margin-bottom:.5rem"><div style="font-family:var(--mono);font-size:2rem;font-weight:700;color:${dc}">${debt.debt}</div><div style="font-family:var(--mono);font-size:.6rem;color:var(--m2);margin-bottom:.28rem">hours</div></div><div class="bar-t"><div class="bar-f" style="width:${Math.min(100,debt.debt*20)}%;background:${dc}"></div></div><div class="cb">${debt.debt<.5?'No debt. Recent exposure within safe limits.':`Lungs at estimated <strong>${debt.lungCap}% capacity</strong>. <strong>${debt.recovH}h</strong> in clean air to recover.`}</div></div>`;
-
-  // Hourly pattern — NEW
-  if(pat){
-    h+=`<div class="card cp"><div class="ey">Your Exposure Pattern</div><div class="cb" style="margin-bottom:.5rem">Based on ${S.ledger.length} readings across all hours of the day.</div><div style="display:flex;gap:.625rem;align-items:flex-start">
-      <div style="flex:1;background:rgba(255,68,102,.06);border:1px solid rgba(255,68,102,.2);border-radius:8px;padding:.75rem;text-align:center"><div style="font-family:var(--mono);font-size:1.3rem;font-weight:700;color:var(--da)">${pat.worst.hri}</div><div style="font-family:var(--mono);font-size:.55rem;color:var(--m2);margin-top:.15rem">HRI at ${pat.worst.label}</div><div style="font-size:.7rem;color:var(--m2);margin-top:.25rem">worst hour</div></div>
-      <div style="flex:1;background:rgba(0,230,118,.06);border:1px solid rgba(0,230,118,.2);border-radius:8px;padding:.75rem;text-align:center"><div style="font-family:var(--mono);font-size:1.3rem;font-weight:700;color:var(--ac)">${pat.best.hri}</div><div style="font-family:var(--mono);font-size:.55rem;color:var(--m2);margin-top:.15rem">HRI at ${pat.best.label}</div><div style="font-size:.7rem;color:var(--m2);margin-top:.25rem">cleanest hour</div></div>
-    </div>
-    ${pat.delta>20?`<div class="cb" style="margin-top:.75rem">Your air quality swings <strong>${pat.delta} HRI points</strong> across the day. Timing matters. BXP can tell you exactly when to go outside.</div>`:''}
-    </div>`;
-  }
-
-  if(desk) h+=`</div>`;
-
-  // Zones
-  if(zones.length>1){
-    const ic={home:'🏠',work:'🏢',commute:'🚶'};
-    h+=`<div class="card cp"><div class="ey">Your exposure zones</div><div class="zone-list">`;
-    for(const z of zones){h+=`<div class="zone-row"><div class="zone-ic">${ic[z.type]||'📍'}</div><div><div class="zone-n">${z.city} <span style="font-family:var(--mono);font-size:.5rem;color:var(--m2)">${z.type}</span></div><div class="zone-s">${z.visits} readings</div></div><div class="zone-hri" style="color:${col(z.avgHRI)}">${z.avgHRI}</div></div>`;}
-    h+=`</div></div>`;
-  }
-
-  // Recovery
-  if(rec){
-    h+=`<div class="card cp"><div class="ey">Recovery Protocol</div><div class="ps-list">`;
-    for(const s of rec){h+=`<div class="ps-row"><div class="ps-arr">→</div><div class="ps-t"><strong>${s.a}</strong><br><span>${s.d}</span></div></div>`;}
-    h+=`</div></div>`;
-  }
-
-  // Milestones — NEW: first-in-history moments
-  if(ms.length){
-    h+=`<div class="card cp"><div class="ey">Your record — first in history</div>`;
-    for(const m of ms){h+=`<div style="padding:.5rem 0;border-bottom:1px solid var(--bd);font-size:.76rem;color:var(--m2);line-height:1.6;"><span style="font-family:var(--mono);font-size:.55rem;color:var(--mu);display:block;margin-bottom:.2rem">${dfmt(m.ts)}</span>${m.text}</div>`;}
-    h+=`</div>`;
-  }
-
-  // Digest
-  if(S.digest){
-    const dg=S.digest,lh=dg.lh;
-    h+=`<div class="card"><div class="cp"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem"><div class="ey" style="margin:0">Daily Digest</div><div style="font-family:var(--mono);font-size:.56rem;color:var(--m2)">${dfmt(dg.date)}</div></div>
-    <div class="dig-hrs"><div class="dh"><div class="dh-v" style="color:#00E676">${Math.round((lh.CLEAN||0)*10)/10}h</div><div class="dh-l">CLEAN</div></div><div class="dh"><div class="dh-v" style="color:#FFEB3B">${Math.round((lh.MODERATE||0)*10)/10}h</div><div class="dh-l">MOD</div></div><div class="dh"><div class="dh-v" style="color:#FF9800">${Math.round(((lh.ELEVATED||0)+(lh.HIGH||0))*10)/10}h</div><div class="dh-l">HIGH</div></div><div class="dh"><div class="dh-v" style="color:var(--m2)">${dg.avgHRI}</div><div class="dh-l">AVG</div></div></div>`;
-    if(dg.agAvg?.length){for(const a of dg.agAvg.slice(0,4)){const c=col(a.pct);h+=`<div style="display:flex;align-items:center;gap:.625rem;margin-bottom:.3rem"><div style="font-family:var(--mono);font-size:.6rem;font-weight:700;min-width:46px">${a.id}</div><div style="flex:1;height:3px;background:var(--bd);border-radius:999px;overflow:hidden"><div style="height:100%;width:${Math.min(100,a.pct)}%;background:${c};border-radius:999px"></div></div><div style="font-family:var(--mono);font-size:.56rem;color:${c};min-width:28px;text-align:right">${a.pct}%</div></div>`;}}
-    h+=`</div>`;
-    if(dg.moments?.length){h+=`<div class="div"></div><div class="cp" style="padding-top:.875rem">`;for(const m of dg.moments){h+=`<div class="mom-row"><div class="mom-t">${tfmt(m.ts)}</div><div class="mom-tx">${m.text} <span>— ${m.detail}</span></div></div>`;}h+=`</div>`;}
-    h+=`</div>`;
-  }
-
-  // Letter
-  if(S.letter){
-    const ml=S.letter;
-    h+=`<div class="card cp"><div class="let-to">Your exposure record · ${ml.month}</div><div class="let-sub">A letter about the air<br>you breathed.</div><div class="let-body"><p>${ml.p1}</p><p>${ml.p2}</p><p>${ml.p3}</p><p>${ml.p4}</p></div><div class="let-sig">— BXP LiveNet · ${new Date(ml.date).toLocaleDateString()}<br>DOI: 10.5281/zenodo.18906812 · Apache 2.0</div></div>`;
-  }
-
-  el.innerHTML=h;
-}
-
-// ════════════════════════════════════════════════════
-// RENDER: LEDGER
-// ════════════════════════════════════════════════════
-
-function renderLedger(){
-  const el=$('cl');
-  if(!S.ledger.length){el.innerHTML=`<div style="padding:3rem;text-align:center;font-family:var(--mono);font-size:.67rem;color:var(--mu);line-height:1.9;background:var(--sf);border:1px solid var(--bd);border-radius:12px">No records yet.<br><br>BXP writes a record when you move<br>or air quality changes significantly.<br><br>Every record is SHA-256 chained<br>to the one before it.</div>`;return;}
-  let ok=true;for(let i=1;i<S.ledger.length;i++)if(S.ledger[i].prevHash!==S.ledger[i-1].hash){ok=false;break;}
-  let h=`<div style="background:var(--sf);border:1px solid ${ok?'rgba(0,255,136,.2)':'rgba(255,68,102,.3)'};border-radius:10px;padding:.7rem 1rem;display:flex;align-items:center;gap:.625rem;margin-bottom:.625rem">
-    <div>${ok?'✓':'⚠'}</div>
-    <div><div style="font-size:.77rem;font-weight:700;color:${ok?'var(--ac)':'var(--da)'}">${ok?'Chain integrity verified':'Chain error'}</div><div style="font-family:var(--mono);font-size:.53rem;color:var(--m2)">${S.ledger.length} records · SHA-256 hash chain</div></div>
-  </div><div class="led-list">`;
-  for(const rec of [...S.ledger].reverse().slice(0,100)){
-    const lv=LV[rec.level]||LV.CLEAN;
-    h+=`<div class="li"><div class="li-sc" style="color:${lv.c}">${rec.hri}</div><div class="li-in"><div class="li-lc">${rec.city}</div><div class="li-mt"><span>#${rec.seq}</span><span>${dfmt(rec.ts)} ${tfmt(rec.ts)}</span><span style="opacity:.5">sha:${rec.hash}</span></div></div><div class="li-bd" style="background:${lv.bg};color:${lv.c}">${lv.l}</div></div>`;
-  }
-  h+=`</div>`;el.innerHTML=h;
-}
-
-// ════════════════════════════════════════════════════
-// RENDER: PASSPORT
-// ════════════════════════════════════════════════════
-
-function renderPassport(){
-  const el=$('cpp');
-  if(!S.ledger.length){el.innerHTML=`<div style="padding:3rem;text-align:center;font-family:var(--mono);font-size:.67rem;color:var(--mu);line-height:1.9;background:var(--sf);border:1px solid var(--bd);border-radius:12px">Your passport is being built.<br><br>Every location adds to<br>your permanent record.</div>`;return;}
-  const avg=Math.round(S.ledger.reduce((s,r)=>s+r.hri,0)/S.ledger.length*10)/10;
-  const peak=Math.max(...S.ledger.map(r=>r.hri));
-  const L=LV[gl(avg)],days=new Set(S.ledger.map(r=>new Date(r.ts).toDateString())).size;
-  const bl=calcBodyLoad(),debt=calcDebt(),ea=calcExpAge();
-  const agT={},agC={};for(const r of S.ledger)for(const a of(r.agents||[])){agT[a.id]=(agT[a.id]||0)+a.value;agC[a.id]=(agC[a.id]||0)+1;}
-  const avgs=Object.entries(agT).map(([id,t])=>({id,pct:WHO[id]?Math.min(100,Math.round(t/agC[id]/WHO[id]*100)):0})).sort((a,b)=>b.pct-a.pct);
-
-  let h=`<div class="card cp">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;padding-bottom:.875rem;border-bottom:1px solid var(--bd)">
-      <div style="font-size:.95rem;font-weight:700">Exposure Passport</div>
-      <div style="font-family:var(--mono);font-size:.55rem;padding:.18rem .45rem;background:rgba(0,255,136,.07);border:1px solid rgba(0,255,136,.18);border-radius:999px;color:var(--ac)">BXP v2.0</div>
-    </div>
-    <div class="bud-grid" style="margin-bottom:1rem;">
-      <div class="bs"><div class="bs-n">${S.ledger.length}</div><div class="bs-l">Records</div></div>
-      <div class="bs"><div class="bs-n">${days}</div><div class="bs-l">Days</div></div>
-      <div class="bs"><div class="bs-n">${peak}</div><div class="bs-l">Peak HRI</div></div>
-    </div>
-    <div style="background:var(--bg);border-radius:9px;padding:.875rem;margin-bottom:.875rem;">
-      <div style="font-family:var(--mono);font-size:.53rem;color:var(--m2);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem">Lifetime avg BXP_HRI</div>
-      <div style="font-family:var(--mono);font-size:1.5rem;font-weight:700;color:${L.c}">${avg}</div>
-      <div style="font-size:.68rem;color:var(--m2);margin-top:.2rem">${L.l}${ea?` · Exp. Age +${ea.yrs}y`:''} · Body Load ${bl.load} · Debt ${debt.debt}h</div>
-    </div>
-    <button class="sec-btn ac-btn" onclick="exportPassport()">Export full ledger as .bxp.json</button>
-  </div>`;
-
-  if(avgs.length){
-    h+=`<div class="card"><div style="padding:.7rem 1.25rem;border-bottom:1px solid var(--bd);font-family:var(--mono);font-size:.53rem;color:var(--m2);letter-spacing:.1em;text-transform:uppercase">Lifetime avg vs WHO limits</div>`;
-    for(const a of avgs){const c=col(a.pct);h+=`<div class="ab-row" style="padding:.6rem 1.25rem;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:.75rem;"><div style="font-family:var(--mono);font-size:.68rem;font-weight:700;min-width:46px">${a.id}</div><div style="flex:1;height:3px;background:var(--bd);border-radius:999px;overflow:hidden"><div style="height:100%;width:${a.pct}%;background:${c};border-radius:999px"></div></div><div style="font-family:var(--mono);font-size:.56rem;color:${c};min-width:28px;text-align:right">${a.pct}%</div></div>`;}
-    h+=`</div>`;
-  }
-  h+=`<button class="sec-btn" onclick="genAll()">Generate Monthly Letter + Digest</button>`;
-  el.innerHTML=h;
-}
-
-// ════════════════════════════════════════════════════
-// RENDER: SHARE — deliberate, no accidental sends
-// ════════════════════════════════════════════════════
-
-function renderShare(){
-  $('csh').innerHTML=`
-  <div class="card cp" style="margin-bottom:1rem;">
-    <div class="ey">Network contributions</div>
-    <div style="font-family:var(--mono);font-size:2.5rem;font-weight:700;color:var(--ac)">${S.contrib}</div>
-    <div style="font-size:.7rem;color:var(--m2);margin-top:.2rem">BXP records in your ledger</div>
-  </div>
-  <div class="share-warn"><strong>Review before sending.</strong> Your readings are personal health data. Each option below shows you exactly what will be shared before anything is sent.</div>
-  <div class="share-opts">
-    <div class="sopt" onclick="confirmShare('wa')">
-      <div class="sopt-ic">💬</div>
-      <div class="sopt-inf"><div class="sopt-t">Share current reading</div><div class="sopt-d">Your city and HRI score on WhatsApp — confirm before sending</div></div>
-      <div class="sopt-arr">›</div>
-    </div>
-    <div class="sopt" onclick="confirmShare('link')">
-      <div class="sopt-ic">🔗</div>
-      <div class="sopt-inf"><div class="sopt-t">Copy app link</div><div class="sopt-d">The BXP URL only — zero personal data</div></div>
-      <div class="sopt-arr">›</div>
-    </div>
-    <div class="sopt" onclick="showQR()">
-      <div class="sopt-ic">⬛</div>
-      <div class="sopt-inf"><div class="sopt-t">QR code</div><div class="sopt-d">Opens the app for anyone nearby — not your data</div></div>
-      <div class="sopt-arr">›</div>
-    </div>
-    <div class="sopt" onclick="exportPassport()">
-      <div class="sopt-ic">📦</div>
-      <div class="sopt-inf"><div class="sopt-t">Export full ledger</div><div class="sopt-d">Download your .bxp.json passport — for doctors, research, or personal archive</div></div>
-      <div class="sopt-arr">›</div>
-    </div>
-  </div>`;
-}
-
-// Confirmation modal before any personal data leaves the device
-let _pendingShare=null;
-function confirmShare(type){
-  const r=S.reading;
-  if(type==='link'){copyLink();return;}
-  const sm=$('sm'),ti=$('sm-title'),bo=$('sm-body'),pr=$('sm-prev'),ok=$('sm-ok');
-  if(type==='wa'){
-    ti.textContent='Share on WhatsApp?';
-    bo.textContent='This message will be sent. Your city and HRI score will be visible to the recipient.';
-    const txt=r?`🫁 My air right now — ${r.city}\nHRI: ${r.hri} (${r.level})\n\n${APP}`:APP;
-    pr.textContent=txt;
-    ok.textContent='Send on WhatsApp';
-    _pendingShare=()=>{window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`,'_blank');closeSM();};
-  }
-  ok.onclick=_pendingShare;
-  sm.classList.add('show');
-}
-function closeSM(){$('sm').classList.remove('show');_pendingShare=null;}
-function copyLink(){navigator.clipboard.writeText(APP).then(()=>toast('Link copied — no personal data included'));}
-function showQR(){$('qrbox').innerHTML=`<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(APP)}" width="200" height="200" style="display:block" alt="QR">`;$('qrm').classList.add('show');}
-
-function exportPassport(){
-  // Monthly letter and insights are embedded in the exported file
-  const letter=generateLetter();
-  const p={
-    bxpVersion:'2.0',fileType:'aggregate',
-    exportedAt:new Date().toISOString(),
-    totalRecords:S.ledger.length,
-    insights:{
-      exposureAge:calcExpAge(),
-      bodyLoad:calcBodyLoad(),
-      debtH:calcDebt().debt,
-      budgetPct:calcBudget().pct,
-      monthlyLetter:letter,
-    },
-    ledger:S.ledger
-  };
-  const blob=new Blob([JSON.stringify(p,null,2)],{type:'application/json'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');a.href=url;a.download=`bxp-passport-${Date.now()}.bxp.json`;a.click();
-  URL.revokeObjectURL(url);
-  toast('Exported — insights embedded in file');
-}
-
-function genAll(){
-  S.digest=generateDigest();S.letter=generateLetter();save();
-  go('now',document.querySelector('.sni,.bni'));
-  document.querySelectorAll('.sni,.bni').forEach((n,i)=>n.classList.toggle('act',i===0));
-  renderNow();toast('Generated — scroll down in Now');
-}
-
-// ════════════════════════════════════════════════════
-// NAV
-// ════════════════════════════════════════════════════
-
-function go(t,btn){
-  document.querySelectorAll('.scr').forEach(s=>s.classList.remove('act'));
-  document.querySelectorAll('.sni,.bni').forEach(n=>n.classList.remove('act'));
-  $('scr-'+t).classList.add('act');
-  if(btn)btn.classList.add('act');
-  if(t==='share')renderShare();
-}
-
-// ════════════════════════════════════════════════════
-// START
-// ════════════════════════════════════════════════════
-
-function showShell(){
-  $('scr-entry').classList.remove('act');
-  $('scr-now').classList.add('act');
-  if(isDesktop()){$('sidebar').style.display='flex';$('nav').style.display='none';}
-  else{$('nav').style.display='flex';$('sidebar').style.display='none';}
-}
-
-async function startApp(){
-  showShell();
-  setLoad(true,'Reading location...');
-  await doRead(true);
-  setLoad(false);
-  S.timer=setInterval(()=>doRead(false),5*60*1000);
-  S.active=true;
-  localStorage.setItem('bxp_s','1');
-}
-
-if(localStorage.getItem('bxp_s')){
-  setTimeout(async()=>{
-    showShell();
-    updateSBStats();
-    renderNow();renderLedger();renderPassport();
-    await doRead(true);
-    S.timer=setInterval(()=>doRead(false),5*60*1000);
-    S.active=true;
-  },80);
-}
-
-document.addEventListener('visibilitychange',()=>{if(!document.hidden&&S.active)doRead(false);});
-window.addEventListener('resize',()=>{
-  if(!S.active)return;
-  if(isDesktop()){$('sidebar').style.display='flex';$('nav').style.display='none';}
-  else{$('nav').style.display='flex';$('sidebar').style.display='none';}
-});
-</script>
+<div class="mlov" id="sm"><div class="modal"><h3 id="sm-title">—</h3><div class="modal-b" id="sm-body"></div><div class="modal-prev" id="sm-prev"></div><div class="modal-acts"><button class="m-cancel" onclick="closeSM()">Cancel</button><button class="m-confirm" id="sm-ok">Send</button></div></div></div>
+<div class="mlov" id="qrm"><div class="modal qr-inner"><h3>Scan to open BXP</h3><p style="font-size:.74rem;color:var(--m2);margin-top:.25rem">Opens the app — not your personal data.</p><div id="qrbox" style="background:#fff;border-radius:8px;padding:.875rem;display:inline-block;margin:1rem 0;"></div><div class="qr-url">bxpprotocol.github.io/livenet.html</div><button class="m-close" onclick="document.getElementById('qrm').classList.remove('show')">Close</button></div></div>
+<script src="/db.js"></script>
+<script src="/app.js"></script>
 </body>
 </html>
