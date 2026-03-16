@@ -1217,62 +1217,138 @@
       </div>
     </header>
 
-    <!-- ONBOARDING MODAL (shown only once) -->
-    <div id="onboardingModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="onboarding-title" data-testid="onboarding-modal" hidden>
-      <div class="modal">
-        <div class="modal-header">
-          <h2 id="onboarding-title" class="modal-title">Welcome to BXP Oracle</h2>
-          <button class="modal-close" onclick="document.getElementById('sourcesModal').style.display='none';">×</button>
-        </div>
-        <div class="modal-body">
-          <p>This is the first system that tells you what your lungs process every day — in terms you understand. <strong>Your data never leaves this device.</strong></p>
-          
-          <div class="form-group">
-            <label class="form-label" for="privacyLevel">📍 Location precision</label>
-            <select id="privacyLevel" class="form-select" aria-describedby="privacyHelp">
-              <option value="exact">Exact (for most accurate tracking)</option>
-              <option value="neighborhood">Neighborhood level (∼100m)</option>
-              <option value="city">City level (anonymous)</option>
-            </select>
-            <div id="privacyHelp" class="form-help">Lower precision = more privacy. You can change this anytime.</div>
-          </div>
+    <!-- ONBOARDING MODAL - SIMPLE VERSION -->
+<div id="onboardingModal" class="modal-overlay" style="display: none;">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Welcome to BXP Oracle</h2>
+      <button class="modal-close" onclick="document.getElementById('onboardingModal').style.display='none'; document.body.style.overflow='auto';">×</button>
+    </div>
+    <div class="modal-body">
+      <p>This is the first system that tells you what your lungs process every day — in terms you understand. <strong>Your data never leaves this device.</strong></p>
+      
+      <div style="margin: 1.5rem 0;">
+        <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">📍 Location precision</label>
+        <select id="privacyLevel" style="width: 100%; padding: 0.75rem; background: #0a0a0a; color: white; border: 1px solid #333; border-radius: 8px;">
+          <option value="exact">Exact (for most accurate tracking)</option>
+          <option value="neighborhood" selected>Neighborhood level (∼100m)</option>
+          <option value="city">City level (anonymous)</option>
+        </select>
+        <div style="font-size: 0.8rem; color: #808080; margin-top: 0.25rem;">Lower precision = more privacy. You can change this anytime.</div>
+      </div>
 
-          <div class="form-group">
-            <label class="form-label" for="retentionDays">📅 Data retention</label>
-            <select id="retentionDays" class="form-select">
-              <option value="30">30 days</option>
-              <option value="90" selected>90 days (recommended)</option>
-              <option value="365">1 year</option>
-              <option value="1825">5 years</option>
-            </select>
-          </div>
+      <div style="margin: 1.5rem 0;">
+        <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">📅 Data retention</label>
+        <select id="retentionDays" style="width: 100%; padding: 0.75rem; background: #0a0a0a; color: white; border: 1px solid #333; border-radius: 8px;">
+          <option value="30">30 days</option>
+          <option value="90" selected>90 days (recommended)</option>
+          <option value="365">1 year</option>
+          <option value="1825">5 years</option>
+        </select>
+      </div>
 
-          <div class="form-group">
-            <label class="form-label" for="notificationTime">🔔 Daily notification time</label>
-            <input type="time" id="notificationTime" class="form-input" value="21:00">
-          </div>
+      <div style="margin: 1.5rem 0;">
+        <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">🔔 Daily notification time</label>
+        <input type="time" id="notificationTime" value="21:00" style="width: 100%; padding: 0.75rem; background: #0a0a0a; color: white; border: 1px solid #333; border-radius: 8px;">
+      </div>
 
-          <div class="form-group">
-            <label class="form-checkbox">
-              <input type="checkbox" id="enableNotifications" checked>
-              <span>Send daily digest with my exposure summary</span>
-            </label>
-          </div>
+      <div style="margin: 1rem 0;">
+        <label style="display: flex; align-items: center; gap: 0.5rem;">
+          <input type="checkbox" id="enableNotifications" checked style="width: 18px; height: 18px;">
+          <span>Send daily digest with my exposure summary</span>
+        </label>
+      </div>
 
-          <div class="form-group">
-            <label class="form-checkbox">
-              <input type="checkbox" id="enableHealthSync">
-              <span>Sync with Apple Health / Google Fit (optional)</span>
-            </label>
-          </div>
-        </div>
-        <div class="modal-footer">
-         <button class="button" onclick="document.getElementById('sourcesModal').style.display='flex';">📡 Sources</button>
-          <button class="button button-primary" id="onboardingSave">Start breathing consciously</button>
-        </div>
+      <div style="margin: 1rem 0;">
+        <label style="display: flex; align-items: center; gap: 0.5rem;">
+          <input type="checkbox" id="enableHealthSync" style="width: 18px; height: 18px;">
+          <span>Sync with Apple Health / Google Fit (optional)</span>
+        </label>
       </div>
     </div>
+    <div class="modal-footer">
+      <button class="button" onclick="document.getElementById('onboardingModal').style.display='none'; document.body.style.overflow='auto';">Skip for now</button>
+      <button class="button button-primary" id="onboardingSaveBtn">Start breathing consciously</button>
+    </div>
+  </div>
+</div>
 
+      </div>
+  </div>
+</div>
+
+<script>
+  // Force onboarding to show on first visit
+  if (!localStorage.getItem('bxp-onboarding-complete')) {
+    setTimeout(() => {
+      const modal = document.getElementById('onboardingModal');
+      if (modal) {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+      }
+    }, 1000);
+  }
+
+  // Make the Start button work
+  document.addEventListener('DOMContentLoaded', function() {
+    const startBtn = document.getElementById('onboardingSaveBtn');
+    if (startBtn) {
+      startBtn.addEventListener('click', function() {
+        // Save settings
+        const privacy = document.getElementById('privacyLevel')?.value || 'neighborhood';
+        const retention = document.getElementById('retentionDays')?.value || '90';
+        const notificationTime = document.getElementById('notificationTime')?.value || '21:00';
+        const notifications = document.getElementById('enableNotifications')?.checked || false;
+        const healthSync = document.getElementById('enableHealthSync')?.checked || false;
+        
+        // Save to localStorage
+        localStorage.setItem('bxp-onboarding-complete', 'true');
+        localStorage.setItem('bxp-privacy', privacy);
+        localStorage.setItem('bxp-retention', retention);
+        localStorage.setItem('bxp-notification-time', notificationTime);
+        localStorage.setItem('bxp-notifications', notifications);
+        localStorage.setItem('bxp-health-sync', healthSync);
+        
+        // Update privacy badge
+        const badge = document.getElementById('privacyMode');
+        if (badge) {
+          badge.textContent = privacy === 'exact' ? '📍 exact' : 
+                              privacy === 'neighborhood' ? '🏘️ area' : '🌍 city';
+        }
+        
+        // Close modal
+        document.getElementById('onboardingModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+        
+        // Show success message
+        alert('Welcome to BXP Oracle! Your settings have been saved.');
+        
+        // Reload to apply settings
+        setTimeout(() => location.reload(), 500);
+      });
+    }
+
+    // Make Skip button work
+    const skipBtn = document.querySelector('#onboardingModal .button:not(.button-primary)');
+    if (skipBtn) {
+      skipBtn.addEventListener('click', function() {
+        localStorage.setItem('bxp-onboarding-complete', 'skipped');
+        document.getElementById('onboardingModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+      });
+    }
+
+    // Make close button work
+    const closeBtn = document.querySelector('#onboardingModal .modal-close');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', function() {
+        document.getElementById('onboardingModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+      });
+    }
+  });
+</script>
+  
     <!-- PRIVACY SETTINGS MODAL -->
     <div id="privacyModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="privacy-modal-title" hidden>
       <div class="modal">
