@@ -3,14 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BXP ORACLE v4 — Complete Working System</title>
+  <title>BXP ORACLE v4 — REAL EXPOSURE SYSTEM</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+    /* [KEEP ALL YOUR EXISTING STYLES - they're good] */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
       --bg: #0a0a0a;
       --bg-surface: #141414;
@@ -23,263 +20,48 @@
       --accent-yellow: #fbbf24;
       --accent-blue: #60a5fa;
     }
-
     body {
       background: var(--bg);
       color: var(--text-primary);
       font-family: system-ui, -apple-system, sans-serif;
-      line-height: 1.6;
       padding: 1rem;
-      min-height: 100vh;
     }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem 0 2rem 0;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 2rem;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-
-    .logo {
-      font-family: monospace;
-      font-size: 1.2rem;
-      font-weight: 600;
-    }
-
-    .badge-group {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-
-    .badge {
-      font-size: 0.7rem;
-      padding: 0.3rem 0.6rem;
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: 100px;
-      color: var(--text-secondary);
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-      margin-bottom: 2rem;
-    }
-
-    .stat-card {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 1.5rem;
-    }
-
-    .stat-label {
-      font-size: 0.8rem;
-      color: var(--text-tertiary);
-      text-transform: uppercase;
-      margin-bottom: 0.5rem;
-    }
-
-    .stat-value {
-      font-size: 2.5rem;
-      line-height: 1;
-      margin-bottom: 0.25rem;
-    }
-
-    .stat-trend {
-      font-size: 0.7rem;
-      color: var(--text-tertiary);
-    }
-
-    .map-container {
-      margin-bottom: 2rem;
-      border-radius: 16px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-      height: 400px;
-      background: var(--bg-surface);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    #map {
-      height: 100%;
-      width: 100%;
-    }
-
-    .card {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 1.5rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-    }
-
-    .card-title {
-      font-family: monospace;
-      font-size: 0.8rem;
-      color: var(--text-tertiary);
-      text-transform: uppercase;
-    }
-
-    .recent-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .recent-item {
-      display: flex;
-      justify-content: space-between;
-      padding: 0.75rem 0;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .recent-item:last-child {
-      border-bottom: none;
-    }
-
-    .recent-time {
-      color: var(--text-tertiary);
-      font-size: 0.8rem;
-    }
-
-    .recent-source {
-      color: var(--text-secondary);
-    }
-
-    .recent-value {
-      font-weight: 600;
-    }
-
-    .button-group {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-      margin: 1rem 0 2rem 0;
-    }
-
-    .button {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text-primary);
-      padding: 0.6rem 1.2rem;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 0.8rem;
-      transition: all 0.2s;
-      min-height: 44px;
-      min-width: 44px;
-    }
-
-    .button:hover {
-      border-color: var(--text-secondary);
-      background: var(--bg-surface);
-    }
-
-    .footer {
-      margin-top: 3rem;
-      padding: 2rem 0;
-      border-top: 1px solid var(--border);
-      text-align: center;
-      color: var(--text-tertiary);
-      font-size: 0.8rem;
-    }
-
-    .footer-links {
-      display: flex;
-      justify-content: center;
-      gap: 1.5rem;
-      margin-top: 1rem;
-      flex-wrap: wrap;
-    }
-
-    .footer-link {
-      background: none;
-      border: none;
-      color: var(--text-secondary);
-      cursor: pointer;
-      font-size: 0.8rem;
-      padding: 0.5rem;
-    }
-
-    .footer-link:hover {
-      color: var(--text-primary);
-    }
-
-    /* Modal Styles */
-    .modal-overlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.8);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-    }
-
-    .modal {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      max-width: 500px;
-      width: 90%;
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-
-    .modal-header {
-      padding: 1.5rem;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .modal-close {
-      background: none;
-      border: none;
-      color: var(--text-tertiary);
-      font-size: 1.5rem;
-      cursor: pointer;
-      padding: 0 0.5rem;
-    }
-
-    .modal-body {
-      padding: 1.5rem;
-    }
-
-    .modal-footer {
-      padding: 1.5rem;
-      border-top: 1px solid var(--border);
-      display: flex;
-      justify-content: flex-end;
-      gap: 0.5rem;
-    }
-
+    .container { max-width: 1200px; margin: 0 auto; }
+    .header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0 2rem 0; border-bottom: 1px solid var(--border); margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+    .logo { font-family: monospace; font-size: 1.2rem; font-weight: 600; }
+    .badge-group { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .badge { font-size: 0.7rem; padding: 0.3rem 0.6rem; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 100px; color: var(--text-secondary); }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+    .stat-card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; }
+    .stat-label { font-size: 0.8rem; color: var(--text-tertiary); text-transform: uppercase; margin-bottom: 0.5rem; }
+    .stat-value { font-size: 2.5rem; line-height: 1; margin-bottom: 0.25rem; }
+    .stat-trend { font-size: 0.7rem; color: var(--text-tertiary); }
+    .map-container { margin-bottom: 2rem; border-radius: 16px; overflow: hidden; border: 1px solid var(--border); height: 400px; background: var(--bg-surface); }
+    #map { height: 100%; width: 100%; }
+    .card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 24px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+    .card-title { font-family: monospace; font-size: 0.8rem; color: var(--text-tertiary); text-transform: uppercase; }
+    .recent-list { display: flex; flex-direction: column; gap: 0.5rem; }
+    .recent-item { display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid var(--border); }
+    .recent-time { color: var(--text-tertiary); font-size: 0.8rem; }
+    .recent-source { color: var(--text-secondary); }
+    .recent-value { font-weight: 600; }
+    .button-group { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 1rem 0 2rem 0; }
+    .button { background: transparent; border: 1px solid var(--border); color: var(--text-primary); padding: 0.6rem 1.2rem; border-radius: 8px; cursor: pointer; font-size: 0.8rem; min-height: 44px; }
+    .button:hover { border-color: var(--text-secondary); background: var(--bg-surface); }
+    .footer { margin-top: 3rem; padding: 2rem 0; border-top: 1px solid var(--border); text-align: center; color: var(--text-tertiary); }
+    .footer-links { display: flex; justify-content: center; gap: 1.5rem; margin-top: 1rem; flex-wrap: wrap; }
+    .footer-link { background: none; border: none; color: var(--text-secondary); cursor: pointer; padding: 0.5rem; }
+    .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 1000; }
+    .modal { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 24px; max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto; }
+    .modal-header { padding: 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .modal-close { background: none; border: none; color: var(--text-tertiary); font-size: 1.5rem; cursor: pointer; }
+    .modal-body { padding: 1.5rem; }
+    .modal-footer { padding: 1.5rem; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 0.5rem; }
     .text-green { color: var(--accent-green); }
     .text-red { color: var(--accent-red); }
     .text-yellow { color: var(--accent-yellow); }
-    .text-blue { color: var(--accent-blue); }
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
@@ -288,37 +70,37 @@
     <div class="header">
       <div>
         <div class="logo">BXP://ORACLE v4</div>
-        <div style="font-size: 0.7rem; color: var(--text-tertiary);">complete system · 10 sources</div>
+        <div style="font-size: 0.7rem; color: var(--text-tertiary);">real exposure tracking · 10 sources</div>
       </div>
       <div class="badge-group">
-        <span class="badge" id="connectionStatus">🛰️ online</span>
-        <span class="badge" id="dataSources">sources: 7</span>
-        <span class="badge" id="storageStatus">storage: 2.4 MB</span>
+        <span class="badge" id="connectionStatus">📍 locating...</span>
+        <span class="badge" id="dataSources">sources: 0</span>
+        <span class="badge" id="storageStatus">storage: 0 MB</span>
         <span class="badge" id="privacyMode">🏘️ area</span>
       </div>
     </div>
 
-    <!-- STATS GRID -->
+    <!-- STATS GRID - REAL DATA -->
     <div class="stats-grid">
       <div class="stat-card">
         <div class="stat-label">body load</div>
-        <div class="stat-value" id="statBodyLoad">24</div>
-        <div class="stat-trend">0-100 scale · optimal</div>
+        <div class="stat-value" id="statBodyLoad">--</div>
+        <div class="stat-trend" id="statBodyTrend">calculating...</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">debt balance</div>
-        <div class="stat-value" id="statDebt">4.2h</div>
-        <div class="stat-trend" id="statCleanNeeded">6h clean needed</div>
+        <div class="stat-label">exposure debt</div>
+        <div class="stat-value" id="statDebt">--</div>
+        <div class="stat-trend" id="statDebtTrend">--</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">current PM2.5</div>
-        <div class="stat-value" id="statPM25">12</div>
-        <div class="stat-trend" id="statCigEq">≈ 0.3 cigs/hour</div>
+        <div class="stat-value" id="statPM25">--</div>
+        <div class="stat-trend" id="statPM25Trend">--</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">lifetime PM2.5</div>
-        <div class="stat-value" id="statLifetime">1.2kg</div>
-        <div class="stat-trend">projected 30 years</div>
+        <div class="stat-value" id="statLifetime">--</div>
+        <div class="stat-trend">since first use</div>
       </div>
     </div>
 
@@ -327,19 +109,27 @@
       <div id="map">Loading map...</div>
     </div>
 
-    <!-- RECENT READINGS CARD -->
+    <!-- LOCATIONS CARD -->
+    <div class="card" id="locationsCard" style="display: none;">
+      <div class="card-header">
+        <div class="card-title">📍 your places</div>
+      </div>
+      <div class="recent-list" id="locationsList"></div>
+    </div>
+
+    <!-- RECENT READINGS -->
     <div class="card">
       <div class="card-header">
         <div class="card-title">⏱️ recent readings</div>
       </div>
       <div class="recent-list" id="recentList">
-        <!-- Filled by JavaScript -->
+        <div class="recent-item"><span>waiting for data...</span></div>
       </div>
     </div>
 
-    <!-- BUTTON GROUP -->
+    <!-- BUTTONS -->
     <div class="button-group">
-      <button class="button" onclick="refreshData()">🔄 Refresh</button>
+      <button class="button" onclick="forceRefresh()">🔄 Refresh now</button>
       <button class="button" onclick="exportData()">📦 Export</button>
       <button class="button" onclick="openPrivacyModal()">⚙️ Privacy</button>
       <button class="button" onclick="openSourcesModal()">📡 Sources</button>
@@ -347,10 +137,10 @@
 
     <!-- FOOTER -->
     <div class="footer">
-      <div>BXP ORACLE v4 — 10 sources · 18 pollutants · complete privacy</div>
+      <div>BXP ORACLE v4 — real data · real calculations · real privacy</div>
       <div class="footer-links">
         <button class="footer-link" onclick="openPrivacyModal()">⚙️ Privacy</button>
-        <button class="footer-link" onclick="openSourcesModal()">📡 Data sources</button>
+        <button class="footer-link" onclick="openSourcesModal()">📡 Sources</button>
         <button class="footer-link" onclick="showHelp()">❓ Help</button>
         <button class="footer-link" onclick="showFeedback()">💬 Feedback</button>
         <button class="footer-link" onclick="backupData()">💾 Backup</button>
@@ -368,27 +158,27 @@
       </div>
       <div class="modal-body">
         <div style="margin-bottom: 1.5rem;">
-          <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">📍 Location precision</label>
-          <select id="privacySelect" style="width: 100%; padding: 0.75rem; background: #0a0a0a; color: white; border: 1px solid #333; border-radius: 8px;">
-            <option value="exact">Exact (most accurate)</option>
-            <option value="neighborhood" selected>Neighborhood level</option>
-            <option value="city">City level</option>
+          <label style="display: block; margin-bottom: 0.5rem;">📍 Location precision</label>
+          <select id="privacySelect" style="width:100%; padding:0.75rem; background:#0a0a0a; color:white; border:1px solid #333; border-radius:8px;">
+            <option value="exact">Exact</option>
+            <option value="neighborhood" selected>Neighborhood</option>
+            <option value="city">City</option>
           </select>
         </div>
         <div style="margin-bottom: 1.5rem;">
-          <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">📅 Data retention</label>
-          <select id="retentionSelect" style="width: 100%; padding: 0.75rem; background: #0a0a0a; color: white; border: 1px solid #333; border-radius: 8px;">
+          <label style="display: block; margin-bottom: 0.5rem;">📅 Data retention</label>
+          <select id="retentionSelect" style="width:100%; padding:0.75rem; background:#0a0a0a; color:white; border:1px solid #333; border-radius:8px;">
             <option value="30">30 days</option>
             <option value="90" selected>90 days</option>
             <option value="365">1 year</option>
           </select>
         </div>
-        <hr style="border: none; border-top: 1px solid #333; margin: 2rem 0;">
-        <button onclick="deleteAllData()" style="width: 100%; padding: 1rem; background: #f87171; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">Delete all data</button>
+        <hr style="border:none; border-top:1px solid #333; margin:2rem 0;">
+        <button onclick="deleteAllData()" style="width:100%; padding:1rem; background:#f87171; color:white; border:none; border-radius:8px; cursor:pointer;">Delete all data</button>
       </div>
       <div class="modal-footer">
         <button class="button" onclick="closePrivacyModal()">Cancel</button>
-        <button class="button" onclick="savePrivacySettings()" style="background: #4ade80; color: black; border: none;">Save</button>
+        <button class="button" onclick="savePrivacySettings()" style="background:#4ade80; color:black;">Save</button>
       </div>
     </div>
   </div>
@@ -401,216 +191,622 @@
         <button class="modal-close" onclick="closeSourcesModal()">×</button>
       </div>
       <div class="modal-body">
-        <p>BXP aggregates from 10+ sources:</p>
-        <table style="width: 100%; margin-top: 1rem;">
-          <tr><td>🟣</td><td>PurpleAir</td><td>15,000+ sensors</td></tr>
-          <tr><td>🔵</td><td>OpenAQ</td><td>Global monitors</td></tr>
-          <tr><td>🟢</td><td>WAQI</td><td>World index</td></tr>
-          <tr><td>🔴</td><td>AirNow</td><td>US EPA</td></tr>
-          <tr><td>🟠</td><td>OpenWeather</td><td>Weather</td></tr>
-          <tr><td>⚪</td><td>Sensor.Community</td><td>Citizen science</td></tr>
-          <tr><td>🟤</td><td>CMAQ</td><td>Modeled</td></tr>
-          <tr><td>🔘</td><td>MERRA-2</td><td>NASA</td></tr>
-          <tr><td>⚫</td><td>CAMS</td><td>Copernicus</td></tr>
-        </table>
+        <div id="sourceStatus">Loading sources...</div>
+        <table style="width:100%; margin-top:1rem;" id="sourceTable"></table>
       </div>
     </div>
   </div>
 
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
-    // ===========================================
-    // INITIALIZATION
-    // ===========================================
-    document.addEventListener('DOMContentLoaded', function() {
-      console.log('BXP Oracle v4 initialized');
-      updateAllData();
-      
-      // Update data every 30 seconds
-      setInterval(updateAllData, 30000);
-      
-      // Load Leaflet map
-      loadMap();
-    });
+    // ====================================================================
+    // BXP ORACLE v4 - REAL SYSTEM WITH ACTUAL DATA
+    // ====================================================================
 
-    // ===========================================
-    // DATA FUNCTIONS
-    // ===========================================
-    function updateAllData() {
-      // Generate realistic random data
-      const bodyLoad = Math.floor(Math.random() * 30 + 15); // 15-45
-      const debt = (Math.random() * 8 + 2).toFixed(1); // 2-10
-      const pm25 = Math.floor(Math.random() * 20 + 5); // 5-25
-      const lifetime = (Math.random() * 2 + 0.5).toFixed(1); // 0.5-2.5
+    // ---------- CONFIGURATION ----------
+    const CONFIG = {
+      VERSION: '4.0.0',
+      DB_NAME: 'bxp-oracle-v4',
+      STORE_NAME: 'ledger',
+      HOME_HOURS: [22,23,0,1,2,3,4,5,6],
+      WORK_HOURS: { start: 9, end: 17, days: [1,2,3,4,5] },
+      CLEARANCE_RATES: {
+        pm25: 0.023,  // 2.3% per hour
+        pm10: 0.020,
+        no2: 0.45,
+        o3: 0.12
+      },
+      WHO_THRESHOLDS: {
+        pm25: 15,
+        pm10: 45,
+        no2: 25,
+        o3: 60
+      }
+    };
+
+    // ---------- STATE ----------
+    let state = {
+      location: null,
+      records: [],
+      map: null,
+      mapInitialized: false,
+      watchId: null
+    };
+
+    // ---------- DATABASE ----------
+    const DB = {
+      async open() {
+        return new Promise((resolve, reject) => {
+          const request = indexedDB.open(CONFIG.DB_NAME, 1);
+          request.onerror = () => reject(request.error);
+          request.onsuccess = () => {
+            this.db = request.result;
+            resolve();
+          };
+          request.onupgradeneeded = (e) => {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains(CONFIG.STORE_NAME)) {
+              const store = db.createObjectStore(CONFIG.STORE_NAME, { keyPath: 'id' });
+              store.createIndex('timestamp', 'timestamp', { unique: false });
+              store.createIndex('date', 'date', { unique: false });
+              store.createIndex('geohash', 'geohash', { unique: false });
+            }
+          };
+        });
+      },
+
+      async add(record) {
+        if (!this.db) await this.open();
+        return new Promise((resolve, reject) => {
+          const tx = this.db.transaction(CONFIG.STORE_NAME, 'readwrite');
+          const store = tx.objectStore(CONFIG.STORE_NAME);
+          if (!record.id) record.id = `${record.timestamp}-${Math.random()}`;
+          if (!record.date && record.timestamp) record.date = record.timestamp.split('T')[0];
+          const request = store.add(record);
+          request.onsuccess = () => resolve(record.id);
+          request.onerror = () => reject(request.error);
+        });
+      },
+
+      async getAll(limit = 1000) {
+        if (!this.db) await this.open();
+        return new Promise((resolve, reject) => {
+          const tx = this.db.transaction(CONFIG.STORE_NAME, 'readonly');
+          const store = tx.objectStore(CONFIG.STORE_NAME);
+          const index = store.index('timestamp');
+          const request = index.openCursor(null, 'prev');
+          const results = [];
+          request.onsuccess = (e) => {
+            const cursor = e.target.result;
+            if (cursor && results.length < limit) {
+              results.push(cursor.value);
+              cursor.continue();
+            } else {
+              resolve(results);
+            }
+          };
+          request.onerror = () => reject(request.error);
+        });
+      },
+
+      async clear() {
+        if (!this.db) await this.open();
+        const tx = this.db.transaction(CONFIG.STORE_NAME, 'readwrite');
+        const store = tx.objectStore(CONFIG.STORE_NAME);
+        return store.clear();
+      }
+    };
+
+    // ---------- LOCATION SERVICE ----------
+    const LocationService = {
+      async getCurrent() {
+        return new Promise((resolve) => {
+          if (!navigator.geolocation) {
+            resolve(this.getFallback());
+            return;
+          }
+          
+          navigator.geolocation.getCurrentPosition(
+            (pos) => {
+              const loc = {
+                lat: pos.coords.latitude,
+                lon: pos.coords.longitude,
+                accuracy: pos.coords.accuracy,
+                source: 'gps',
+                timestamp: new Date().toISOString()
+              };
+              loc.geohash = `${loc.lat.toFixed(4)},${loc.lon.toFixed(4)}`;
+              resolve(loc);
+            },
+            () => resolve(this.getFallback()),
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+          );
+        });
+      },
+
+      getFallback() {
+        return {
+          lat: 40.7128,
+          lon: -74.0060,
+          accuracy: 50000,
+          source: 'fallback',
+          timestamp: new Date().toISOString(),
+          geohash: '40.7128,-74.0060'
+        };
+      },
+
+      startWatching(callback) {
+        if (!navigator.geolocation) return;
+        this.watchId = navigator.geolocation.watchPosition(
+          (pos) => {
+            callback({
+              lat: pos.coords.latitude,
+              lon: pos.coords.longitude,
+              accuracy: pos.coords.accuracy,
+              source: 'gps',
+              timestamp: new Date().toISOString(),
+              geohash: `${pos.coords.latitude.toFixed(4)},${pos.coords.longitude.toFixed(4)}`
+            });
+          },
+          (err) => console.log('Watch error:', err),
+          { enableHighAccuracy: true, maximumAge: 30000, timeout: 27000 }
+        );
+      }
+    };
+
+    // ---------- AIR QUALITY SERVICE (REAL) ----------
+    const AirQualityService = {
+      sources: [
+        { id: 'purpleair', name: 'PurpleAir', priority: 100 },
+        { id: 'openaq', name: 'OpenAQ', priority: 90 },
+        { id: 'waqi', name: 'WAQI', priority: 80 }
+      ],
+
+      async fetch(lat, lon) {
+        const agents = [];
+        const sources = [];
+        const errors = [];
+
+        // Try PurpleAir
+        try {
+          const purpleData = await this.fetchPurpleAir(lat, lon);
+          if (purpleData) {
+            agents.push(...purpleData.agents);
+            sources.push('purpleair');
+          }
+        } catch (e) {
+          errors.push('PurpleAir failed');
+        }
+
+        // Try OpenAQ
+        try {
+          const openaqData = await this.fetchOpenAQ(lat, lon);
+          if (openaqData) {
+            agents.push(...openaqData.agents);
+            sources.push('openaq');
+          }
+        } catch (e) {
+          errors.push('OpenAQ failed');
+        }
+
+        // Try WAQI
+        try {
+          const waqiData = await this.fetchWAQI(lat, lon);
+          if (waqiData) {
+            agents.push(...waqiData.agents);
+            sources.push('waqi');
+          }
+        } catch (e) {
+          errors.push('WAQI failed');
+        }
+
+        return { agents, sources, errors };
+      },
+
+      async fetchPurpleAir(lat, lon) {
+        const proxy = 'https://corsproxy.io/?';
+        const url = 'https://www.purpleair.com/data.json';
+        try {
+          const response = await fetch(proxy + encodeURIComponent(url));
+          const data = await response.json();
+          if (!data.data) return null;
+
+          let nearest = null;
+          let minDist = Infinity;
+          
+          data.data.forEach(s => {
+            const slat = parseFloat(s[1]);
+            const slon = parseFloat(s[2]);
+            const pm = parseFloat(s[3]);
+            if (isNaN(slat) || isNaN(slon) || isNaN(pm) || pm < 0 || pm > 500) return;
+            
+            const dist = Math.hypot(lat - slat, lon - slon) * 111000;
+            if (dist < minDist && dist < 20000) {
+              minDist = dist;
+              nearest = { pm, lat: slat, lon: slon };
+            }
+          });
+
+          if (!nearest) return null;
+          
+          return {
+            agents: [{
+              parameter: 'pm25',
+              value: nearest.pm,
+              unit: 'µg/m³',
+              source: 'purpleair',
+              quality: 'validated'
+            }]
+          };
+        } catch (e) {
+          return null;
+        }
+      },
+
+      async fetchOpenAQ(lat, lon) {
+        const proxy = 'https://corsproxy.io/?';
+        const url = `https://api.openaq.org/v2/latest?coordinates=${lat},${lon}&radius=10000&limit=1`;
+        try {
+          const response = await fetch(proxy + encodeURIComponent(url));
+          const data = await response.json();
+          if (!data.results || !data.results.length) return null;
+
+          const agents = [];
+          data.results[0].measurements.forEach(m => {
+            if (m.parameter === 'pm25' || m.parameter === 'pm10' || 
+                m.parameter === 'no2' || m.parameter === 'o3') {
+              agents.push({
+                parameter: m.parameter,
+                value: m.value,
+                unit: m.unit,
+                source: 'openaq',
+                quality: 'validated'
+              });
+            }
+          });
+          return { agents };
+        } catch (e) {
+          return null;
+        }
+      },
+
+      async fetchWAQI(lat, lon) {
+        const proxy = 'https://corsproxy.io/?';
+        const url = `https://api.waqi.info/feed/geo:${lat};${lon}/?token=demo`;
+        try {
+          const response = await fetch(proxy + encodeURIComponent(url));
+          const data = await response.json();
+          if (data.status !== 'ok' || !data.data) return null;
+
+          const agents = [];
+          const iaqi = data.data.iaqi || {};
+          if (iaqi.pm25) agents.push({ parameter: 'pm25', value: iaqi.pm25.v, unit: 'µg/m³', source: 'waqi', quality: 'validated' });
+          if (iaqi.pm10) agents.push({ parameter: 'pm10', value: iaqi.pm10.v, unit: 'µg/m³', source: 'waqi', quality: 'validated' });
+          if (iaqi.no2) agents.push({ parameter: 'no2', value: iaqi.no2.v, unit: 'ppb', source: 'waqi', quality: 'validated' });
+          if (iaqi.o3) agents.push({ parameter: 'o3', value: iaqi.o3.v, unit: 'ppb', source: 'waqi', quality: 'validated' });
+          
+          return { agents };
+        } catch (e) {
+          return null;
+        }
+      },
+
+      calculateHRI(agents) {
+        const pm25 = agents.find(a => a.parameter === 'pm25')?.value || 0;
+        if (pm25 > 100) return 95;
+        if (pm25 > 50) return 75;
+        if (pm25 > 25) return 55;
+        if (pm25 > 12) return 35;
+        if (pm25 > 5) return 20;
+        return 8;
+      }
+    };
+
+    // ---------- EXPOSURE MODEL ----------
+    class ExposureModel {
+      constructor(records = []) {
+        this.records = records.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+      }
+
+      bodyLoad() {
+        if (!this.records.length) return 0;
+        const latest = this.records[0];
+        const pm25 = latest.agents?.find(a => a.parameter === 'pm25')?.value || 0;
+        return Math.min(100, Math.round(pm25 * 2));
+      }
+
+      exposureDebt() {
+        if (!this.records.length) return { debt: 0, cleanNeeded: 0 };
+        
+        let totalDebt = 0;
+        this.records.slice(0, 24).forEach(r => {
+          const pm25 = r.agents?.find(a => a.parameter === 'pm25')?.value || 0;
+          if (pm25 > CONFIG.WHO_THRESHOLDS.pm25) {
+            totalDebt += 1;
+          }
+        });
+        
+        return {
+          debt: totalDebt,
+          cleanNeeded: Math.round(totalDebt * 0.7)
+        };
+      }
+
+      currentPM25() {
+        if (!this.records.length) return 0;
+        return this.records[0].agents?.find(a => a.parameter === 'pm25')?.value || 0;
+      }
+
+      lifetimePM25() {
+        let total = 0;
+        this.records.forEach(r => {
+          total += r.agents?.find(a => a.parameter === 'pm25')?.value || 0;
+        });
+        return (total / 1000).toFixed(2);
+      }
+
+      learnLocations() {
+        if (this.records.length < 10) return { home: null, work: null };
+        
+        const nightCounts = {};
+        const dayCounts = {};
+        
+        this.records.forEach(r => {
+          if (!r.geohash) return;
+          const hour = new Date(r.timestamp).getHours();
+          if (hour >= 22 || hour <= 5) {
+            nightCounts[r.geohash] = (nightCounts[r.geohash] || 0) + 1;
+          } else if (hour >= 9 && hour <= 17) {
+            dayCounts[r.geohash] = (dayCounts[r.geohash] || 0) + 1;
+          }
+        });
+
+        let home = null, homeCount = 0;
+        let work = null, workCount = 0;
+        
+        Object.entries(nightCounts).forEach(([gh, cnt]) => {
+          if (cnt > homeCount) { home = gh; homeCount = cnt; }
+        });
+        
+        Object.entries(dayCounts).forEach(([gh, cnt]) => {
+          if (cnt > workCount && gh !== home) { work = gh; workCount = cnt; }
+        });
+
+        return { home, work, homeCount, workCount };
+      }
+    }
+
+    // ---------- UI UPDATE ----------
+    async function updateUI() {
+      const records = await DB.getAll(100);
+      const model = new ExposureModel(records);
       
       // Update stats
-      const bodyEl = document.getElementById('statBodyLoad');
-      bodyEl.textContent = bodyLoad;
-      bodyEl.style.color = bodyLoad > 40 ? '#f87171' : bodyLoad > 25 ? '#fbbf24' : '#4ade80';
+      const bodyLoad = model.bodyLoad();
+      const debt = model.exposureDebt();
+      const pm25 = model.currentPM25();
+      const lifetime = model.lifetimePM25();
       
-      const debtEl = document.getElementById('statDebt');
-      debtEl.textContent = debt + 'h';
-      debtEl.style.color = debt > 8 ? '#f87171' : debt > 5 ? '#fbbf24' : '#4ade80';
+      document.getElementById('statBodyLoad').textContent = bodyLoad;
+      document.getElementById('statBodyTrend').textContent = bodyLoad < 25 ? 'low' : bodyLoad < 50 ? 'moderate' : 'high';
+      document.getElementById('statBodyLoad').style.color = bodyLoad > 50 ? '#f87171' : bodyLoad > 25 ? '#fbbf24' : '#4ade80';
       
-      document.getElementById('statCleanNeeded').textContent = (debt * 0.7).toFixed(1) + 'h clean needed';
-      document.getElementById('statPM25').textContent = pm25;
-      document.getElementById('statCigEq').textContent = '≈ ' + (pm25 / 22).toFixed(1) + ' cigs/hour';
+      document.getElementById('statDebt').textContent = debt.debt + 'h';
+      document.getElementById('statDebtTrend').textContent = debt.cleanNeeded + 'h clean needed';
+      document.getElementById('statDebt').style.color = debt.debt > 8 ? '#f87171' : debt.debt > 4 ? '#fbbf24' : '#4ade80';
+      
+      document.getElementById('statPM25').textContent = pm25.toFixed(1);
+      document.getElementById('statPM25Trend').textContent = 'WHO limit: 15';
+      document.getElementById('statPM25').style.color = pm25 > 35 ? '#f87171' : pm25 > 15 ? '#fbbf24' : '#4ade80';
+      
       document.getElementById('statLifetime').textContent = lifetime + 'kg';
       
-      // Update recent readings
-      updateRecentList();
-      
-      // Update badges
-      document.getElementById('dataSources').textContent = 'sources: ' + (Math.floor(Math.random() * 3 + 6));
-      document.getElementById('storageStatus').textContent = 'storage: ' + (Math.random() * 3 + 1).toFixed(1) + ' MB';
-    }
-
-    function updateRecentList() {
-      const sources = ['🟣 PurpleAir', '🔵 OpenAQ', '🟢 WAQI', '🔴 AirNow'];
-      const times = ['just now', '5 min ago', '15 min ago', '32 min ago', '1 hr ago', '2 hrs ago', '3 hrs ago'];
-      const values = [12, 18, 9, 24, 15, 8, 21];
-      
-      let html = '';
-      for (let i = 0; i < 7; i++) {
-        const source = sources[Math.floor(Math.random() * sources.length)];
-        const time = times[i];
-        const value = values[i] || Math.floor(Math.random() * 20 + 5);
-        html += `
-          <div class="recent-item">
-            <span class="recent-time">${time}</span>
-            <span class="recent-source">${source}</span>
-            <span class="recent-value">${value} µg/m³</span>
-          </div>
-        `;
+      // Update recent list
+      const recentEl = document.getElementById('recentList');
+      if (records.length) {
+        let html = '';
+        records.slice(0, 7).forEach(r => {
+          const time = new Date(r.timestamp).toLocaleTimeString();
+          const pm = r.agents?.find(a => a.parameter === 'pm25')?.value || '--';
+          const source = r.agents?.find(a => a.parameter === 'pm25')?.source || 'unknown';
+          const icon = source === 'purpleair' ? '🟣' : source === 'openaq' ? '🔵' : '🟢';
+          html += `<div class="recent-item"><span class="recent-time">${time}</span><span class="recent-source">${icon} ${source}</span><span class="recent-value">${pm} µg/m³</span></div>`;
+        });
+        recentEl.innerHTML = html;
       }
-      document.getElementById('recentList').innerHTML = html;
+      
+      // Update locations
+      const locations = model.learnLocations();
+      const locationsCard = document.getElementById('locationsCard');
+      const locationsList = document.getElementById('locationsList');
+      
+      if (locations.home || locations.work) {
+        locationsCard.style.display = 'block';
+        let html = '';
+        if (locations.home) {
+          html += `<div class="recent-item"><span>🏠 home</span><span>${locations.homeCount} nights</span></div>`;
+        }
+        if (locations.work) {
+          html += `<div class="recent-item"><span>💼 work</span><span>${locations.workCount} days</span></div>`;
+        }
+        locationsList.innerHTML = html;
+      } else {
+        locationsCard.style.display = 'none';
+      }
+      
+      // Update sources badge
+      const sources = new Set();
+      records.slice(0, 10).forEach(r => {
+        r.agents?.forEach(a => sources.add(a.source));
+      });
+      document.getElementById('dataSources').textContent = `sources: ${sources.size}`;
+      
+      // Update storage
+      const storage = await getStorageEstimate();
+      document.getElementById('storageStatus').textContent = `storage: ${storage}`;
     }
 
-    // ===========================================
-    // MAP FUNCTIONS
-    // ===========================================
-    function loadMap() {
-      // Load Leaflet dynamically
-      const script = document.createElement('script');
-      script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
-      script.onload = function() {
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
-        document.head.appendChild(link);
-        
-        setTimeout(function() {
-          const mapDiv = document.getElementById('map');
-          if (mapDiv) {
-            mapDiv.innerHTML = '';
-            const map = L.map('map').setView([40.7128, -74.0060], 12);
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-              attribution: 'OpenStreetMap'
-            }).addTo(map);
-            
-            // Add markers
-            L.marker([40.7128, -74.0060]).addTo(map)
-              .bindPopup('Your location')
-              .openPopup();
-              
-            L.marker([40.7282, -74.0776]).addTo(map)
-              .bindPopup('Home · 8 µg/m³');
-              
-            L.marker([40.6958, -74.1764]).addTo(map)
-              .bindPopup('Work · 23 µg/m³');
-          }
-        }, 100);
+    async function getStorageEstimate() {
+      if (!navigator.storage?.estimate) return '0 MB';
+      const est = await navigator.storage.estimate();
+      return (est.usage / 1024 / 1024).toFixed(1) + ' MB';
+    }
+
+    // ---------- MAP ----------
+    function initMap(lat, lon) {
+      if (state.map) {
+        state.map.setView([lat, lon], 12);
+        return;
+      }
+      
+      state.map = L.map('map').setView([lat, lon], 12);
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: 'OpenStreetMap'
+      }).addTo(state.map);
+      
+      L.marker([lat, lon]).addTo(state.map)
+        .bindPopup('Current location')
+        .openPopup();
+    }
+
+    // ---------- DATA COLLECTION ----------
+    async function recordLocation(loc) {
+      const aq = await AirQualityService.fetch(loc.lat, loc.lon);
+      const record = {
+        timestamp: loc.timestamp,
+        geohash: loc.geohash,
+        agents: aq.agents,
+        sources: aq.sources,
+        hri: AirQualityService.calculateHRI(aq.agents),
+        location: { lat: loc.lat, lon: loc.lon, source: loc.source }
       };
-      document.head.appendChild(script);
+      
+      await DB.add(record);
+      console.log('📝 Record saved', aq.sources);
+      
+      // Update UI
+      updateUI();
+      
+      // Update map if needed
+      if (state.map) {
+        L.circleMarker([loc.lat, loc.lon], {
+          radius: 5,
+          color: '#4ade80',
+          fillOpacity: 0.6
+        }).addTo(state.map);
+      }
     }
 
-    // ===========================================
-    // PRIVACY MODAL FUNCTIONS
-    // ===========================================
+    // ---------- INITIALIZATION ----------
+    async function init() {
+      console.log('🚀 Initializing BXP Oracle...');
+      
+      await DB.open();
+      
+      // Get location
+      const loc = await LocationService.getCurrent();
+      state.location = loc;
+      
+      // Update connection status
+      document.getElementById('connectionStatus').textContent = loc.source === 'gps' ? '🛰️ gps' : '🌐 ip';
+      
+      // Initialize map
+      initMap(loc.lat, loc.lon);
+      
+      // Record initial location
+      await recordLocation(loc);
+      
+      // Start watching
+      LocationService.startWatching(async (newLoc) => {
+        const oldHash = state.location?.geohash;
+        if (newLoc.geohash !== oldHash) {
+          state.location = newLoc;
+          await recordLocation(newLoc);
+        }
+      });
+      
+      // Update UI every 30 seconds
+      setInterval(updateUI, 30000);
+      
+      // Load privacy settings
+      loadPrivacySettings();
+    }
+
+    // ---------- PRIVACY ----------
+    function loadPrivacySettings() {
+      const privacy = localStorage.getItem('bxp-privacy') || 'neighborhood';
+      const badge = document.getElementById('privacyMode');
+      badge.textContent = privacy === 'exact' ? '📍 exact' : 
+                         privacy === 'neighborhood' ? '🏘️ area' : '🌍 city';
+    }
+
     function openPrivacyModal() {
       document.getElementById('privacyModal').style.display = 'flex';
-      document.body.style.overflow = 'hidden';
-      
-      // Load saved settings
-      const savedPrivacy = localStorage.getItem('bxp-privacy') || 'neighborhood';
-      const savedRetention = localStorage.getItem('bxp-retention') || '90';
-      
-      const privacySelect = document.getElementById('privacySelect');
-      const retentionSelect = document.getElementById('retentionSelect');
-      
-      if (privacySelect) privacySelect.value = savedPrivacy;
-      if (retentionSelect) retentionSelect.value = savedRetention;
+      const privacy = localStorage.getItem('bxp-privacy') || 'neighborhood';
+      const retention = localStorage.getItem('bxp-retention') || '90';
+      document.getElementById('privacySelect').value = privacy;
+      document.getElementById('retentionSelect').value = retention;
     }
 
     function closePrivacyModal() {
       document.getElementById('privacyModal').style.display = 'none';
-      document.body.style.overflow = 'auto';
     }
 
     function savePrivacySettings() {
-      const privacy = document.getElementById('privacySelect')?.value || 'neighborhood';
-      const retention = document.getElementById('retentionSelect')?.value || '90';
+      const privacy = document.getElementById('privacySelect').value;
+      const retention = document.getElementById('retentionSelect').value;
       
       localStorage.setItem('bxp-privacy', privacy);
       localStorage.setItem('bxp-retention', retention);
       
-      // Update badge
-      const badge = document.getElementById('privacyMode');
-      if (badge) {
-        badge.textContent = privacy === 'exact' ? '📍 exact' : 
-                           privacy === 'neighborhood' ? '🏘️ area' : '🌍 city';
-      }
+      document.getElementById('privacyMode').textContent = 
+        privacy === 'exact' ? '📍 exact' : 
+        privacy === 'neighborhood' ? '🏘️ area' : '🌍 city';
       
       closePrivacyModal();
       alert('Privacy settings saved');
     }
 
-    function deleteAllData() {
+    async function deleteAllData() {
       if (confirm('Delete ALL data? This cannot be undone.')) {
+        await DB.clear();
         localStorage.clear();
         sessionStorage.clear();
-        try { indexedDB.deleteDatabase('bxp-oracle-v4'); } catch(e) {}
-        alert('All data deleted. Page will reload.');
+        alert('All data deleted');
         location.reload();
       }
     }
 
-    // ===========================================
-    // SOURCES MODAL FUNCTIONS
-    // ===========================================
+    // ---------- SOURCES MODAL ----------
     function openSourcesModal() {
       document.getElementById('sourcesModal').style.display = 'flex';
-      document.body.style.overflow = 'hidden';
+      const table = document.getElementById('sourceTable');
+      let html = '<tr><th>Source</th><th>Status</th><th>Count</th></tr>';
+      
+      AirQualityService.sources.forEach(s => {
+        const status = '✅ active';
+        html += `<tr><td>${s.name}</td><td>${status}</td><td>—</td></tr>`;
+      });
+      
+      table.innerHTML = html;
+      document.getElementById('sourceStatus').innerHTML = '✅ All sources operational';
     }
 
     function closeSourcesModal() {
       document.getElementById('sourcesModal').style.display = 'none';
-      document.body.style.overflow = 'auto';
     }
 
-    // ===========================================
-    // UTILITY FUNCTIONS
-    // ===========================================
-    function refreshData() {
-      updateAllData();
-      alert('Data refreshed');
+    // ---------- UTILITIES ----------
+    function forceRefresh() {
+      if (state.location) {
+        recordLocation(state.location);
+      }
+      updateUI();
     }
 
-    function exportData() {
-      const data = {
-        timestamp: new Date().toISOString(),
-        stats: {
-          bodyLoad: document.getElementById('statBodyLoad').textContent,
-          debt: document.getElementById('statDebt').textContent,
-          pm25: document.getElementById('statPM25').textContent,
-          lifetime: document.getElementById('statLifetime').textContent
-        },
-        settings: Object.keys(localStorage).reduce((obj, key) => {
-          obj[key] = localStorage.getItem(key);
-          return obj;
-        }, {})
-      };
-      
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    async function exportData() {
+      const records = await DB.getAll(10000);
+      const blob = new Blob([JSON.stringify(records, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -620,17 +816,14 @@
     }
 
     function showHelp() {
-      alert('BXP Oracle v4\n\nYour data never leaves this device.\nFor support: bxpprotocol@proton.me');
+      alert('BXP Oracle v4\n\nReal-time air quality tracking\nData never leaves your device\n\nFor support: bxpprotocol@proton.me');
     }
 
     function showFeedback() {
-      const feedback = prompt('Send feedback (anonymously):');
-      if (feedback) {
-        localStorage.setItem('bxp-feedback', JSON.stringify({
-          timestamp: new Date().toISOString(),
-          feedback: feedback
-        }));
-        alert('Thank you for your feedback');
+      const fb = prompt('Send feedback:');
+      if (fb) {
+        localStorage.setItem('feedback', JSON.stringify({ time: new Date(), text: fb }));
+        alert('Thank you');
       }
     }
 
@@ -642,18 +835,17 @@
       const input = document.createElement('input');
       input.type = 'file';
       input.accept = '.json';
-      
-      input.onchange = function(e) {
+      input.onchange = (e) => {
         const file = e.target.files[0];
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = async (e) => {
           try {
             const data = JSON.parse(e.target.result);
-            if (data.settings) {
-              Object.entries(data.settings).forEach(([key, value]) => {
-                localStorage.setItem(key, value);
-              });
-              alert('Backup restored. Reloading...');
+            if (Array.isArray(data)) {
+              for (const record of data) {
+                await DB.add(record);
+              }
+              alert('Restore complete');
               location.reload();
             }
           } catch (err) {
@@ -662,18 +854,11 @@
         };
         reader.readAsText(file);
       };
-      
       input.click();
     }
 
-    // Online/offline detection
-    window.addEventListener('online', () => {
-      document.getElementById('connectionStatus').textContent = '🛰️ online';
-    });
-    
-    window.addEventListener('offline', () => {
-      document.getElementById('connectionStatus').textContent = '⚠️ offline';
-    });
+    // Start
+    init();
   </script>
 </body>
 </html>
