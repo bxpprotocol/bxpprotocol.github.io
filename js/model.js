@@ -189,5 +189,124 @@ class ExposureModel {
   }
 }
 
+// Add to ExposureModel class
+  // Learn home and work locations from patterns
+  learnLocations() 
+    if (!this.records.length) return { home: null, work: null }; 
+    
+    // Group records by hour to find patterns
+    const hourCounts = {};
+    const locationByHour = {};
+    
+    this.records.forEach(record => {
+      const date = new Date(record.timestamp);
+      const hour = date.getHours();
+      const geohash = record.geohash;
+      
+      if (!hourCounts[hour]) hourCounts[hour] = 0;
+      hourCounts[hour]++;
+      
+      if (!locationByHour[hour]) locationByHour[hour] = {};
+      if (!locationByHour[hour][geohash]) locationByHour[hour][geohash] = 0;
+      locationByHour[hour][geohash]++;
+    });
+    
+    // Find most common location for night hours (10pm-6am)
+    let homeGeohash = null;
+    let homeConfidence = 0;
+    
+    for (let hour = 22; hour < 24; hour++) { // 10pm-12am
+      if (locationByHour[hour]) {
+        const mostCommon = this.getMostCommon(locationByHour[hour]);
+        if (mostCommon && mostCommon.count > homeConfidence) {
+          homeGeohash = mostCommon.key;
+          homeConfidence = mostCommon.count;
+        }
+      }
+    }
+    for (let hour = 0; hour < 6; hour++) { // 12am-6am
+      if (locationByHour[hour]) {
+        const mostCommon = this.getMostCommon(locationByHour[hour]);
+        if (mostCommon && mostCommon.count > homeConfidence) {
+          homeGeohash = mostCommon.key;
+          homeConfidence = mostCommon.count;
+        }
+      }
+    }
+    
+    // Find most common location for weekday day hours (9am-5pm Mon-Fri)
+    let workGeohash = null;
+    let workConfidence = 0;
+    
+    this.records.forEach(record => {
+      const date = new Date(record.timestamp);
+      const day = date.getDay(); // 0=Sunday, 1=Monday, etc.
+      const hour = date.getHours();
+      const geohash = record.geohash;
+      
+      // Weekday (Mon-Fri) during work hours (9am-5pm)
+      if (day >= 1 && day <= 5 && hour >= 9 && hour <= 17) {
+        if (!locationByHour['work']) locationByHour['work'] = {};
+        if (!locationByHour['work'][geohash]) locationByHour['work'][geohash] = 0;
+        locationByHour['work'][geohash]++;
+      }
+    });
+    
+    if (locationByHour['work']) {
+      const mostCommon = this.getMostCommon(locationByHour['work']);
+      if (mostCommon) {
+        workGeohash = mostCommon.key;
+        workConfidence = mostCommon.count;
+      }
+    }
+    
+    // Don't show if same as home
+    if (homeGeohash && workGeohash && homeGeohash === workGeohash) {
+      workGeohash = null;
+    }
+    
+    // Only show if we have enough confidence (at least 5 records)
+    return {
+      home: homeConfidence > 5 ? homeGeohash : null,
+      work: workConfidence > 5 ? workGeohash : null,
+      homeConfidence,
+      workConfidence
+    };
+  
+  
+  // Helper to find most common value in an object
+  getMostCommon(obj) 
+    let maxCount = 0;
+    let maxKey = null;
+    
+    Object.keys(obj).forEach(key => {
+      if (obj[key] > maxCount) {
+        maxCount = obj[key];
+        maxKey = key;
+      }
+    });
+    
+    return maxKey ? { key: maxKey, count: maxCount } : null;
+  
+  
+  // Get average air quality for a location
+  getLocationAverage(geohash, parameter = 'pm25') 
+    const records = this.records.filter(r => r.geohash === geohash);
+    if (records.length === 0) return null;
+    
+    let sum = 0;
+    let count = 0;
+    
+    records.forEach(record => {
+      const agent = record.agents.find(a => a.parameter === parameter);
+      if (agent) {
+        sum += agent.value;
+        count++;
+      }
+    });
+    
+    return count > 0 ? sum / count : null;
+  
+
 // Make available globally
 window.ExposureModel = ExposureModel;

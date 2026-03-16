@@ -175,20 +175,92 @@ async function updateUI() {
   
   // Update history
   updateHistory(recentRecords);
+  
+  // NEW: Update location insights
+  updateLocationInsights(model);
 }
 
-// Update the "Right now" card
-function updateCurrentStatus(model, records) {
-  const container = document.getElementById('current-status');
+// NEW: Update home/work insights
+function updateLocationInsights(model) {
+  const locations = model.learnLocations();
   
-  if (!records || records.length === 0) {
-    container.innerHTML = `
-      <div style="text-align:center; padding:1rem; color:var(--muted);">
-        No data yet. Waiting for location...
-      </div>
-    `;
+  // Check if we already have a location card
+  let locationCard = document.getElementById('location-insights');
+  
+  if (!locations.home && !locations.work) {
+    // No locations learned yet, remove card if exists
+    if (locationCard) locationCard.remove();
     return;
   }
+  
+  // Create or update card
+  const mainElement = document.querySelector('main');
+  
+  if (!locationCard) {
+    locationCard = document.createElement('div');
+    locationCard.id = 'location-insights';
+    locationCard.className = 'card';
+    mainElement.insertBefore(locationCard, mainElement.children[2]); // After second card
+  }
+  
+  let html = '<div class="card-title">Your places</div>';
+  
+  if (locations.home) {
+    const homePM25 = model.getLocationAverage(locations.home);
+    const homeDisplay = homePM25 ? `${homePM25.toFixed(1)} µg/m³` : 'learning...';
+    html += `
+      <div style="margin-bottom:1rem;">
+        <strong>🏠 Home</strong><br>
+        Average PM2.5: ${homeDisplay}
+      </div>
+    `;
+  }
+  
+  if (locations.work) {
+    const workPM25 = model.getLocationAverage(locations.work);
+    const workDisplay = workPM25 ? `${workPM25.toFixed(1)} µg/m³` : 'learning...';
+    
+    // Compare with home if both exist
+    if (locations.home) {
+      const homePM25 = model.getLocationAverage(locations.home);
+      if (homePM25 && workPM25) {
+        const ratio = (workPM25 / homePM25).toFixed(1);
+        const comparison = workPM25 > homePM25 
+          ? `${ratio}x worse than home` 
+          : `${(1/ratio).toFixed(1)}x better than home`;
+        
+        html += `
+          <div style="margin-bottom:1rem;">
+            <strong>💼 Work</strong><br>
+            Average PM2.5: ${workDisplay}<br>
+            <span style="font-size:0.8rem; color:var(--muted);">${comparison}</span>
+          </div>
+        `;
+      } else {
+        html += `
+          <div style="margin-bottom:1rem;">
+            <strong>💼 Work</strong><br>
+            Average PM2.5: ${workDisplay}
+          </div>
+        `;
+      }
+    } else {
+      html += `
+        <div style="margin-bottom:1rem;">
+          <strong>💼 Work</strong><br>
+          Average PM2.5: ${workDisplay}
+        </div>
+      `;
+    }
+  }
+  
+  // Add confidence note
+  if (locations.homeConfidence < 10) {
+    html += `<div style="font-size:0.7rem; color:var(--muted2); margin-top:1rem;">Learning your patterns... (${Math.min(100, Math.round(locations.homeConfidence*10))}% confidence)</div>`;
+  }
+  
+  locationCard.innerHTML = html;
+}
   
   const bodyLoad = model.calculateBodyLoad();
   const debt = model.calculateDebt();
@@ -215,7 +287,7 @@ function updateCurrentStatus(model, records) {
       ≈ <span>${cigaretteEq} cigarettes/hour</span>
     </div>
   `;
-}
+
 
 // Update today's summary
 function updateTodaySummary(records, model) {
