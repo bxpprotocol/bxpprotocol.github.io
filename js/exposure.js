@@ -108,13 +108,14 @@ function handleLocationError(error) {
   showError(message);
 }
 
-// Fetch air quality from OpenAQ
+// Fetch air quality from OpenAQ using CORS proxy
 async function fetchAirQuality(lat, lon) {
   try {
-    // OpenAQ nearest endpoint - free, no key needed
-    const url = `https://api.openaq.org/v2/latest?coordinates=${lat},${lon}&radius=10000&limit=1`;
+    // Use a public CORS proxy to bypass OpenAQ restriction
+    const proxyUrl = 'https://corsproxy.io/?';
+    const targetUrl = `https://api.openaq.org/v2/latest?coordinates=${lat},${lon}&radius=10000&limit=1`;
     
-    const response = await fetch(url);
+    const response = await fetch(proxyUrl + encodeURIComponent(targetUrl));
     const data = await response.json();
     
     if (data.results && data.results.length > 0) {
