@@ -1267,7 +1267,7 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button class="button" onclick="document.getElementById('sourcesModal').style.display='flex';">📡 Sources</button>
+         <button class="button" onclick="document.getElementById('sourcesModal').style.display='flex';">📡 Sources</button>
           <button class="button button-primary" id="onboardingSave">Start breathing consciously</button>
         </div>
       </div>
@@ -1327,27 +1327,26 @@
       </div>
     </div>
 
-    <!-- DATA SOURCES MODAL -->
-   <div id="sourcesModal" class="modal-overlay" style="display: none;">
-  <div class="modal">
+   <!-- SOURCES MODAL - CLOSES WHEN CLICKING OUTSIDE -->
+<div id="sourcesModal" class="modal-overlay" style="display: none;" onclick="this.style.display='none';">
+  <div class="modal" onclick="event.stopPropagation();">
     <div class="modal-header">
       <h2>Data sources</h2>
-      <button class="modal-close" onclick="document.getElementById('sourcesModal').style.display='none';">×</button>
     </div>
     <div class="modal-body">
       <p>BXP Oracle aggregates from 10+ sources to give you the most accurate picture of your exposure.</p>
       
-      <table style="width:100%; margin-top:1rem;">
-        <tr><td>🟣</td><td><strong>PurpleAir</strong></td><td>15,000+ citizen sensors</td></tr>
-        <tr><td>🔵</td><td><strong>OpenAQ</strong></td><td>Global government monitors</td></tr>
-        <tr><td>🟢</td><td><strong>WAQI</strong></td><td>World Air Quality Index</td></tr>
-        <tr><td>🟡</td><td><strong>AirNow</strong></td><td>US EPA data</td></tr>
-        <tr><td>🟠</td><td><strong>OpenWeather</strong></td><td>Weather correlation</td></tr>
-        <tr><td>🔴</td><td><strong>IQAir</strong></td><td>Global air quality</td></tr>
-        <tr><td>⚪</td><td><strong>Sensor.Community</strong></td><td>Open citizen science</td></tr>
-        <tr><td>🟤</td><td><strong>CMAQ</strong></td><td>Modeled air quality</td></tr>
-        <tr><td>🔘</td><td><strong>MERRA-2</strong></td><td>NASA reanalysis</td></tr>
-        <tr><td>⚫</td><td><strong>CAMS</strong></td><td>Copernicus Atmosphere</td></tr>
+      <table style="width:100%; margin-top:1rem; border-collapse: collapse;">
+        <tr><td style="padding: 0.5rem 0;">🟣</td><td style="padding: 0.5rem 0;"><strong>PurpleAir</strong></td><td style="padding: 0.5rem 0; text-align: right;">15,000+ citizen sensors</td></tr>
+        <tr><td style="padding: 0.5rem 0;">🔵</td><td style="padding: 0.5rem 0;"><strong>OpenAQ</strong></td><td style="padding: 0.5rem 0; text-align: right;">Global government monitors</td></tr>
+        <tr><td style="padding: 0.5rem 0;">🟢</td><td style="padding: 0.5rem 0;"><strong>WAQI</strong></td><td style="padding: 0.5rem 0; text-align: right;">World Air Quality Index</td></tr>
+        <tr><td style="padding: 0.5rem 0;">🟡</td><td style="padding: 0.5rem 0;"><strong>AirNow</strong></td><td style="padding: 0.5rem 0; text-align: right;">US EPA data</td></tr>
+        <tr><td style="padding: 0.5rem 0;">🟠</td><td style="padding: 0.5rem 0;"><strong>OpenWeather</strong></td><td style="padding: 0.5rem 0; text-align: right;">Weather correlation</td></tr>
+        <tr><td style="padding: 0.5rem 0;">🔴</td><td style="padding: 0.5rem 0;"><strong>IQAir</strong></td><td style="padding: 0.5rem 0; text-align: right;">Global air quality</td></tr>
+        <tr><td style="padding: 0.5rem 0;">⚪</td><td style="padding: 0.5rem 0;"><strong>Sensor.Community</strong></td><td style="padding: 0.5rem 0; text-align: right;">Open citizen science</td></tr>
+        <tr><td style="padding: 0.5rem 0;">🟤</td><td style="padding: 0.5rem 0;"><strong>CMAQ</strong></td><td style="padding: 0.5rem 0; text-align: right;">Modeled air quality</td></tr>
+        <tr><td style="padding: 0.5rem 0;">🔘</td><td style="padding: 0.5rem 0;"><strong>MERRA-2</strong></td><td style="padding: 0.5rem 0; text-align: right;">NASA reanalysis</td></tr>
+        <tr><td style="padding: 0.5rem 0;">⚫</td><td style="padding: 0.5rem 0;"><strong>CAMS</strong></td><td style="padding: 0.5rem 0; text-align: right;">Copernicus Atmosphere</td></tr>
       </table>
     </div>
   </div>
