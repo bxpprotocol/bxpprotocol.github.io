@@ -1,48 +1,74 @@
-// BXP Exposure - SIMPLIFIED TEST VERSION
+// BXP Exposure - WITH IP FALLBACK
 
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('Test version started');
+  console.log('Starting with IP fallback');
   
-  // Simple location test
+  // Try GPS first
   if (navigator.geolocation) {
-    console.log('Geolocation available');
-    
     navigator.geolocation.getCurrentPosition(
+      // Success
       (position) => {
-        console.log('SUCCESS! Got location:', position.coords);
-        document.getElementById('current-status').innerHTML = `
-          <div style="color:green; padding:1rem;">
-            ✅ Location working!<br>
-            Lat: ${position.coords.latitude}<br>
-            Lon: ${position.coords.longitude}
-          </div>
-        `;
+        console.log('GPS success:', position.coords);
+        showLocation('gps', position.coords.latitude, position.coords.longitude);
       },
+      // GPS Failed - try IP
       (error) => {
-        console.error('Location error:', error);
-        let message = 'Location failed: ';
-        if (error.code === 1) message += 'Permission denied';
-        else if (error.code === 2) message += 'Position unavailable';
-        else if (error.code === 3) message += 'Timeout';
-        else message += error.message;
-        
-        document.getElementById('current-status').innerHTML = `
-          <div style="color:red; padding:1rem;">
-            ❌ ${message}
-          </div>
-        `;
+        console.log('GPS failed, trying IP:', error.message);
+        getLocationFromIP();
       },
       {
         enableHighAccuracy: false,
-        timeout: 30000,
+        timeout: 10000,
         maximumAge: 60000
       }
     );
   } else {
-    document.getElementById('current-status').innerHTML = `
-      <div style="color:red; padding:1rem;">
-        ❌ Geolocation not supported
-      </div>
-    `;
+    // No GPS at all - try IP
+    getLocationFromIP();
   }
 });
+
+// Get location from IP address
+async function getLocationFromIP() {
+  try {
+    // Free IP geolocation API
+    const response = await fetch('https://ipapi.co/json/');
+    const data = await response.json();
+    
+    if (data.latitude && data.longitude) {
+      console.log('IP location:', data);
+      showLocation('ip', data.latitude, data.longitude, data.city);
+    } else {
+      showError('Could not get location from IP');
+    }
+  } catch (error) {
+    console.error('IP location failed:', error);
+    showError('All location methods failed');
+  }
+}
+
+// Show location on page
+function showLocation(method, lat, lon, city = '') {
+  const statusDiv = document.getElementById('current-status');
+  
+  let locationText = `📍 Location (${method}): ${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+  if (city) locationText += ` - ${city}`;
+  
+  statusDiv.innerHTML = `
+    <div style="padding:1rem;">
+      <div style="color:green; font-weight:bold; margin-bottom:0.5rem;">✅ Location working!</div>
+      <div>${locationText}</div>
+      <div style="margin-top:1rem; font-size:0.8rem; color:var(--muted);">
+        Now we can fetch air quality data...
+      </div>
+    </div>
+  `;
+}
+
+function showError(message) {
+  document.getElementById('current-status').innerHTML = `
+    <div style="color:#c62828; padding:1rem; text-align:center;">
+      ⚠️ ${message}
+    </div>
+  `;
+}
