@@ -1222,7 +1222,7 @@
       <div class="modal">
         <div class="modal-header">
           <h2 id="onboarding-title" class="modal-title">Welcome to BXP Oracle</h2>
-          <button class="modal-close" id="onboardingClose" aria-label="Close dialog">×</button>
+          <button class="modal-close" onclick="document.getElementById('sourcesModal').style.display='none';">×</button>
         </div>
         <div class="modal-body">
           <p>This is the first system that tells you what your lungs process every day — in terms you understand. <strong>Your data never leaves this device.</strong></p>
@@ -1267,7 +1267,7 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button class="button" id="onboardingSkip" aria-label="Skip onboarding">Skip for now</button>
+          <button class="button" onclick="document.getElementById('sourcesModal').style.display='flex';">📡 Sources</button>
           <button class="button button-primary" id="onboardingSave">Start breathing consciously</button>
         </div>
       </div>
@@ -1278,7 +1278,7 @@
       <div class="modal">
         <div class="modal-header">
           <h2 id="privacy-modal-title" class="modal-title">Privacy settings</h2>
-          <button class="modal-close" id="privacyModalClose" aria-label="Close dialog">×</button>
+          <button class="modal-close" onclick="document.getElementById('privacyModal').style.display='none';">×</button>
         </div>
         <div class="modal-body">
           <div class="form-group">
@@ -1328,30 +1328,30 @@
     </div>
 
     <!-- DATA SOURCES MODAL -->
-    <div id="sourcesModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="sources-modal-title" hidden>
-      <div class="modal">
-        <div class="modal-header">
-          <h2 id="sources-modal-title" class="modal-title">Data sources</h2>
-          <button class="modal-close" id="sourcesModalClose">×</button>
-        </div>
-        <div class="modal-body">
-          <p>BXP Oracle aggregates from 10+ sources to give you the most accurate picture of your exposure.</p>
-          
-          <table style="width:100%; margin-top:var(--space-lg);">
-            <tr><td>🟣</td><td><strong>PurpleAir</strong></td><td>15,000+ citizen sensors</td></tr>
-            <tr><td>🔵</td><td><strong>OpenAQ</strong></td><td>Global government monitors</td></tr>
-            <tr><td>🟢</td><td><strong>WAQI</strong></td><td>World Air Quality Index</td></tr>
-            <tr><td>🟡</td><td><strong>AirNow</strong></td><td>US EPA data</td></tr>
-            <tr><td>🟠</td><td><strong>OpenWeather</strong></td><td>Weather correlation</td></tr>
-            <tr><td>🔴</td><td><strong>IQAir</strong></td><td>Global air quality</td></tr>
-            <tr><td>⚪</td><td><strong>Sensor.Community</strong></td><td>Open citizen science</td></tr>
-            <tr><td>🟤</td><td><strong>CMAQ</strong></td><td>Modeled air quality</td></tr>
-            <tr><td>🔘</td><td><strong>MERRA-2</strong></td><td>NASA reanalysis</td></tr>
-            <tr><td>⚫</td><td><strong>CAMS</strong></td><td>Copernicus Atmosphere</td></tr>
-          </table>
-        </div>
-      </div>
+   <div id="sourcesModal" class="modal-overlay" style="display: none;">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Data sources</h2>
+      <button class="modal-close" onclick="document.getElementById('sourcesModal').style.display='none';">×</button>
     </div>
+    <div class="modal-body">
+      <p>BXP Oracle aggregates from 10+ sources to give you the most accurate picture of your exposure.</p>
+      
+      <table style="width:100%; margin-top:1rem;">
+        <tr><td>🟣</td><td><strong>PurpleAir</strong></td><td>15,000+ citizen sensors</td></tr>
+        <tr><td>🔵</td><td><strong>OpenAQ</strong></td><td>Global government monitors</td></tr>
+        <tr><td>🟢</td><td><strong>WAQI</strong></td><td>World Air Quality Index</td></tr>
+        <tr><td>🟡</td><td><strong>AirNow</strong></td><td>US EPA data</td></tr>
+        <tr><td>🟠</td><td><strong>OpenWeather</strong></td><td>Weather correlation</td></tr>
+        <tr><td>🔴</td><td><strong>IQAir</strong></td><td>Global air quality</td></tr>
+        <tr><td>⚪</td><td><strong>Sensor.Community</strong></td><td>Open citizen science</td></tr>
+        <tr><td>🟤</td><td><strong>CMAQ</strong></td><td>Modeled air quality</td></tr>
+        <tr><td>🔘</td><td><strong>MERRA-2</strong></td><td>NASA reanalysis</td></tr>
+        <tr><td>⚫</td><td><strong>CAMS</strong></td><td>Copernicus Atmosphere</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
 
     <!-- SERVICE WORKER SCRIPT -->
     <script id="serviceWorkerScript">
@@ -1387,7 +1387,7 @@
     <footer class="footer">
       <div>BXP ORACLE v4 — 10 sources · 18 pollutants · complete privacy</div>
       <div class="footer-links">
-        <button class="footer-link" id="privacyButton">⚙️ Privacy</button>
+        <button class="button" onclick="document.getElementById('privacyModal').style.display='flex';">⚙️ Privacy</button>
         <button class="footer-link" id="sourcesButton">📡 Data sources</button>
         <button class="footer-link" id="helpButton">❓ Help</button>
         <button class="footer-link" id="feedbackButton">💬 Feedback</button>
