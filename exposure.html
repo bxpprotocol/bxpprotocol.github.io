@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BXP Exposure — Your Personal Air Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#fafaf8;--bg2:#f3f3ef;--surface:#ffffff;--border:#e4e4dc;--border2:#d0d0c4;--text:#1a1a18;--muted:#6b6b60;--muted2:#9b9b8e;--green:#1a6640;--mono:'IBM Plex Mono',monospace;--serif:'Instrument Serif',serif;--sans:'DM Sans',sans-serif;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.6;padding:2rem;max-width:900px;margin:0 auto;}
+header{margin-bottom:3rem;}
+.back{font-family:var(--mono);font-size:0.8rem;margin-bottom:2rem;display:block;color:var(--muted);text-decoration:none;}
+h1{font-family:var(--serif);font-size:3rem;font-weight:400;margin-bottom:1rem;line-height:1.1;}
+.sub{color:var(--muted);margin-bottom:3rem;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:2rem;margin-bottom:2rem;}
+.card-title{font-family:var(--mono);font-size:0.8rem;color:var(--muted2);margin-bottom:1.5rem;text-transform:uppercase;letter-spacing:0.05em;}
+.status-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:1.5rem;margin-bottom:1.5rem;}
+.stat{text-align:center;}
+.stat-value{font-family:var(--serif);font-size:2.5rem;color:var(--text);line-height:1;}
+.stat-label{font-size:0.8rem;color:var(--muted);margin-top:0.5rem;}
+.equivalent{background:var(--bg2);border-radius:8px;padding:1rem;margin:1rem 0;font-size:0.9rem;}
+.equivalent span{font-weight:600;color:var(--text);}
+.button{background:var(--text);color:white;border:none;padding:0.75rem 1.5rem;border-radius:6px;font-weight:600;cursor:pointer;font-size:0.9rem;}
+.button.secondary{background:transparent;border:1px solid var(--border2);color:var(--text);}
+.history-item{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:1rem;margin-bottom:0.5rem;display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:0.8rem;}
+.history-item .time{color:var(--muted2);}
+.history-item .value{font-weight:600;}
+.history-item .hri{background:var(--text);color:white;padding:0.2rem 0.5rem;border-radius:4px;font-size:0.7rem;}
+.warning{background:#fff3e0;border:1px solid #ffb74d;border-radius:6px;padding:1rem;margin:1rem 0;font-size:0.85rem;}
+.warning strong{color:#e65100;}
+footer{margin-top:4rem;color:var(--muted2);font-size:0.8rem;text-align:center;}
+</style>
+</head>
+<body>
+
+<header>
+  <a href="/" class="back">← Back to BXP Protocol</a>
+  <h1>Your breath.<br>Your ledger.<br>Your life.</h1>
+  <p class="sub">BXP tracks what you breathe and tells you what it means. Everything stays on your phone. No signup. No tracking. Just truth.</p>
+</header>
+
+<main>
+  <!-- STATUS CARD -->
+  <div class="card">
+    <div class="card-title">Right now</div>
+    <div id="current-status">
+      <div style="text-align:center; padding:2rem; color:var(--muted);">Requesting location...</div>
+    </div>
+  </div>
+
+  <!-- TODAY'S CARD -->
+  <div class="card">
+    <div class="card-title">Today</div>
+    <div id="today-summary">
+      <div style="text-align:center; padding:1rem; color:var(--muted);">Loading...</div>
+    </div>
+  </div>
+
+  <!-- HISTORY CARD -->
+  <div class="card">
+    <div class="card-title">Recent history</div>
+    <div id="history-list">
+      <div style="text-align:center; padding:1rem; color:var(--muted);">No records yet. Leave this tab open to start tracking.</div>
+    </div>
+    <div style="display:flex; gap:1rem; margin-top:1.5rem;">
+      <button class="button secondary" id="export-btn">Export all as .bxp</button>
+      <button class="button secondary" id="clear-btn" style="display:none;">Clear history</button>
+    </div>
+  </div>
+
+  <!-- DISCLAIMER CARD -->
+  <div class="warning">
+    <strong>⚠️ Web limitation:</strong> BXP only tracks while this tab is open. Keep it open for continuous tracking. We're building the native app next.
+  </div>
+</main>
+
+<footer>
+  BXP Protocol · Apache 2.0 · Your data never leaves this device
+</footer>
+
+<script src="js/ledger.js"></script>
+<script src="js/model.js"></script>
+<script src="js/exposure.js"></script>
+</body>
+</html>
