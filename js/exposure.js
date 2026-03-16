@@ -40,9 +40,40 @@ document.addEventListener('DOMContentLoaded', async () => {
     showError('Geolocation not supported in this browser');
   }
   
-  // Update UI every 60 seconds
-  updateInterval = setInterval(updateUI, 60000);
-  
+  // Update all UI elements
+async function updateUI() {
+  try {
+    // Get today's records
+    const todayRecords = await BXPLedger.getTodaysRecords();
+    
+    // Get recent records (last 7 days)
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    
+    const recentRecords = await BXPLedger.getRecords({
+      startDate: sevenDaysAgo.toISOString(),
+      recent: true
+    });
+    
+    // Check if ExposureModel exists
+    if (typeof ExposureModel === 'undefined') {
+      console.error('ExposureModel not loaded yet');
+      return;
+    }
+    
+    // Create model with recent records
+    model = new ExposureModel(recentRecords || []);
+    
+    // Update UI components
+    updateCurrentStatus(model, recentRecords);
+    updateTodaySummary(todayRecords, model);
+    updateHistory(recentRecords);
+    updateLocationInsights(model);
+    
+  } catch (error) {
+    console.error('Error in updateUI:', error);
+  }
+}
   // Initial UI update
   await updateUI();
   
