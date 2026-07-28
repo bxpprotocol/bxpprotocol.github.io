@@ -3,308 +3,1419 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#fafaf8">
-<meta name="description" content="BXP (Breathe Exposure Protocol) is the open standard for atmospheric exposure data. Apache 2.0. Forever free.">
-<meta property="og:title" content="BXP Protocol — Open Standard for Atmospheric Exposure Data">
-<meta property="og:description" content="Any device writes it. Any software reads it. Nobody owns it.">
-<meta property="og:url" content="https://bxpprotocol.github.io">
-<title>BXP Protocol — Open Standard for Atmospheric Exposure Data</title>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<title>BXP — Breathe Exposure Protocol</title>
+<meta name="description" content="The open universal standard for atmospheric exposure data. BXP is to air quality what MP4 is to video — a universal format any system can read, write, and exchange. Free forever.">
+<meta property="og:title" content="BXP — Breathe Exposure Protocol">
+<meta property="og:description" content="Open universal standard for atmospheric exposure data. 31 agents. WHO-derived HRI. Federated nodes. Privacy-first.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
+
 :root{
-  --bg:#fafaf8;--bg2:#f3f3ef;--surface:#ffffff;
-  --border:#e4e4dc;--border2:#d0d0c4;
-  --text:#1a1a18;--muted:#6b6b60;--muted2:#9b9b8e;
-  --green:#1a6640;
-  --mono:'IBM Plex Mono',monospace;
-  --serif:'Instrument Serif',serif;
-  --sans:'DM Sans',sans-serif;
+  --bg:#060a14;
+  --bg2:#080d1a;
+  --surface:#0d1526;
+  --surface2:#111d30;
+  --border:#172038;
+  --border2:#1e2d47;
+  --text:#cdd6f4;
+  --muted:#4a5580;
+  --muted2:#6b7aaa;
+  --accent:#00e5ff;
+  --accent2:#64ffda;
+  --accent3:#7b61ff;
+  --warn:#ffb020;
+  --danger:#ff4d6d;
+  --sans:'Inter',system-ui,sans-serif;
+  --mono:'JetBrains Mono',monospace;
 }
+
 html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.6;}
 
-header{padding:1.25rem 2rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:var(--surface);position:sticky;top:0;z-index:100;}
-.logo{font-family:var(--mono);font-size:0.85rem;font-weight:600;color:var(--text);letter-spacing:0.05em;text-decoration:none;}
-nav{display:flex;align-items:center;gap:2rem;}
-nav a{font-size:0.85rem;color:var(--muted);text-decoration:none;transition:color 0.15s;}
-nav a:hover{color:var(--text)}
-.nav-cta{font-size:0.82rem;font-weight:600;color:var(--surface);background:var(--text);padding:0.5rem 1.25rem;border-radius:6px;text-decoration:none;transition:opacity 0.15s;}
-.nav-cta:hover{opacity:0.8;color:var(--surface)}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--sans);
+  overflow-x:hidden;
+  line-height:1.6;
+}
 
-.hero{max-width:900px;margin:0 auto;padding:6rem 2rem 5rem;border-bottom:1px solid var(--border);}
-.hero-kicker{font-family:var(--mono);font-size:0.72rem;letter-spacing:0.15em;color:var(--muted2);text-transform:uppercase;margin-bottom:1.5rem;}
-.hero-title{font-family:var(--serif);font-size:clamp(2.5rem,5vw,4.5rem);line-height:1.1;letter-spacing:-0.01em;margin-bottom:1.5rem;font-weight:400;}
-.hero-title em{font-style:italic;color:var(--muted);}
-.hero-body{font-size:1.1rem;color:var(--muted);max-width:560px;line-height:1.75;margin-bottom:2.5rem;}
-.hero-actions{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;}
-.btn-primary{font-size:0.9rem;font-weight:600;color:var(--surface);background:var(--text);padding:0.75rem 1.75rem;border-radius:6px;text-decoration:none;transition:opacity 0.15s;}
-.btn-primary:hover{opacity:0.8}
-.btn-secondary{font-size:0.9rem;font-weight:500;color:var(--text);background:transparent;padding:0.75rem 1.75rem;border-radius:6px;text-decoration:none;border:1px solid var(--border2);transition:border-color 0.15s;}
-.btn-secondary:hover{border-color:var(--text)}
-.hero-note{font-family:var(--mono);font-size:0.72rem;color:var(--muted2);margin-top:1.5rem;}
+/* ── NAV ───────────────────────────────────────── */
+nav{
+  position:fixed;top:0;left:0;right:0;
+  z-index:200;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 2rem;
+  height:60px;
+  background:rgba(6,10,20,0.88);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+}
+.nav-logo{
+  display:flex;align-items:center;gap:0.7rem;
+  text-decoration:none;
+}
+.nav-badge{
+  font-family:var(--mono);font-size:0.7rem;font-weight:700;
+  letter-spacing:0.15em;color:#060a14;
+  background:var(--accent2);
+  padding:0.25rem 0.55rem;border-radius:4px;
+}
+.nav-brand{
+  font-size:0.9rem;font-weight:600;color:var(--text);
+  letter-spacing:-0.01em;
+}
+.nav-links{display:flex;align-items:center;gap:1.75rem}
+.nav-links a{
+  font-size:0.82rem;color:var(--muted2);text-decoration:none;
+  transition:color 0.2s;font-weight:500;
+}
+.nav-links a:hover{color:var(--accent2)}
+.nav-cta{
+  font-size:0.8rem;font-weight:700;
+  background:var(--accent2);color:#060a14;
+  padding:0.45rem 1rem;border-radius:6px;
+  text-decoration:none;transition:opacity 0.2s;
+}
+.nav-cta:hover{opacity:0.85;color:#060a14!important}
+@media(max-width:768px){
+  .nav-links .hide-mob{display:none}
+}
 
-.stats{max-width:900px;margin:0 auto;padding:3rem 2rem;display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;border-bottom:1px solid var(--border);}
-.stat-num{font-family:var(--serif);font-size:2.5rem;color:var(--text);margin-bottom:0.25rem;line-height:1;}
-.stat-label{font-size:0.85rem;color:var(--muted);line-height:1.5;}
+/* ── HERO ──────────────────────────────────────── */
+.hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  justify-content:center;align-items:center;
+  text-align:center;
+  padding:6rem 2rem 4rem;
+  position:relative;
+  overflow:hidden;
+}
+.hero-grid{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(0,229,255,0.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,229,255,0.03) 1px,transparent 1px);
+  background-size:60px 60px;
+  pointer-events:none;
+}
+.hero-glow{
+  position:absolute;
+  width:700px;height:700px;
+  background:radial-gradient(circle,rgba(0,229,255,0.06) 0%,transparent 70%);
+  top:50%;left:50%;transform:translate(-50%,-55%);
+  pointer-events:none;
+}
+.hero-eyebrow{
+  font-family:var(--mono);font-size:0.72rem;
+  letter-spacing:0.25em;color:var(--accent2);
+  text-transform:uppercase;margin-bottom:1.5rem;
+  display:flex;align-items:center;justify-content:center;gap:0.6rem;
+  position:relative;z-index:1;
+}
+.eyebrow-dot{
+  width:6px;height:6px;background:var(--accent2);
+  border-radius:50%;animation:pulse 2s infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.7)}}
 
-.tools{max-width:900px;margin:0 auto;padding:4rem 2rem;border-bottom:1px solid var(--border);}
-.section-label{font-family:var(--mono);font-size:0.7rem;letter-spacing:0.15em;color:var(--muted2);text-transform:uppercase;margin-bottom:2rem;}
-.tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
-.tool-card{background:var(--surface);padding:2rem;text-decoration:none;color:inherit;transition:background 0.15s;display:block;}
-.tool-card:hover{background:var(--bg2)}
-.tool-card.featured{border-left:3px solid var(--text);}
-.tool-number{font-family:var(--mono);font-size:0.65rem;color:var(--muted2);margin-bottom:1rem;letter-spacing:0.1em;}
-.tool-title{font-size:1rem;font-weight:600;margin-bottom:0.5rem;color:var(--text);}
-.tool-desc{font-size:0.875rem;color:var(--muted);line-height:1.6;margin-bottom:1.25rem;}
-.tool-url{font-family:var(--mono);font-size:0.68rem;color:var(--muted2);letter-spacing:0.03em;}
-.tool-badge{display:inline-block;font-family:var(--mono);font-size:0.6rem;padding:0.2rem 0.5rem;background:#e8f5e9;color:var(--green);border-radius:4px;margin-bottom:0.75rem;letter-spacing:0.05em;}
+.hero-title{
+  font-size:clamp(2.8rem,7vw,5.5rem);
+  font-weight:900;letter-spacing:-0.04em;
+  line-height:1.02;
+  margin-bottom:1.25rem;
+  position:relative;z-index:1;
+}
+.hero-title em{
+  font-style:normal;
+  background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 50%,var(--accent3) 100%);
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.hero-sub{
+  font-size:clamp(1rem,2vw,1.2rem);
+  color:var(--muted2);max-width:620px;
+  line-height:1.75;margin-bottom:2.5rem;
+  position:relative;z-index:1;
+  font-weight:400;
+}
+.hero-actions{
+  display:flex;gap:1rem;flex-wrap:wrap;
+  justify-content:center;
+  position:relative;z-index:1;
+  margin-bottom:3.5rem;
+}
+.btn-primary{
+  padding:0.85rem 1.75rem;
+  background:var(--accent2);color:#060a14;
+  font-size:0.9rem;font-weight:700;
+  border-radius:8px;text-decoration:none;
+  transition:all 0.2s;border:none;cursor:pointer;
+}
+.btn-primary:hover{opacity:0.88;transform:translateY(-1px)}
+.btn-outline{
+  padding:0.85rem 1.75rem;
+  background:transparent;
+  border:1px solid var(--border2);
+  color:var(--text);
+  font-size:0.9rem;font-weight:600;
+  border-radius:8px;text-decoration:none;
+  transition:all 0.2s;
+}
+.btn-outline:hover{border-color:var(--accent2);color:var(--accent2)}
 
-.what{max-width:900px;margin:0 auto;padding:4rem 2rem;border-bottom:1px solid var(--border);}
-.what-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;}
-.what-title{font-family:var(--serif);font-size:2rem;line-height:1.2;margin-bottom:1.25rem;font-weight:400;}
-.what-body{font-size:0.925rem;color:var(--muted);line-height:1.8;}
-.what-body p{margin-bottom:1rem}
-.spec-list{list-style:none;display:flex;flex-direction:column;gap:1rem;}
-.spec-item{padding:1.25rem;background:var(--bg2);border-radius:6px;border:1px solid var(--border);}
-.spec-item-title{font-weight:600;font-size:0.875rem;margin-bottom:0.3rem;}
-.spec-item-desc{font-size:0.82rem;color:var(--muted);line-height:1.6;}
+/* stat strip */
+.hero-stats{
+  display:flex;gap:2.5rem;flex-wrap:wrap;
+  justify-content:center;
+  position:relative;z-index:1;
+  border-top:1px solid var(--border);
+  padding-top:2.5rem;
+  width:100%;max-width:700px;
+}
+.stat{text-align:center}
+.stat-num{
+  font-family:var(--mono);font-size:1.75rem;font-weight:700;
+  color:var(--accent);letter-spacing:-0.03em;line-height:1;
+}
+.stat-label{
+  font-size:0.75rem;color:var(--muted);
+  margin-top:0.3rem;font-weight:500;
+  letter-spacing:0.03em;
+}
 
-.code-section{max-width:900px;margin:0 auto;padding:4rem 2rem;border-bottom:1px solid var(--border);}
-.code-block{background:var(--text);color:#e8e8e0;font-family:var(--mono);font-size:0.82rem;line-height:2;padding:2rem;border-radius:8px;overflow-x:auto;}
-.code-block .c{color:#6b6b60}
-.code-block .k{color:#7dd3a8}
+/* ── SECTION WRAPPER ───────────────────────────── */
+section{padding:6rem 2rem}
+.container{max-width:1100px;margin:0 auto}
+.section-tag{
+  font-family:var(--mono);font-size:0.68rem;
+  letter-spacing:0.2em;text-transform:uppercase;
+  color:var(--accent2);margin-bottom:0.75rem;
+}
+.section-title{
+  font-size:clamp(1.6rem,4vw,2.5rem);
+  font-weight:800;letter-spacing:-0.03em;
+  line-height:1.15;margin-bottom:1rem;
+}
+.section-sub{
+  font-size:1rem;color:var(--muted2);
+  max-width:580px;line-height:1.7;
+}
 
-.status-section{max-width:900px;margin:0 auto;padding:3rem 2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.5rem;}
-.status-left h3{font-size:1rem;font-weight:600;margin-bottom:0.25rem;}
-.status-left p{font-size:0.85rem;color:var(--muted);}
-.status-indicators{display:flex;gap:1.5rem;flex-wrap:wrap;}
-.status-item{display:flex;align-items:center;gap:0.5rem;font-size:0.82rem;color:var(--muted);}
-.dot{width:7px;height:7px;border-radius:50%;background:#22c55e;flex-shrink:0;}
+/* ── PROBLEM BAND ──────────────────────────────── */
+.problem{
+  background:var(--bg2);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+}
+.problem-inner{
+  max-width:1100px;margin:0 auto;
+  display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;
+}
+@media(max-width:768px){.problem-inner{grid-template-columns:1fr;gap:2rem}}
+.problem-stat{
+  text-align:center;
+  padding:3rem 2rem;
+  border-right:1px solid var(--border);
+}
+@media(max-width:768px){.problem-stat{border-right:none;border-bottom:1px solid var(--border)}}
+.problem-num{
+  font-family:var(--mono);font-size:4.5rem;font-weight:700;
+  color:var(--danger);line-height:1;letter-spacing:-0.04em;
+}
+.problem-num-label{
+  font-size:1.1rem;font-weight:700;color:var(--text);
+  margin-top:0.5rem;
+}
+.problem-num-sub{font-size:0.85rem;color:var(--muted2);margin-top:0.3rem}
+.problem-text h3{
+  font-size:1.4rem;font-weight:700;margin-bottom:1rem;
+  letter-spacing:-0.02em;
+}
+.problem-text p{color:var(--muted2);line-height:1.8;margin-bottom:0.75rem}
+.problem-text strong{color:var(--accent2)}
 
-.citation-section{max-width:900px;margin:0 auto;padding:4rem 2rem;border-bottom:1px solid var(--border);}
-.citation-block{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:1.75rem;font-family:var(--mono);font-size:0.78rem;line-height:1.9;color:var(--muted);}
-.citation-block strong{color:var(--text)}
+/* ── WHAT IS BXP ───────────────────────────────── */
+.what-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start;
+  margin-top:3rem;
+}
+@media(max-width:768px){.what-grid{grid-template-columns:1fr;gap:2rem}}
+.analogy-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:2rem;
+}
+.analogy-card h4{
+  font-family:var(--mono);font-size:0.75rem;
+  letter-spacing:0.15em;text-transform:uppercase;
+  color:var(--muted2);margin-bottom:1.25rem;
+}
+.analogy-row{
+  display:flex;align-items:center;gap:1rem;
+  padding:0.85rem 0;
+  border-bottom:1px solid var(--border);
+}
+.analogy-row:last-child{border-bottom:none}
+.analogy-domain{
+  font-size:0.8rem;color:var(--muted);min-width:80px;
+  font-family:var(--mono);
+}
+.analogy-format{
+  font-family:var(--mono);font-size:0.85rem;
+  background:var(--surface2);border:1px solid var(--border2);
+  padding:0.2rem 0.6rem;border-radius:4px;color:var(--accent2);
+  font-weight:500;
+}
+.analogy-row.active .analogy-format{
+  background:rgba(100,255,218,0.1);border-color:var(--accent2);
+  color:var(--accent2);
+}
+.analogy-desc{font-size:0.8rem;color:var(--muted2)}
+.what-features{display:flex;flex-direction:column;gap:1rem}
+.wf{
+  display:flex;gap:1rem;align-items:flex-start;
+  padding:1rem;
+  border:1px solid var(--border);border-radius:8px;
+  background:var(--surface);
+  transition:border-color 0.2s;
+}
+.wf:hover{border-color:var(--border2)}
+.wf-icon{
+  font-size:1.3rem;flex-shrink:0;
+  width:36px;height:36px;
+  display:flex;align-items:center;justify-content:center;
+}
+.wf-text h5{font-size:0.9rem;font-weight:600;margin-bottom:0.2rem}
+.wf-text p{font-size:0.8rem;color:var(--muted2);line-height:1.5}
 
-footer{max-width:900px;margin:0 auto;padding:3rem 2rem;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:2rem;}
-.footer-brand{font-family:var(--mono);font-size:0.8rem;color:var(--muted2);line-height:1.8;}
-.footer-brand strong{color:var(--text);display:block;margin-bottom:0.25rem;}
-.footer-links{display:flex;flex-direction:column;gap:0.5rem;}
-.footer-links a{font-size:0.82rem;color:var(--muted);text-decoration:none;transition:color 0.15s;}
-.footer-links a:hover{color:var(--text)}
-.footer-links-title{font-family:var(--mono);font-size:0.65rem;letter-spacing:0.1em;color:var(--muted2);text-transform:uppercase;margin-bottom:0.5rem;}
+/* ── QUICK START ───────────────────────────────── */
+.quickstart{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:0;overflow-x:auto}
+.tab{
+  font-family:var(--mono);font-size:0.72rem;
+  padding:0.75rem 1.25rem;cursor:pointer;
+  color:var(--muted);border-bottom:2px solid transparent;
+  white-space:nowrap;transition:all 0.15s;font-weight:500;
+  letter-spacing:0.05em;background:none;border-top:none;
+  border-left:none;border-right:none;
+}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--accent2);border-bottom-color:var(--accent2)}
+.code-block{
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:0 0 8px 8px;
+  overflow-x:auto;
+}
+.code-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0.65rem 1rem;
+  border-bottom:1px solid var(--border);
+  background:var(--surface);
+  border-radius:8px 8px 0 0;
+}
+.code-lang{
+  font-family:var(--mono);font-size:0.65rem;
+  color:var(--muted2);letter-spacing:0.1em;text-transform:uppercase;
+}
+.copy-btn{
+  font-family:var(--mono);font-size:0.65rem;
+  color:var(--muted);background:none;border:1px solid var(--border2);
+  padding:0.2rem 0.6rem;border-radius:4px;cursor:pointer;
+  transition:all 0.15s;
+}
+.copy-btn:hover{color:var(--accent2);border-color:var(--accent2)}
+pre{
+  padding:1.5rem;
+  font-family:var(--mono);font-size:0.8rem;
+  line-height:1.8;
+  color:#a6e3a1;
+  white-space:pre;
+  margin:0;
+}
+.tok-c{color:#6b7aaa}  /* comment */
+.tok-k{color:var(--accent)}   /* keyword */
+.tok-s{color:#f9e2af}  /* string */
+.tok-f{color:var(--accent2)} /* function */
+.tok-n{color:#cba6f7}  /* number */
+.tok-v{color:var(--text)} /* var */
+.tok-p{color:var(--muted2)} /* punctuation */
 
-@media(max-width:700px){
-  nav .nav-hide{display:none}
-  .stats{grid-template-columns:1fr 1fr}
-  .what-grid{grid-template-columns:1fr}
-  .tools-grid{grid-template-columns:1fr}
+.qs-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:3rem}
+@media(max-width:768px){.qs-grid{grid-template-columns:1fr}}
+
+/* ── PROTOCOL PILLARS ──────────────────────────── */
+.pillars-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);gap:1.5rem;
+  margin-top:3rem;
+}
+@media(max-width:900px){.pillars-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.pillars-grid{grid-template-columns:1fr}}
+.pillar{
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:1.75rem;
+  background:var(--surface);
+  transition:border-color 0.2s,transform 0.2s;
+}
+.pillar:hover{border-color:var(--border2);transform:translateY(-2px)}
+.pillar-icon{font-size:1.75rem;margin-bottom:1rem}
+.pillar-title{font-size:0.95rem;font-weight:700;margin-bottom:0.5rem}
+.pillar-body{font-size:0.82rem;color:var(--muted2);line-height:1.65}
+.pillar-badge{
+  display:inline-flex;align-items:center;gap:0.35rem;
+  font-family:var(--mono);font-size:0.62rem;
+  background:rgba(0,229,255,0.08);color:var(--accent);
+  border:1px solid rgba(0,229,255,0.2);
+  padding:0.2rem 0.5rem;border-radius:4px;
+  margin-top:0.75rem;letter-spacing:0.08em;
+}
+
+/* ── AGENTS ────────────────────────────────────── */
+.agents-section{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.agents-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+  gap:0.75rem;
+  margin-top:2.5rem;
+}
+.agent-chip{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:0.85rem 1rem;
+  transition:border-color 0.15s,background 0.15s;
+  cursor:default;
+}
+.agent-chip:hover{border-color:var(--border2);background:var(--surface2)}
+.agent-id{
+  font-family:var(--mono);font-size:0.78rem;font-weight:700;
+  color:var(--accent2);margin-bottom:0.2rem;
+}
+.agent-name{font-size:0.72rem;color:var(--muted2)}
+.agent-who{
+  font-family:var(--mono);font-size:0.62rem;
+  color:var(--muted);margin-top:0.3rem;
+}
+.agents-categories{display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:2rem;margin-top:1.5rem}
+.cat-badge{
+  font-size:0.72rem;padding:0.25rem 0.75rem;
+  border:1px solid var(--border2);border-radius:999px;
+  color:var(--muted2);background:var(--surface);
+  cursor:pointer;transition:all 0.15s;
+}
+.cat-badge.active{background:var(--accent2);color:#060a14;border-color:var(--accent2);font-weight:600}
+
+/* ── HRI ───────────────────────────────────────── */
+.hri-section{border-top:1px solid var(--border)}
+.hri-scale{
+  display:flex;gap:0;margin:2rem 0;
+  border-radius:8px;overflow:hidden;
+  height:20px;
+}
+.hri-band{flex:1;transition:flex 0.3s}
+.hri-table{
+  width:100%;border-collapse:collapse;
+  margin-top:1rem;font-size:0.82rem;
+}
+.hri-table th{
+  text-align:left;padding:0.65rem 1rem;
+  color:var(--muted);font-size:0.68rem;letter-spacing:0.1em;
+  text-transform:uppercase;border-bottom:1px solid var(--border);
+  background:var(--surface);
+}
+.hri-table td{
+  padding:0.85rem 1rem;
+  border-bottom:1px solid var(--border);
+  vertical-align:middle;
+}
+.hri-table tr:hover td{background:var(--surface)}
+.hri-dot{
+  width:10px;height:10px;border-radius:50%;
+  display:inline-block;margin-right:0.5rem;
+}
+.hri-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start}
+@media(max-width:768px){.hri-grid{grid-template-columns:1fr}}
+.formula-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:10px;padding:1.75rem;
+}
+.formula-card h4{
+  font-size:0.85rem;font-weight:600;margin-bottom:1.25rem;
+  color:var(--muted2);
+}
+.formula{
+  font-family:var(--mono);font-size:0.82rem;
+  color:var(--accent2);
+  background:var(--bg);border:1px solid var(--border2);
+  border-radius:6px;padding:1rem;
+  line-height:2;
+  margin-bottom:1rem;
+}
+.weight-list{display:flex;flex-direction:column;gap:0.5rem;margin-top:1rem}
+.weight-row{
+  display:flex;align-items:center;gap:0.75rem;
+  font-size:0.8rem;
+}
+.weight-bar-bg{
+  flex:1;height:5px;background:var(--border);
+  border-radius:999px;overflow:hidden;
+}
+.weight-bar-fill{height:100%;border-radius:999px;background:var(--accent2)}
+.weight-label{font-family:var(--mono);font-size:0.72rem;color:var(--muted2);min-width:50px}
+.weight-pct{font-family:var(--mono);font-size:0.72rem;color:var(--muted);min-width:30px;text-align:right}
+
+/* ── ARCHITECTURE ──────────────────────────────── */
+.arch-section{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.arch-diagram{
+  margin-top:2.5rem;
+  border:1px solid var(--border);
+  border-radius:12px;
+  overflow:hidden;
+  background:var(--bg);
+}
+.arch-row{
+  display:flex;gap:0;
+  border-bottom:1px solid var(--border);
+}
+.arch-row:last-child{border-bottom:none}
+.arch-cell{
+  flex:1;padding:1.25rem 1.5rem;
+  border-right:1px solid var(--border);
+  font-size:0.82rem;
+}
+.arch-cell:last-child{border-right:none}
+.arch-cell-title{
+  font-family:var(--mono);font-size:0.68rem;
+  color:var(--accent);letter-spacing:0.12em;
+  text-transform:uppercase;margin-bottom:0.4rem;
+}
+.arch-cell-body{color:var(--muted2);line-height:1.6}
+.arch-header{
+  background:var(--surface);
+  padding:0.75rem 1.5rem;
+  display:flex;align-items:center;gap:0.75rem;
+  border-bottom:1px solid var(--border);
+}
+.arch-title-text{
+  font-family:var(--mono);font-size:0.75rem;
+  color:var(--muted2);font-weight:500;
+}
+.flow-diagram{
+  font-family:var(--mono);font-size:0.82rem;
+  color:var(--text);
+  display:flex;align-items:center;
+  justify-content:center;
+  gap:0;
+  padding:2rem;
+  flex-wrap:wrap;
+  gap:0.5rem;
+}
+.flow-node{
+  background:var(--surface);
+  border:1px solid var(--border2);
+  padding:0.6rem 1rem;border-radius:6px;
+  text-align:center;font-size:0.75rem;
+}
+.flow-node strong{display:block;color:var(--accent2);font-size:0.8rem;margin-bottom:0.1rem}
+.flow-node span{color:var(--muted2);font-size:0.65rem}
+.flow-arrow{color:var(--muted);font-size:0.9rem;padding:0 0.25rem}
+
+/* ── ECOSYSTEM ─────────────────────────────────── */
+.ecosystem-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;
+  margin-top:2.5rem;
+}
+@media(max-width:900px){.ecosystem-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.ecosystem-grid{grid-template-columns:1fr}}
+.eco-card{
+  border:1px solid var(--border);
+  border-radius:10px;padding:1.5rem;
+  background:var(--surface);
+  text-decoration:none;color:inherit;
+  transition:border-color 0.2s,transform 0.2s;
+  display:block;
+}
+.eco-card:hover{border-color:var(--accent2);transform:translateY(-2px)}
+.eco-icon{font-size:1.5rem;margin-bottom:0.85rem}
+.eco-title{font-size:0.9rem;font-weight:700;margin-bottom:0.4rem;color:var(--text)}
+.eco-body{font-size:0.79rem;color:var(--muted2);line-height:1.6}
+.eco-tag{
+  display:inline-block;
+  font-family:var(--mono);font-size:0.6rem;
+  color:var(--accent2);
+  background:rgba(100,255,218,0.08);
+  border:1px solid rgba(100,255,218,0.2);
+  padding:0.15rem 0.45rem;border-radius:3px;
+  margin-top:0.75rem;letter-spacing:0.06em;
+}
+
+/* ── LIVE NODE BAND ────────────────────────────── */
+.live-band{
+  background:linear-gradient(135deg,rgba(0,229,255,0.05),rgba(100,255,218,0.05));
+  border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+  padding:4rem 2rem;text-align:center;
+}
+.live-title{
+  font-size:1.75rem;font-weight:800;
+  letter-spacing:-0.03em;margin-bottom:0.75rem;
+}
+.live-sub{color:var(--muted2);margin-bottom:2rem;font-size:0.95rem}
+.live-actions{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.status-dot{
+  display:inline-block;width:8px;height:8px;
+  background:var(--accent2);border-radius:50%;
+  animation:pulse 2s infinite;margin-right:0.4rem;
+}
+
+/* ── CITATION ──────────────────────────────────── */
+.citation-section{border-top:1px solid var(--border)}
+.citation-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:2.5rem}
+@media(max-width:768px){.citation-grid{grid-template-columns:1fr}}
+.cite-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:10px;padding:1.5rem;
+}
+.cite-label{
+  font-family:var(--mono);font-size:0.65rem;
+  color:var(--muted2);letter-spacing:0.15em;
+  text-transform:uppercase;margin-bottom:0.75rem;
+}
+.cite-doi{
+  font-family:var(--mono);font-size:0.8rem;
+  color:var(--accent2);
+  background:var(--bg);border:1px solid var(--border2);
+  padding:0.85rem 1rem;border-radius:6px;
+  word-break:break-all;line-height:1.5;
+  display:block;text-decoration:none;
+  transition:border-color 0.2s;
+}
+.cite-doi:hover{border-color:var(--accent2)}
+.cite-meta{
+  font-size:0.78rem;color:var(--muted2);
+  margin-top:0.75rem;line-height:1.6;
+}
+.orcid-badge{
+  display:inline-flex;align-items:center;gap:0.4rem;
+  font-family:var(--mono);font-size:0.72rem;
+  color:var(--accent2);
+  background:rgba(100,255,218,0.06);
+  border:1px solid rgba(100,255,218,0.2);
+  padding:0.3rem 0.75rem;border-radius:4px;
+  text-decoration:none;transition:background 0.2s;
+  margin-top:0.75rem;display:block;width:fit-content;
+}
+.orcid-badge:hover{background:rgba(100,255,218,0.12)}
+
+/* ── FOOTER ────────────────────────────────────── */
+footer{
+  background:var(--bg2);
+  border-top:1px solid var(--border);
+  padding:3rem 2rem 2rem;
+}
+.footer-inner{
+  max-width:1100px;margin:0 auto;
+  display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;
+}
+@media(max-width:768px){.footer-inner{grid-template-columns:1fr 1fr;gap:2rem}}
+@media(max-width:480px){.footer-inner{grid-template-columns:1fr}}
+.footer-brand p{font-size:0.82rem;color:var(--muted2);margin-top:0.75rem;line-height:1.6;max-width:260px}
+.footer-col h5{
+  font-size:0.78rem;font-weight:600;
+  color:var(--text);margin-bottom:0.85rem;
+  letter-spacing:0.02em;
+}
+.footer-col a{
+  display:block;font-size:0.78rem;color:var(--muted2);
+  text-decoration:none;margin-bottom:0.5rem;
+  transition:color 0.15s;
+}
+.footer-col a:hover{color:var(--accent2)}
+.footer-bottom{
+  max-width:1100px;margin:2rem auto 0;
+  padding-top:1.5rem;border-top:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:1rem;
+}
+.footer-bottom-text{font-size:0.75rem;color:var(--muted)}
+.footer-bottom-links{display:flex;gap:1.25rem}
+.footer-bottom-links a{font-size:0.75rem;color:var(--muted);text-decoration:none;transition:color 0.15s}
+.footer-bottom-links a:hover{color:var(--accent2)}
+.license-badge{
+  font-family:var(--mono);font-size:0.65rem;
+  background:rgba(100,255,218,0.08);
+  color:var(--accent2);border:1px solid rgba(100,255,218,0.2);
+  padding:0.2rem 0.5rem;border-radius:3px;
+  display:inline-block;margin-top:0.5rem;
+}
+
+/* ── DIVIDER ───────────────────────────────────── */
+.divider{height:1px;background:var(--border);width:100%;max-width:1100px;margin:0 auto}
+
+/* ── TAB PANELS ────────────────────────────────── */
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* scrollbar */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:999px}
+
+/* ── RESPONSIVE CODE LAYOUT ────────────────────── */
+@media(max-width:768px){
+  pre{font-size:0.72rem;padding:1rem}
+  .qs-grid{grid-template-columns:1fr}
 }
 </style>
 </head>
 <body>
-<div class="hero-actions">
-  <a href="oracle.html" class="btn-primary" style="background: var(--green);">✨ Try Personal Tracker</a>
-  <a href="https://github.com/bxpprotocol/bxp-spec" class="btn-secondary">Read the Spec</a>
-  <a href="https://bxp-node.onrender.com/dashboard" target="_blank" class="btn-secondary">Global Dashboard</a>
-</div>
-<header>
-  <a href="/" class="logo">BXP PROTOCOL</a>
-  <nav>
-    <a href="#tools" class="nav-hide">Tools</a>
-    <a href="#what" class="nav-hide">Specification</a>
-    <a href="https://github.com/bxpprotocol/bxp-spec" target="_blank" class="nav-hide">GitHub</a>
-    <a href="https://github.com/bxpprotocol/bxp-spec" class="nav-cta">View on GitHub</a>
-  </nav>
-</header>
 
+<!-- ── NAV ── -->
+<nav>
+  <a class="nav-logo" href="/">
+    <span class="nav-badge">BXP</span>
+    <span class="nav-brand">Breathe Exposure Protocol</span>
+  </a>
+  <div class="nav-links">
+    <a href="#what" class="hide-mob">Protocol</a>
+    <a href="#quickstart" class="hide-mob">Quick Start</a>
+    <a href="#agents" class="hide-mob">Agents</a>
+    <a href="#ecosystem" class="hide-mob">Ecosystem</a>
+    <a href="https://github.com/bxpprotocol/bxp-spec" target="_blank" class="hide-mob">GitHub</a>
+    <a href="validator.html" class="nav-cta">Validator →</a>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
 <section class="hero">
-  <div class="hero-kicker">Breathe Exposure Protocol v2.0</div>
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+
+  <div class="hero-eyebrow">
+    <span class="eyebrow-dot"></span>
+    Open Standard · v2.0 · Apache 2.0
+    <span class="eyebrow-dot"></span>
+  </div>
+
   <h1 class="hero-title">
-    The open standard<br>
-    for <em>atmospheric exposure</em><br>
-    data.
+    The universal format<br>
+    for <em>air quality data</em>
   </h1>
-  <p class="hero-body">
-    Air pollution kills 7 million people annually. The sensors exist.
-    The data infrastructure does not. BXP is the open standard that
-    fixes that — like HTTP for air quality. Any device writes it.
-    Any software reads it. Nobody owns it.
+
+  <p class="hero-sub">
+    BXP is to atmospheric exposure data what MP4 is to video —
+    a universal file format and protocol that any system can read, write, and exchange.
+    Owned by nobody. Usable by everyone. Free forever.
   </p>
+
   <div class="hero-actions">
-    <a href="https://github.com/bxpprotocol/bxp-spec" class="btn-primary">Read the Spec</a>
-    <a href="https://bxp-node.onrender.com/dashboard" target="_blank" class="btn-secondary">Global Dashboard</a>
+    <a href="#quickstart" class="btn-primary">Get Started →</a>
+    <a href="https://github.com/bxpprotocol/bxp-spec" target="_blank" class="btn-outline">View on GitHub</a>
+    <a href="validator.html" class="btn-outline">Try the Validator</a>
   </div>
-  <div class="hero-note">Apache 2.0 · Forever free · DOI: 10.5281/zenodo.18906812</div>
-</section>
 
-<section class="stats">
-  <div>
-    <div class="stat-num">7M</div>
-    <div class="stat-label">Deaths per year<br>from air pollution</div>
-  </div>
-  <div>
-    <div class="stat-num">31</div>
-    <div class="stat-label">Atmospheric agents<br>in the BXP spec</div>
-  </div>
-  <div>
-    <div class="stat-num">∞</div>
-    <div class="stat-label">Cities searchable<br>on the public node</div>
-  </div>
-</section>
-
-<section class="tools" id="tools">
-  <div class="section-label">Tools & Resources</div>
-  <div class="tools-grid">
-
-    <a href="https://bxp-node.onrender.com/dashboard" target="_blank" class="tool-card featured">
-      <div class="tool-number">01</div>
-      <div class="tool-title">Global Dashboard</div>
-      <div class="tool-desc">Search any city on earth. Real-time atmospheric exposure data served in BXP format from the public reference node.</div>
-      <div class="tool-url">bxp-node.onrender.com/dashboard</div>
-    </a>
-
-    <a href="bxp-spec/index.html" class="tool-card">
-      <div class="tool-number">02</div>
-      <div class="tool-title">BXP Validator & Playground</div>
-      <div class="tool-desc">Paste any JSON and validate it against the BXP v2.0 specification. Get error codes, HRI scores, and WHO threshold analysis.</div>
-      <div class="tool-url">bxpprotocol.github.io/bxp-spec</div>
-    </a>
-
-    <a href="https://github.com/bxpprotocol/bxp-spec" target="_blank" class="tool-card">
-      <div class="tool-number">03</div>
-      <div class="tool-title">Reference Server & SDK</div>
-      <div class="tool-desc">Complete technical specification, Python reference server, SDK, and CLI. Run your own BXP node in under 3 minutes.</div>
-      <div class="tool-url">github.com/bxpprotocol/bxp-spec</div>
-    </a>
-
-    <a href="https://bxp-node.onrender.com/docs" target="_blank" class="tool-card">
-      <div class="tool-number">04</div>
-      <div class="tool-title">Public API</div>
-      <div class="tool-desc">REST API endpoint serving real-time BXP data. Federated node architecture. Open to everyone, rate-limited for fair use.</div>
-      <div class="tool-url">bxp-node.onrender.com/docs</div>
-    </a>
-
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num">31</div>
+      <div class="stat-label">Atmospheric Agents</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">v2.0</div>
+      <div class="stat-label">Protocol Version</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">0–100</div>
+      <div class="stat-label">BXP_HRI Scale</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">DOI</div>
+      <div class="stat-label">Zenodo Archived</div>
+    </div>
   </div>
 </section>
 
-<section class="what" id="what">
-  <div class="section-label">What BXP defines</div>
-  <div class="what-grid">
-    <div>
-      <h2 class="what-title">A format layer,<br>not a platform.</h2>
-      <div class="what-body">
-        <p>BXP is a pure software protocol standard. Like HTTP, PDF, and MP3 — it requires no proprietary hardware, no centralised infrastructure, and no licensing fees.</p>
-        <p>It runs on any device, any platform, any geography, at any scale. A sensor company in Japan can write their own C++ implementation. A Nigerian startup builds their own node. Nobody needs permission.</p>
-        <p>The spec lives on GitHub permanently. The standard is the law. Everything else is an implementation of it.</p>
+<!-- ── PROBLEM ── -->
+<section class="problem" id="problem">
+  <div class="problem-inner">
+    <div class="problem-stat">
+      <div class="problem-num">7M</div>
+      <div class="problem-num-label">Premature deaths annually</div>
+      <div class="problem-num-sub">attributed to air pollution — WHO, 2024</div>
+    </div>
+    <div class="problem-text">
+      <h3>The sensors exist.<br>The data infrastructure does not.</h3>
+      <p>
+        Air quality sensors are deployed across thousands of cities, research institutions, and homes.
+        But every device speaks a different format. Every platform uses a proprietary schema.
+        Data cannot move freely between systems — so it doesn't.
+      </p>
+      <p>
+        <strong>BXP fixes this.</strong> A single open standard for reading, writing, and exchanging
+        atmospheric exposure data — across sensors, servers, SDKs, and research platforms — with
+        built-in health risk scoring, privacy protections, and federated networking.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ── WHAT IS BXP ── -->
+<section id="what">
+  <div class="container">
+    <div class="section-tag">Protocol Overview</div>
+    <h2 class="section-title">Everything a standard needs to be universal</h2>
+    <p class="section-sub">
+      BXP defines the complete stack: file format, REST API, health risk index,
+      privacy framework, and federated node architecture.
+    </p>
+
+    <div class="what-grid">
+      <div>
+        <div class="analogy-card">
+          <h4>Universal formats by domain</h4>
+          <div class="analogy-row"><span class="analogy-domain">Video</span><span class="analogy-format">MP4</span><span class="analogy-desc">Any player, any platform</span></div>
+          <div class="analogy-row"><span class="analogy-domain">Documents</span><span class="analogy-format">PDF</span><span class="analogy-desc">Identical anywhere</span></div>
+          <div class="analogy-row"><span class="analogy-domain">Geospatial</span><span class="analogy-format">GeoJSON</span><span class="analogy-desc">Open, composable</span></div>
+          <div class="analogy-row"><span class="analogy-domain">Messaging</span><span class="analogy-format">MQTT</span><span class="analogy-desc">Speaks across IoT</span></div>
+          <div class="analogy-row active"><span class="analogy-domain">Air Quality</span><span class="analogy-format">.bxp</span><span class="analogy-desc">The missing standard</span></div>
+        </div>
+      </div>
+      <div class="what-features">
+        <div class="wf"><div class="wf-icon">📄</div><div class="wf-text"><h5>.bxp File Format</h5><p>JSON-based container carrying readings, location, quality flags, payload hash for integrity, and HRI score. Machine-readable and human-readable.</p></div></div>
+        <div class="wf"><div class="wf-icon">🌐</div><div class="wf-text"><h5>REST API Standard</h5><p>Standard endpoints any server can implement. Submit readings, query by geohash, aggregate over time windows, verify integrity.</p></div></div>
+        <div class="wf"><div class="wf-icon">📊</div><div class="wf-text"><h5>BXP_HRI Score</h5><p>WHO-derived composite Health Risk Index on a 0–100 scale. Comparable across all agents, locations, and time periods.</p></div></div>
+        <div class="wf"><div class="wf-icon">🔒</div><div class="wf-text"><h5>Privacy by Design</h5><p>SHA-256 hashed person IDs, geohash-5 spatial floor, k≥5 anonymity on aggregates, cryptographic deletion proof.</p></div></div>
+        <div class="wf"><div class="wf-icon">🕸</div><div class="wf-text"><h5>Federated Architecture</h5><p>Any institution can run a node. Nodes interoperate. No central owner. Data sovereignty preserved at the source.</p></div></div>
       </div>
     </div>
-    <ul class="spec-list">
-      <li class="spec-item">
-        <div class="spec-item-title">Universal .bxp File Format</div>
-        <div class="spec-item-desc">Any device or software reads and writes it. Covers 31 atmospheric agents including PM2.5, NO2, ozone, VOCs, heavy metals, and biological agents.</div>
-      </li>
-      <li class="spec-item">
-        <div class="spec-item-title">BXP_HRI Health Risk Index</div>
-        <div class="spec-item-desc">Composite health risk score 0–100. WHO-derived weighting across all available agents. Single actionable number for any exposure record.</div>
-      </li>
-      <li class="spec-item">
-        <div class="spec-item-title">REST API Specification</div>
-        <div class="spec-item-desc">Complete federated node architecture. Any institution runs a node. Nodes interoperate via standard endpoints. Nobody owns the network.</div>
-      </li>
-      <li class="spec-item">
-        <div class="spec-item-title">Privacy Framework</div>
-        <div class="spec-item-desc">Individual records private by default. AES-256-GCM encryption. SHA-256 hashed identifiers. GDPR compliant by design.</div>
-      </li>
-    </ul>
   </div>
 </section>
 
-<section class="code-section">
-  <div class="section-label">Run a BXP node in 3 minutes</div>
-  <div class="code-block">
-<span class="c"># Clone the reference implementation</span>
-<span class="k">git clone</span> https://github.com/bxpprotocol/bxp-spec
-<span class="k">cd</span> bxp-spec/reference-server
+<!-- ── QUICK START ── -->
+<section class="quickstart" id="quickstart">
+  <div class="container">
+    <div class="section-tag">Quick Start</div>
+    <h2 class="section-title">Working in minutes, not days</h2>
+    <p class="section-sub">The Python SDK ships with zero required dependencies. Everything else is optional.</p>
 
-<span class="c"># Install dependencies</span>
-<span class="k">pip install</span> fastapi uvicorn pydantic httpx
+    <div style="margin-top:2.5rem">
+      <div class="tabs" id="tabs">
+        <button class="tab active" onclick="showTab('python')">Python SDK</button>
+        <button class="tab" onclick="showTab('curl')">cURL / HTTP</button>
+        <button class="tab" onclick="showTab('cli')">CLI</button>
+        <button class="tab" onclick="showTab('file')">File Format</button>
+      </div>
 
-<span class="c"># Start your BXP node</span>
-<span class="k">python</span> server.py
+      <!-- Python -->
+      <div class="tab-panel active" id="tab-python">
+        <div class="code-header">
+          <span class="code-lang">python</span>
+          <button class="copy-btn" onclick="copyCode('code-python')">copy</button>
+        </div>
+        <div class="code-block">
+<pre id="code-python"><span class="tok-c"># Install (zero required dependencies)</span>
+<span class="tok-c"># pip install bxp-sdk         # once published</span>
+<span class="tok-c"># pip install bxp-sdk[async]  # with async client</span>
+<span class="tok-c"># Or: copy sdk/python/bxp_sdk.py into your project</span>
 
-<span class="c"># Dashboard: http://localhost:8000/dashboard</span>
-<span class="c"># API docs:  http://localhost:8000/docs</span>
+<span class="tok-k">from</span> bxp_sdk <span class="tok-k">import</span> BXPClient, write_bxp, calculate_risk
+
+<span class="tok-c"># ── Calculate HRI without any server ──────────────────</span>
+risk <span class="tok-p">=</span> calculate_risk(pm25<span class="tok-p">=</span><span class="tok-n">47.2</span>, no2<span class="tok-p">=</span><span class="tok-n">31.0</span>, duration<span class="tok-p">=</span><span class="tok-s">"8h"</span>, population<span class="tok-p">=</span><span class="tok-s">"sensitive"</span>)
+<span class="tok-f">print</span>(risk[<span class="tok-s">"score"</span>])    <span class="tok-c"># 72.4</span>
+<span class="tok-f">print</span>(risk[<span class="tok-s">"level"</span>])    <span class="tok-c"># HIGH</span>
+<span class="tok-f">print</span>(risk[<span class="tok-s">"advice"</span>])   <span class="tok-c"># Wear N95 outdoors. Close windows.</span>
+
+<span class="tok-c"># ── Write a .bxp file ─────────────────────────────────</span>
+write_bxp(<span class="tok-s">"accra_20240101.bxp.json"</span>, {
+    <span class="tok-s">"latitude"</span>: <span class="tok-n">5.6037</span>, <span class="tok-s">"longitude"</span>: <span class="tok-n">-0.1870</span>,
+    <span class="tok-s">"pm25"</span>: <span class="tok-n">47.2</span>, <span class="tok-s">"no2"</span>: <span class="tok-n">18.3</span>, <span class="tok-s">"temp"</span>: <span class="tok-n">29.0</span>,
+    <span class="tok-s">"durationS"</span>: <span class="tok-n">3600</span>, <span class="tok-s">"indoorOutdoor"</span>: <span class="tok-s">"outdoor"</span>,
+})
+
+<span class="tok-c"># ── Submit to a BXP node ──────────────────────────────</span>
+client <span class="tok-p">=</span> BXPClient(<span class="tok-s">"https://your-bxp-node.example.com"</span>)
+result <span class="tok-p">=</span> client.submit(latitude<span class="tok-p">=</span><span class="tok-n">5.6037</span>, longitude<span class="tok-p">=</span><span class="tok-n">-0.1870</span>, pm25<span class="tok-p">=</span><span class="tok-n">47.2</span>)
+<span class="tok-f">print</span>(result[<span class="tok-s">"bxpHri"</span>])  <span class="tok-c"># 61.2</span>
+<span class="tok-f">print</span>(result[<span class="tok-s">"level"</span>])   <span class="tok-c"># HIGH</span>
+
+<span class="tok-c"># ── Async client (requires pip install httpx) ──────────</span>
+<span class="tok-k">from</span> bxp_sdk <span class="tok-k">import</span> AsyncBXPClient
+<span class="tok-k">import</span> asyncio
+
+<span class="tok-k">async def</span> <span class="tok-f">main</span>():
+    <span class="tok-k">async with</span> AsyncBXPClient(<span class="tok-s">"https://your-bxp-node.example.com"</span>) <span class="tok-k">as</span> client:
+        result <span class="tok-p">=</span> <span class="tok-k">await</span> client.submit(latitude<span class="tok-p">=</span><span class="tok-n">5.6037</span>, longitude<span class="tok-p">=</span><span class="tok-n">-0.1870</span>, pm25<span class="tok-p">=</span><span class="tok-n">47.2</span>)
+
+asyncio.run(main())</pre>
+        </div>
+      </div>
+
+      <!-- cURL -->
+      <div class="tab-panel" id="tab-curl">
+        <div class="code-header">
+          <span class="code-lang">shell</span>
+          <button class="copy-btn" onclick="copyCode('code-curl')">copy</button>
+        </div>
+        <div class="code-block">
+<pre id="code-curl"><span class="tok-c"># Check node health</span>
+curl https://your-node.example.com/bxp/v2/health
+
+<span class="tok-c"># Get live air quality for a city</span>
+curl https://your-node.example.com/bxp/v2/city/accra
+
+<span class="tok-c"># Submit a reading (no auth required for anonymous)</span>
+curl -X POST https://your-node.example.com/bxp/v2/readings \
+  -H "Content-Type: application/json" \
+  -d '{
+    "readings": [{
+      "latitude": 5.6037,
+      "longitude": -0.1870,
+      "agents": [
+        {"agentId": "PM2_5", "value": 47.2, "unit": "ug/m3"},
+        {"agentId": "NO2",   "value": 18.3, "unit": "ppb"}
+      ],
+      "durationS": 3600,
+      "indoorOutdoor": "outdoor"
+    }]
+  }'
+
+<span class="tok-c"># Register a device (returns a token for authenticated writes)</span>
+curl -X POST https://your-node.example.com/bxp/v2/devices/register \
+  -H "Content-Type: application/json" \
+  -d '{"label": "Rooftop Sensor - Building A"}'
+
+<span class="tok-c"># Query readings by geohash with pagination</span>
+curl "https://your-node.example.com/bxp/v2/readings?geohash=s1v0g&limit=50&offset=0"
+
+<span class="tok-c"># Verify a reading's integrity</span>
+curl https://your-node.example.com/bxp/v2/readings/{reading_id}/verify
+
+<span class="tok-c"># Aggregate (k≥5 anonymity enforced)</span>
+curl "https://your-node.example.com/bxp/v2/locations/s1v0g/aggregate"</pre>
+        </div>
+      </div>
+
+      <!-- CLI -->
+      <div class="tab-panel" id="tab-cli">
+        <div class="code-header">
+          <span class="code-lang">shell</span>
+          <button class="copy-btn" onclick="copyCode('code-cli')">copy</button>
+        </div>
+        <div class="code-block">
+<pre id="code-cli"><span class="tok-c"># Generate a .bxp file from sensor readings</span>
+python cli/bxp_cli.py generate \
+  --pm25 47.2 --no2 18.3 --temp 29 \
+  --lat 5.6037 --lon -0.1870 \
+  --output accra.bxp.json
+
+<span class="tok-c"># Calculate HRI without writing a file</span>
+python cli/bxp_cli.py hri --pm25 67.0 --no2 31.0 --duration 24h --population sensitive
+
+<span class="tok-c"># Validate a .bxp file against the spec</span>
+python cli/bxp_cli.py validate accra.bxp.json
+
+<span class="tok-c"># Export to CSV or GeoJSON</span>
+python cli/bxp_cli.py export accra.bxp.json --format csv
+python cli/bxp_cli.py export accra.bxp.json --format geojson
+
+<span class="tok-c"># Submit to a BXP node</span>
+python cli/bxp_cli.py submit --file accra.bxp.json \
+  --server https://your-node.example.com
+
+<span class="tok-c"># Batch submit a directory of readings</span>
+python cli/bxp_cli.py batch-submit --dir ./sensor_data/
+
+<span class="tok-c"># Generate a self-contained HTML map</span>
+python cli/bxp_cli.py map ./sensor_data/ --output city_map.html
+
+<span class="tok-c"># Store server URL so you don't repeat it every command</span>
+python cli/bxp_cli.py config set server https://your-node.example.com
+python cli/bxp_cli.py server-status</pre>
+        </div>
+      </div>
+
+      <!-- File Format -->
+      <div class="tab-panel" id="tab-file">
+        <div class="code-header">
+          <span class="code-lang">json — .bxp.json</span>
+          <button class="copy-btn" onclick="copyCode('code-file')">copy</button>
+        </div>
+        <div class="code-block">
+<pre id="code-file">{
+  <span class="tok-s">"bxpVersion"</span>:    <span class="tok-s">"2.0"</span>,
+  <span class="tok-s">"deviceUuid"</span>:    <span class="tok-s">"550e8400-e29b-41d4-a716-446655440000"</span>,
+  <span class="tok-s">"geohash"</span>:       <span class="tok-s">"s1v0g7k"</span>,          <span class="tok-c">// precision-7, ~153m resolution</span>
+  <span class="tok-s">"latitude"</span>:      <span class="tok-n">5.6037</span>,
+  <span class="tok-s">"longitude"</span>:     <span class="tok-n">-0.1870</span>,
+  <span class="tok-s">"timestampUs"</span>:   <span class="tok-n">1710000000000000</span>,  <span class="tok-c">// Unix epoch, microseconds</span>
+  <span class="tok-s">"durationS"</span>:     <span class="tok-n">3600</span>,               <span class="tok-c">// 1-hour averaging period</span>
+  <span class="tok-s">"indoorOutdoor"</span>: <span class="tok-s">"outdoor"</span>,
+  <span class="tok-s">"agents"</span>: [
+    { <span class="tok-s">"agentId"</span>: <span class="tok-s">"PM2_5"</span>, <span class="tok-s">"value"</span>: <span class="tok-n">47.2</span>, <span class="tok-s">"unit"</span>: <span class="tok-s">"ug/m3"</span> },
+    { <span class="tok-s">"agentId"</span>: <span class="tok-s">"NO2"</span>,   <span class="tok-s">"value"</span>: <span class="tok-n">18.3</span>, <span class="tok-s">"unit"</span>: <span class="tok-s">"ppb"</span>  },
+    { <span class="tok-s">"agentId"</span>: <span class="tok-s">"O3"</span>,    <span class="tok-s">"value"</span>: <span class="tok-n">24.1</span>, <span class="tok-s">"unit"</span>: <span class="tok-s">"ppb"</span>  },
+    { <span class="tok-s">"agentId"</span>: <span class="tok-s">"TEMP"</span>,  <span class="tok-s">"value"</span>: <span class="tok-n">29.0</span>, <span class="tok-s">"unit"</span>: <span class="tok-s">"C"</span>    }
+  ],
+  <span class="tok-s">"quality"</span>: {
+    <span class="tok-s">"flag"</span>:       <span class="tok-s">"UNVALIDATED"</span>,
+    <span class="tok-s">"confidence"</span>: <span class="tok-n">0.9</span>,
+    <span class="tok-s">"qcMethod"</span>:   <span class="tok-s">"bxp-sdk-auto"</span>
+  },
+  <span class="tok-s">"bxpHri"</span>:      <span class="tok-n">61.2</span>,
+  <span class="tok-s">"bxpHriLevel"</span>: <span class="tok-s">"HIGH"</span>,
+  <span class="tok-s">"payloadHash"</span>: <span class="tok-s">"sha256:a4c2e1f8..."</span>   <span class="tok-c">// tamper detection</span>
+}</pre>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
-<section class="status-section">
-  <div class="status-left">
-    <h3>Public Reference Node</h3>
-    <p>The world's first public BXP node — open to anyone, free to use.</p>
-  </div>
-  <div class="status-indicators">
-    <div class="status-item"><span class="dot"></span>Node operational</div>
-    <div class="status-item"><span class="dot"></span>Real-time global data</div>
-    <div class="status-item"><span class="dot"></span>API available</div>
+<!-- ── PILLARS ── -->
+<section id="protocol">
+  <div class="container">
+    <div class="section-tag">Core Features</div>
+    <h2 class="section-title">Six pillars of the protocol</h2>
+    <p class="section-sub">Every component is specified, documented, and implemented in the reference server.</p>
+
+    <div class="pillars-grid">
+      <div class="pillar">
+        <div class="pillar-icon">📦</div>
+        <div class="pillar-title">Universal File Format</div>
+        <div class="pillar-body">JSON-based <code>.bxp</code> files carry readings, location, quality metadata, and an SHA-256 payload hash for tamper detection. Readable by any JSON parser.</div>
+        <div class="pillar-badge">§2 · File Specification</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon">🌍</div>
+        <div class="pillar-title">REST API Standard</div>
+        <div class="pillar-body">Standard endpoints for submitting readings, querying by geohash or time window, device registration, community reports, and federated node discovery.</div>
+        <div class="pillar-badge">§4 · API Reference</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon">📊</div>
+        <div class="pillar-title">BXP_HRI Score</div>
+        <div class="pillar-body">WHO-derived composite Health Risk Index. Weighted across 7 primary agents. Adjustable for exposure duration (1h/8h/24h) and population sensitivity.</div>
+        <div class="pillar-badge">§3 · HRI Specification</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon">🔒</div>
+        <div class="pillar-title">Privacy Framework</div>
+        <div class="pillar-body">SHA-256 hashed person IDs. Geohash-5 spatial floor on personal records. k≥5 anonymity on aggregate endpoints. Cryptographic deletion proof.</div>
+        <div class="pillar-badge">§9 · Privacy</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon">🕸</div>
+        <div class="pillar-title">Federated Nodes</div>
+        <div class="pillar-body">Any institution can run a node. Nodes self-announce and interoperate. No central authority, no single point of failure, full data sovereignty.</div>
+        <div class="pillar-badge">§6 · Federation</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon">✅</div>
+        <div class="pillar-title">Quality Control</div>
+        <div class="pillar-body">Four-state quality flag (VALIDATED / UNVALIDATED / SUSPECT / INVALID) with confidence score and QC method provenance tracked per reading.</div>
+        <div class="pillar-badge">§7 · QC Framework</div>
+      </div>
+    </div>
   </div>
 </section>
 
-<a href="oracle.html" class="tool-card featured">
-  <div class="tool-number">✨ NEW</div>
-  <div class="tool-badge">LIVE NOW — USE IT</div>
-  <div class="tool-title">BXP Personal Exposure Tracker</div>
-  <div class="tool-desc">Your personal exposure passport. Runs in your browser. Tracks where you go. Shows what you breathe. Calculates your exposure debt. No install. No signup. Free forever.</div>
-  <div class="tool-url">bxpprotocol.github.io/oracle.html</div>
-</a>
-  <section class="citation-section">
-  <div class="section-label">Cite BXP in your research</div>
-  <div class="citation-block">
-<strong>Specification</strong>
-Elvarin. (2026). BXP — Breathe Exposure Protocol v2.0 Technical Specification.
-Zenodo. https://doi.org/10.5281/zenodo.18906812
+<!-- ── AGENTS ── -->
+<section class="agents-section" id="agents">
+  <div class="container">
+    <div class="section-tag">Atmospheric Agents</div>
+    <h2 class="section-title">31 agents, one standard</h2>
+    <p class="section-sub">From PM2.5 to benzene to mold spores — every atmospheric substance the BXP spec covers, with standardised IDs, units, and WHO thresholds.</p>
 
-<strong>Reference Implementation</strong>
-Elvarin. (2026). BXP Protocol — Reference Implementation v2.0.
-Zenodo. https://doi.org/10.5281/zenodo.18907003
+    <div class="agents-categories">
+      <button class="cat-badge active" onclick="filterAgents('all',this)">All 31</button>
+      <button class="cat-badge" onclick="filterAgents('particulate',this)">Particulates</button>
+      <button class="cat-badge" onclick="filterAgents('gas',this)">Gases</button>
+      <button class="cat-badge" onclick="filterAgents('voc',this)">VOCs</button>
+      <button class="cat-badge" onclick="filterAgents('bio',this)">Biological</button>
+      <button class="cat-badge" onclick="filterAgents('heavy',this)">Heavy Metals</button>
+      <button class="cat-badge" onclick="filterAgents('env',this)">Environmental</button>
+    </div>
 
-<strong>ORCID</strong>
-https://orcid.org/0009-0001-4856-4986
+    <div class="agents-grid" id="agents-grid">
+      <!-- generated by JS -->
+    </div>
   </div>
 </section>
 
+<!-- ── HRI ── -->
+<section class="hri-section" id="hri">
+  <div class="container">
+    <div class="section-tag">Health Risk Index</div>
+    <h2 class="section-title">One number that explains the air</h2>
+    <p class="section-sub">BXP_HRI translates complex multi-pollutant data into a single 0–100 score that is comparable across locations, agents, and time.</p>
+
+    <div class="hri-scale" style="margin-top:2rem">
+      <div class="hri-band" style="background:#00E676;flex:20"></div>
+      <div class="hri-band" style="background:#FFEB3B;flex:20"></div>
+      <div class="hri-band" style="background:#FF9800;flex:20"></div>
+      <div class="hri-band" style="background:#F44336;flex:15"></div>
+      <div class="hri-band" style="background:#9C27B0;flex:15"></div>
+      <div class="hri-band" style="background:#4A0000;flex:10"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:0.62rem;color:var(--muted);margin-top:0.35rem;padding:0 2px">
+      <span>0 CLEAN</span><span>20</span><span>40</span><span>60</span><span>75</span><span>90</span><span>100 HAZARDOUS</span>
+    </div>
+
+    <div class="hri-grid" style="margin-top:2.5rem">
+      <div>
+        <table class="hri-table">
+          <thead><tr><th>Range</th><th>Level</th><th>Who is at risk</th></tr></thead>
+          <tbody>
+            <tr><td><span class="hri-dot" style="background:#00E676"></span><code>0–20</code></td><td style="color:#00E676;font-weight:600">CLEAN</td><td style="color:var(--muted2)">No restrictions</td></tr>
+            <tr><td><span class="hri-dot" style="background:#FFEB3B"></span><code>21–40</code></td><td style="color:#FFEB3B;font-weight:600">MODERATE</td><td style="color:var(--muted2)">Sensitive groups: limit exertion</td></tr>
+            <tr><td><span class="hri-dot" style="background:#FF9800"></span><code>41–60</code></td><td style="color:#FF9800;font-weight:600">ELEVATED</td><td style="color:var(--muted2)">Reduce outdoor exertion</td></tr>
+            <tr><td><span class="hri-dot" style="background:#F44336"></span><code>61–75</code></td><td style="color:#F44336;font-weight:600">HIGH</td><td style="color:var(--muted2)">Wear N95. Close windows.</td></tr>
+            <tr><td><span class="hri-dot" style="background:#9C27B0"></span><code>76–90</code></td><td style="color:#9C27B0;font-weight:600">VERY HIGH</td><td style="color:var(--muted2)">Avoid all outdoor activity</td></tr>
+            <tr><td><span class="hri-dot" style="background:#ff4444"></span><code>91–100</code></td><td style="color:#ff4444;font-weight:600">HAZARDOUS</td><td style="color:var(--muted2)">Health emergency</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="formula-card">
+        <h4>HRI Formula (simplified)</h4>
+        <div class="formula">HRI = min(100, Σ(val/WHO × weight) × 100<br>      × d_factor × v_factor)</div>
+        <div style="font-size:0.78rem;color:var(--muted2);margin-bottom:1rem">
+          <strong style="color:var(--text)">Duration factor:</strong> 1h → ×1.0 · 8h → ×1.2 · 24h → ×1.5<br>
+          <strong style="color:var(--text)">Population factor:</strong> general → ×1.0 · sensitive → ×1.3
+        </div>
+        <div class="weight-list">
+          <div style="font-size:0.7rem;color:var(--muted);font-family:var(--mono);letter-spacing:0.08em;margin-bottom:0.4rem">PRIMARY AGENT WEIGHTS</div>
+          <div class="weight-row"><span class="weight-label">PM2.5</span><div class="weight-bar-bg"><div class="weight-bar-fill" style="width:70%"></div></div><span class="weight-pct">35%</span></div>
+          <div class="weight-row"><span class="weight-label">PM10</span><div class="weight-bar-bg"><div class="weight-bar-fill" style="width:30%"></div></div><span class="weight-pct">15%</span></div>
+          <div class="weight-row"><span class="weight-label">NO₂</span><div class="weight-bar-bg"><div class="weight-bar-fill" style="width:30%"></div></div><span class="weight-pct">15%</span></div>
+          <div class="weight-row"><span class="weight-label">O₃</span><div class="weight-bar-bg"><div class="weight-bar-fill" style="width:24%"></div></div><span class="weight-pct">12%</span></div>
+          <div class="weight-row"><span class="weight-label">CO</span><div class="weight-bar-bg"><div class="weight-bar-fill" style="width:20%"></div></div><span class="weight-pct">10%</span></div>
+          <div class="weight-row"><span class="weight-label">SO₂</span><div class="weight-bar-bg"><div class="weight-bar-fill" style="width:10%"></div></div><span class="weight-pct">5%</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ARCHITECTURE ── -->
+<section class="arch-section" id="architecture">
+  <div class="container">
+    <div class="section-tag">Architecture</div>
+    <h2 class="section-title">How BXP data flows</h2>
+    <p class="section-sub">From sensor hardware through the network to researchers — every step is standardised.</p>
+
+    <div style="margin-top:2.5rem;overflow-x:auto">
+      <div class="flow-diagram">
+        <div class="flow-node"><strong>IoT Sensor</strong><span>MQTT / serial</span></div>
+        <span class="flow-arrow">──▶</span>
+        <div class="flow-node"><strong>BXP Client</strong><span>SDK / CLI</span></div>
+        <span class="flow-arrow">──▶</span>
+        <div class="flow-node" style="border-color:var(--accent2)"><strong style="color:var(--accent2)">.bxp File</strong><span>JSON + hash</span></div>
+        <span class="flow-arrow">──▶</span>
+        <div class="flow-node"><strong>BXP Node</strong><span>FastAPI + SQLite</span></div>
+        <span class="flow-arrow">──▶</span>
+        <div class="flow-node"><strong>Federated</strong><span>Node network</span></div>
+        <span class="flow-arrow">──▶</span>
+        <div class="flow-node"><strong>Research / Apps</strong><span>REST API</span></div>
+      </div>
+
+      <div class="arch-diagram" style="margin-top:1.5rem">
+        <div class="arch-header">
+          <span style="width:10px;height:10px;background:#ff4d6d;border-radius:50%;display:inline-block"></span>
+          <span style="width:10px;height:10px;background:#ffb020;border-radius:50%;display:inline-block"></span>
+          <span style="width:10px;height:10px;background:#00e676;border-radius:50%;display:inline-block"></span>
+          <span class="arch-title-text">BXP Node — Reference Implementation (FastAPI + SQLite)</span>
+        </div>
+        <div class="arch-row">
+          <div class="arch-cell"><div class="arch-cell-title">Data Collection</div><div class="arch-cell-body">POST /bxp/v2/readings<br>Device auth · Rate limiting<br>QC auto-assessment</div></div>
+          <div class="arch-cell"><div class="arch-cell-title">Storage</div><div class="arch-cell-body">SQLite persistence<br>SHA-256 payload hash<br>Geohash indexing</div></div>
+          <div class="arch-cell"><div class="arch-cell-title">Query</div><div class="arch-cell-body">By geohash / time window<br>Cursor pagination<br>k≥5 aggregate privacy</div></div>
+          <div class="arch-cell"><div class="arch-cell-title">Live Data</div><div class="arch-cell-body">AQICN integration<br>10-min ETag cache<br>10 global cities</div></div>
+        </div>
+        <div class="arch-row">
+          <div class="arch-cell"><div class="arch-cell-title">Visualisation</div><div class="arch-cell-body">Map view (Leaflet)<br>Time series (Chart.js)<br>City comparison</div></div>
+          <div class="arch-cell"><div class="arch-cell-title">Integrity</div><div class="arch-cell-body">GET /readings/{id}/verify<br>DELETE with crypto proof<br>Payload hash check</div></div>
+          <div class="arch-cell"><div class="arch-cell-title">Community</div><div class="arch-cell-body">POST /community/reports<br>Device registration<br>Anonymous + authenticated</div></div>
+          <div class="arch-cell"><div class="arch-cell-title">Ops</div><div class="arch-cell-body">GET /metrics (Prometheus)<br>Structured logging<br>Docker ready</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ECOSYSTEM ── -->
+<section id="ecosystem">
+  <div class="container">
+    <div class="section-tag">Ecosystem</div>
+    <h2 class="section-title">Everything you need to build with BXP</h2>
+    <p class="section-sub">Reference implementations, SDKs, integrations, and tools — all open source, all Apache 2.0.</p>
+
+    <div class="ecosystem-grid">
+      <a class="eco-card" href="https://github.com/bxpprotocol/bxp-spec/tree/main/reference-server" target="_blank">
+        <div class="eco-icon">🖥</div>
+        <div class="eco-title">Reference Node</div>
+        <div class="eco-body">FastAPI server with SQLite persistence, full REST API, live city data via AQICN, dashboard with map and charts, Prometheus metrics.</div>
+        <div class="eco-tag">Python · FastAPI</div>
+      </a>
+      <a class="eco-card" href="https://github.com/bxpprotocol/bxp-spec/tree/main/sdk/python" target="_blank">
+        <div class="eco-icon">🐍</div>
+        <div class="eco-title">Python SDK</div>
+        <div class="eco-body">Sync and async clients, offline queue for IoT, file I/O, HRI calculation, validation — zero required dependencies.</div>
+        <div class="eco-tag">pip install bxp-sdk</div>
+      </a>
+      <a class="eco-card" href="https://github.com/bxpprotocol/bxp-spec/tree/main/sdk/typescript" target="_blank">
+        <div class="eco-icon">📘</div>
+        <div class="eco-title">TypeScript SDK</div>
+        <div class="eco-body">Full-featured SDK for Node.js and browser environments. Identical API surface to the Python SDK. Strongly typed.</div>
+        <div class="eco-tag">npm · TypeScript</div>
+      </a>
+      <a class="eco-card" href="https://github.com/bxpprotocol/bxp-spec/tree/main/cli" target="_blank">
+        <div class="eco-icon">⌨️</div>
+        <div class="eco-title">CLI Tool</div>
+        <div class="eco-body">Generate, read, validate, submit, batch-submit, export to CSV/GeoJSON, generate HTML maps from readings directories.</div>
+        <div class="eco-tag">bxp generate · bxp submit</div>
+      </a>
+      <a class="eco-card" href="https://github.com/bxpprotocol/bxp-spec/tree/main/integrations" target="_blank">
+        <div class="eco-icon">📡</div>
+        <div class="eco-title">MQTT Bridge</div>
+        <div class="eco-body">Subscribe to MQTT topics, auto-convert messages to BXP format, and submit to a node. Enables any MQTT-speaking air sensor to join the network.</div>
+        <div class="eco-tag">IoT · MQTT</div>
+      </a>
+      <a class="eco-card" href="validator.html">
+        <div class="eco-icon">🔍</div>
+        <div class="eco-title">Online Validator</div>
+        <div class="eco-body">Paste any JSON and validate it against the BXP v2.0 spec. Get instant feedback, HRI scores, WHO threshold analysis — no installation.</div>
+        <div class="eco-tag">Browser · No install</div>
+      </a>
+      <a class="eco-card" href="https://github.com/bxpprotocol/bxp-spec/tree/main/postman" target="_blank">
+        <div class="eco-icon">📬</div>
+        <div class="eco-title">Postman Collection</div>
+        <div class="eco-body">Importable Postman collection covering every BXP API endpoint. Test any node in 30 seconds.</div>
+        <div class="eco-tag">Postman · Bruno</div>
+      </a>
+      <a class="eco-card" href="https://github.com/bxpprotocol/bxp-spec/blob/main/spec/bxp-v2.0.md" target="_blank">
+        <div class="eco-icon">📑</div>
+        <div class="eco-title">Full Specification</div>
+        <div class="eco-body">The complete BXP v2.0 protocol specification. All 9 sections — file format, agents, HRI, API, privacy, federation, QC framework.</div>
+        <div class="eco-tag">Markdown · GitHub</div>
+      </a>
+      <a class="eco-card" href="https://github.com/bxpprotocol/bxp-spec/blob/main/Dockerfile" target="_blank">
+        <div class="eco-icon">🐳</div>
+        <div class="eco-title">Docker Image</div>
+        <div class="eco-body">Run your own BXP node in one command. Docker Compose configuration included for production deployments.</div>
+        <div class="eco-tag">docker compose up</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── LIVE NODE ── -->
+<div class="live-band">
+  <div class="live-title">
+    <span class="status-dot"></span>Live public node — real-time global data
+  </div>
+  <p class="live-sub">The reference node runs a public BXP API with live data for 10 global cities, a map view, dashboard, and embeddable widgets. No account required.</p>
+  <div class="live-actions">
+    <a href="/dashboard" class="btn-primary">Open Dashboard →</a>
+    <a href="/map" class="btn-outline">Global Map</a>
+    <a href="/docs" class="btn-outline" target="_blank">API Docs (Swagger)</a>
+    <a href="/bxp/v2/health" class="btn-outline" target="_blank">Health Check</a>
+  </div>
+</div>
+
+<!-- ── CITATION ── -->
+<section class="citation-section" id="citation">
+  <div class="container">
+    <div class="section-tag">Academic Citation</div>
+    <h2 class="section-title">Citable, archived, permanent</h2>
+    <p class="section-sub">BXP is archived on Zenodo with permanent DOIs. Cite the protocol or the reference implementation independently.</p>
+
+    <div class="citation-grid">
+      <div class="cite-card">
+        <div class="cite-label">Protocol Specification</div>
+        <a class="cite-doi" href="https://doi.org/10.5281/zenodo.18906812" target="_blank">
+          doi:10.5281/zenodo.18906812
+        </a>
+        <div class="cite-meta">BXP Protocol v2.0 — Breathe Exposure Protocol specification. Zenodo.</div>
+        <a href="https://orcid.org/0009-0001-4856-4986" target="_blank" class="orcid-badge">
+          🆔 ORCID: 0009-0001-4856-4986
+        </a>
+      </div>
+      <div class="cite-card">
+        <div class="cite-label">Reference Implementation</div>
+        <a class="cite-doi" href="https://doi.org/10.5281/zenodo.18907003" target="_blank">
+          doi:10.5281/zenodo.18907003
+        </a>
+        <div class="cite-meta">BXP Protocol Reference Node — FastAPI reference server implementation. Zenodo.</div>
+        <div style="margin-top:1rem">
+          <div class="cite-label" style="margin-bottom:0.5rem">BibTeX</div>
+          <div style="font-family:var(--mono);font-size:0.7rem;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:0.85rem;line-height:1.8;color:var(--muted2)">
+            @software{bxp_protocol_2024,<br>
+            &nbsp;&nbsp;title = {BXP Protocol},<br>
+            &nbsp;&nbsp;doi = {10.5281/zenodo.18906812},<br>
+            &nbsp;&nbsp;license = {Apache-2.0}<br>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
 <footer>
-  <div class="footer-brand">
-    <strong>BXP Protocol</strong>
-    Apache 2.0 · Founded February 15, 2026<br>
-    The air is public. The data should be too.<br><br>
-    <a href="mailto:bxpprotocol@proton.me" style="color:var(--muted);text-decoration:none">bxpprotocol@proton.me</a>
-  </div>
-  <div>
-    <div class="footer-links-title">Resources</div>
-    <div class="footer-links">
-      <a href="https://bxp-node.onrender.com/dashboard" target="_blank">Global Dashboard</a>
-      <a href="bxp-spec/index.html">Validator</a>
-      <a href="https://bxp-node.onrender.com/docs" target="_blank">API Docs</a>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="nav-logo" style="text-decoration:none;display:flex;align-items:center;gap:0.7rem;margin-bottom:0.75rem">
+        <span class="nav-badge">BXP</span>
+        <span style="font-size:0.9rem;font-weight:600;color:var(--text)">Breathe Exposure Protocol</span>
+      </div>
+      <p>The open universal standard for atmospheric exposure data. Owned by nobody. Usable by everyone. Free forever.</p>
+      <div class="license-badge">Apache 2.0</div>
     </div>
-  </div>
-  <div>
-    <div class="footer-links-title">Protocol</div>
-    <div class="footer-links">
-      <a href="https://github.com/bxpprotocol/bxp-spec" target="_blank">Specification</a>
-      <a href="https://doi.org/10.5281/zenodo.18906812" target="_blank">DOI — Zenodo</a>
-      <a href="https://orcid.org/0009-0001-4856-4986" target="_blank">ORCID</a>
+    <div class="footer-col">
+      <h5>Protocol</h5>
+      <a href="https://github.com/bxpprotocol/bxp-spec/blob/main/spec/bxp-v2.0.md" target="_blank">Specification v2.0</a>
+      <a href="https://github.com/bxpprotocol/bxp-spec/blob/main/docs/api_documentation.md" target="_blank">API Reference</a>
+      <a href="https://github.com/bxpprotocol/bxp-spec/blob/main/docs/protocol_overview.md" target="_blank">Protocol Overview</a>
+      <a href="https://github.com/bxpprotocol/bxp-spec/blob/main/docs/developer_guide.md" target="_blank">Developer Guide</a>
+      <a href="https://doi.org/10.5281/zenodo.18906812" target="_blank">DOI / Zenodo</a>
     </div>
-  </div>
-  <div>
-    <div class="footer-links-title">Community</div>
-    <div class="footer-links">
-      <a href="https://github.com/bxpprotocol/bxp-spec/issues" target="_blank">GitHub Issues</a>
+    <div class="footer-col">
+      <h5>Tools</h5>
+      <a href="validator.html">BXP Validator</a>
+      <a href="https://github.com/bxpprotocol/bxp-spec/tree/main/sdk/python" target="_blank">Python SDK</a>
+      <a href="https://github.com/bxpprotocol/bxp-spec/tree/main/sdk/typescript" target="_blank">TypeScript SDK</a>
+      <a href="https://github.com/bxpprotocol/bxp-spec/tree/main/cli" target="_blank">CLI Tool</a>
+      <a href="https://github.com/bxpprotocol/bxp-spec/tree/main/postman" target="_blank">Postman Collection</a>
+    </div>
+    <div class="footer-col">
+      <h5>Community</h5>
+      <a href="https://github.com/bxpprotocol/bxp-spec" target="_blank">GitHub</a>
       <a href="https://github.com/bxpprotocol/bxp-spec/blob/main/CONTRIBUTING.md" target="_blank">Contributing</a>
+      <a href="https://github.com/bxpprotocol/bxp-spec/issues" target="_blank">Issues</a>
+      <a href="https://orcid.org/0009-0001-4856-4986" target="_blank">ORCID</a>
+      <a href="mailto:bxpprotocol@proton.me">Contact</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-bottom-text">© 2024 BXP Protocol · Apache 2.0 · The air is public. The data should be too.</span>
+    <div class="footer-bottom-links">
+      <a href="https://github.com/bxpprotocol/bxp-spec" target="_blank">GitHub</a>
+      <a href="https://doi.org/10.5281/zenodo.18906812" target="_blank">DOI</a>
       <a href="mailto:bxpprotocol@proton.me">Contact</a>
     </div>
   </div>
 </footer>
 
+<script>
+// ── AGENTS DATA ────────────────────────────────────────────────
+const AGENTS = [
+  {id:'PM1',   name:'Ultrafine PM',       who:'—',     cat:'particulate'},
+  {id:'PM2_5', name:'Fine particles',     who:'15 μg/m³', cat:'particulate'},
+  {id:'PM10',  name:'Coarse particles',   who:'45 μg/m³', cat:'particulate'},
+  {id:'BC',    name:'Black Carbon',       who:'—',     cat:'particulate'},
+  {id:'CO',    name:'Carbon Monoxide',    who:'4 mg/m³',  cat:'gas'},
+  {id:'CO2',   name:'Carbon Dioxide',     who:'—',     cat:'gas'},
+  {id:'NO2',   name:'Nitrogen Dioxide',   who:'25 μg/m³', cat:'gas'},
+  {id:'NO',    name:'Nitric Oxide',       who:'—',     cat:'gas'},
+  {id:'SO2',   name:'Sulfur Dioxide',     who:'40 μg/m³', cat:'gas'},
+  {id:'O3',    name:'Ozone',             who:'100 μg/m³',cat:'gas'},
+  {id:'H2S',   name:'Hydrogen Sulfide',   who:'7 ppb', cat:'gas'},
+  {id:'NH3',   name:'Ammonia',            who:'—',     cat:'gas'},
+  {id:'TVOC',  name:'Total VOCs',         who:'500 ppb',  cat:'voc'},
+  {id:'BENZ',  name:'Benzene',            who:'1 ppb', cat:'voc'},
+  {id:'FORM',  name:'Formaldehyde',       who:'8 ppb', cat:'voc'},
+  {id:'TOLU',  name:'Toluene',            who:'50 ppm',   cat:'voc'},
+  {id:'XYLE',  name:'Xylene',             who:'—',     cat:'voc'},
+  {id:'NAPH',  name:'Naphthalene',        who:'—',     cat:'voc'},
+  {id:'MOLD_S',name:'Mold spores',        who:'—',     cat:'bio'},
+  {id:'POLL_G',name:'Grass pollen',       who:'—',     cat:'bio'},
+  {id:'POLL_T',name:'Tree pollen',        who:'—',     cat:'bio'},
+  {id:'BACT_T',name:'Total bacteria',     who:'—',     cat:'bio'},
+  {id:'DUST_M',name:'Dust mites',         who:'—',     cat:'bio'},
+  {id:'PB',    name:'Lead',              who:'0.5 μg/m³',cat:'heavy'},
+  {id:'HG',    name:'Mercury',            who:'1 μg/m³',  cat:'heavy'},
+  {id:'AS',    name:'Arsenic',            who:'—',     cat:'heavy'},
+  {id:'TEMP',  name:'Temperature',        who:'—',     cat:'env'},
+  {id:'RH',    name:'Relative Humidity',  who:'—',     cat:'env'},
+  {id:'PRESS', name:'Pressure',           who:'—',     cat:'env'},
+  {id:'UV',    name:'UV Index',           who:'—',     cat:'env'},
+  {id:'RADON', name:'Radon',             who:'—',     cat:'env'},
+];
+
+function renderAgents(filter) {
+  const grid = document.getElementById('agents-grid');
+  const list = filter === 'all' ? AGENTS : AGENTS.filter(a => a.cat === filter);
+  grid.innerHTML = list.map(a => `
+    <div class="agent-chip">
+      <div class="agent-id">${a.id}</div>
+      <div class="agent-name">${a.name}</div>
+      ${a.who !== '—' ? `<div class="agent-who">WHO: ${a.who}</div>` : '<div class="agent-who" style="opacity:0.4">No WHO limit</div>'}
+    </div>
+  `).join('');
+}
+
+function filterAgents(cat, btn) {
+  document.querySelectorAll('.cat-badge').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderAgents(cat);
+}
+
+renderAgents('all');
+
+// ── TABS ────────────────────────────────────────────────────────
+function showTab(id) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  document.querySelectorAll('.tab').forEach(t => {
+    if (t.getAttribute('onclick').includes("'" + id + "'")) t.classList.add('active');
+  });
+}
+
+// ── COPY ────────────────────────────────────────────────────────
+function copyCode(id) {
+  const el = document.getElementById(id);
+  const text = el.innerText || el.textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = event.target;
+    btn.textContent = 'copied!';
+    setTimeout(() => btn.textContent = 'copy', 1500);
+  });
+}
+
+// ── SMOOTH SCROLL with nav offset ───────────────────────────────
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const target = document.querySelector(a.getAttribute('href'));
+    if (!target) return;
+    e.preventDefault();
+    const y = target.getBoundingClientRect().top + window.scrollY - 72;
+    window.scrollTo({top: y, behavior: 'smooth'});
+  });
+});
+
+// ── NAV ACTIVE STATE ────────────────────────────────────────────
+const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
+const sections = document.querySelectorAll('section[id]');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(l => {
+        l.style.color = l.getAttribute('href') === '#' + e.target.id
+          ? 'var(--accent2)' : '';
+      });
+    }
+  });
+}, {rootMargin:'-60px 0px -60% 0px'});
+sections.forEach(s => observer.observe(s));
+</script>
 </body>
 </html>

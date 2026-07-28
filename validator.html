@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BXP Validator & Playground — Breathe Exposure Protocol</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Cabinet+Grotesk:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+  --bg:#07090f;
+  --bg2:#0c1018;
+  --surface:#111520;
+  --surface2:#161c2a;
+  --border:#1e2535;
+  --border2:#252d40;
+  --text:#dde3f0;
+  --muted:#4a5470;
+  --muted2:#6b7594;
+  --accent:#3dffa0;
+  --accent2:#00d4ff;
+  --error:#ff4d6d;
+  --warn:#ffb830;
+  --mono:'JetBrains Mono',monospace;
+  --sans:'Cabinet Grotesk',sans-serif;
+}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--sans);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* Noise overlay */
+body::before{
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none;
+  z-index:0;
+  opacity:0.4;
+}
+
+/* Header */
+header{
+  padding:1rem 2rem;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  border-bottom:1px solid var(--border);
+  position:sticky;
+  top:0;
+  background:rgba(7,9,15,0.95);
+  backdrop-filter:blur(16px);
+  z-index:100;
+}
+
+.logo{
+  display:flex;
+  align-items:center;
+  gap:0.75rem;
+}
+
+.logo-badge{
+  font-family:var(--mono);
+  font-size:0.75rem;
+  font-weight:700;
+  letter-spacing:0.15em;
+  color:var(--bg);
+  background:var(--accent);
+  padding:0.3rem 0.6rem;
+  border-radius:4px;
+}
+
+.logo-text{
+  font-size:0.9rem;
+  font-weight:700;
+  color:var(--muted2);
+}
+
+.logo-text span{color:var(--text)}
+
+nav{display:flex;align-items:center;gap:1.5rem}
+nav a{
+  font-family:var(--mono);
+  font-size:0.72rem;
+  color:var(--muted);
+  text-decoration:none;
+  letter-spacing:0.05em;
+  transition:color 0.2s;
+}
+nav a:hover{color:var(--accent)}
+
+/* Hero strip */
+.hero{
+  padding:3rem 2rem 2rem;
+  max-width:1400px;
+  margin:0 auto;
+  position:relative;
+  z-index:1;
+}
+
+.hero-eyebrow{
+  font-family:var(--mono);
+  font-size:0.7rem;
+  letter-spacing:0.2em;
+  color:var(--accent);
+  text-transform:uppercase;
+  margin-bottom:0.75rem;
+}
+
+.hero-title{
+  font-size:clamp(1.8rem,4vw,3rem);
+  font-weight:800;
+  letter-spacing:-0.03em;
+  line-height:1.1;
+  margin-bottom:0.75rem;
+}
+
+.hero-title span{
+  color:transparent;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  -webkit-background-clip:text;
+  background-clip:text;
+}
+
+.hero-sub{
+  font-size:0.95rem;
+  color:var(--muted2);
+  max-width:600px;
+  line-height:1.7;
+}
+
+/* Main layout */
+.main{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:1px;
+  background:var(--border);
+  max-width:1400px;
+  margin:0 auto 0;
+  border-top:1px solid var(--border);
+  position:relative;
+  z-index:1;
+  min-height:calc(100vh - 200px);
+}
+
+/* Panel */
+.panel{
+  background:var(--bg2);
+  display:flex;
+  flex-direction:column;
+}
+
+.panel-header{
+  padding:1rem 1.5rem;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  background:var(--surface);
+}
+
+.panel-title{
+  font-family:var(--mono);
+  font-size:0.72rem;
+  letter-spacing:0.15em;
+  color:var(--muted2);
+  text-transform:uppercase;
+}
+
+.panel-actions{
+  display:flex;
+  gap:0.5rem;
+}
+
+.btn-sm{
+  font-family:var(--mono);
+  font-size:0.65rem;
+  padding:0.3rem 0.75rem;
+  border-radius:4px;
+  border:1px solid var(--border2);
+  background:transparent;
+  color:var(--muted2);
+  cursor:pointer;
+  transition:all 0.2s;
+  letter-spacing:0.05em;
+}
+
+.btn-sm:hover{border-color:var(--accent);color:var(--accent)}
+.btn-sm.primary{background:var(--accent);color:var(--bg);border-color:var(--accent);font-weight:700}
+.btn-sm.primary:hover{opacity:0.85}
+
+/* Editor */
+#editor{
+  flex:1;
+  width:100%;
+  background:var(--bg2);
+  border:none;
+  outline:none;
+  color:#a8d8a8;
+  font-family:var(--mono);
+  font-size:0.82rem;
+  line-height:1.8;
+  padding:1.5rem;
+  resize:none;
+  min-height:500px;
+  caret-color:var(--accent);
+}
+
+#editor::placeholder{color:var(--muted)}
+#editor:focus{background:var(--bg)}
+
+/* Results panel */
+.results{
+  flex:1;
+  padding:1.5rem;
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+  gap:1rem;
+}
+
+/* Status banner */
+.status-banner{
+  display:flex;
+  align-items:center;
+  gap:1rem;
+  padding:1.25rem 1.5rem;
+  border-radius:8px;
+  border:1px solid;
+  animation:fadeIn 0.3s ease;
+}
+
+.status-banner.valid{
+  background:rgba(61,255,160,0.05);
+  border-color:rgba(61,255,160,0.3);
+}
+
+.status-banner.invalid{
+  background:rgba(255,77,109,0.05);
+  border-color:rgba(255,77,109,0.3);
+}
+
+.status-banner.empty{
+  background:var(--surface);
+  border-color:var(--border);
+}
+
+.status-icon{
+  font-size:1.75rem;
+  flex-shrink:0;
+}
+
+.status-title{
+  font-size:1.1rem;
+  font-weight:700;
+  margin-bottom:0.2rem;
+}
+
+.status-banner.valid .status-title{color:var(--accent)}
+.status-banner.invalid .status-title{color:var(--error)}
+.status-banner.empty .status-title{color:var(--muted2)}
+
+.status-sub{
+  font-family:var(--mono);
+  font-size:0.7rem;
+  color:var(--muted2);
+}
+
+/* HRI card */
+.hri-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:1.5rem;
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:1.25rem;
+  align-items:center;
+  animation:fadeIn 0.4s ease;
+}
+
+.hri-score-big{
+  font-family:var(--mono);
+  font-size:3.5rem;
+  font-weight:700;
+  line-height:1;
+}
+
+.hri-level{
+  font-size:1rem;
+  font-weight:700;
+  letter-spacing:0.08em;
+  margin-bottom:0.4rem;
+}
+
+.hri-advice{
+  font-size:0.82rem;
+  color:var(--muted2);
+  line-height:1.6;
+  margin-bottom:0.75rem;
+}
+
+.hri-bar-wrap{
+  height:6px;
+  background:var(--border);
+  border-radius:999px;
+  overflow:hidden;
+}
+
+.hri-bar{
+  height:100%;
+  border-radius:999px;
+  transition:width 0.8s cubic-bezier(0.16,1,0.3,1);
+}
+
+/* Errors list */
+.errors-section{
+  animation:fadeIn 0.3s ease;
+}
+
+.section-label{
+  font-family:var(--mono);
+  font-size:0.65rem;
+  letter-spacing:0.18em;
+  color:var(--muted);
+  text-transform:uppercase;
+  margin-bottom:0.75rem;
+}
+
+.error-item{
+  display:flex;
+  gap:0.75rem;
+  padding:0.75rem 1rem;
+  background:var(--surface);
+  border-left:2px solid var(--error);
+  border-radius:0 6px 6px 0;
+  margin-bottom:0.5rem;
+  animation:slideIn 0.2s ease;
+}
+
+.warn-item{
+  border-left-color:var(--warn);
+}
+
+.ok-item{
+  border-left-color:var(--accent);
+}
+
+.error-code{
+  font-family:var(--mono);
+  font-size:0.65rem;
+  color:var(--error);
+  font-weight:700;
+  flex-shrink:0;
+  padding-top:1px;
+}
+
+.warn-item .error-code{color:var(--warn)}
+.ok-item .error-code{color:var(--accent)}
+
+.error-msg{
+  font-size:0.82rem;
+  color:var(--text);
+  line-height:1.5;
+}
+
+.error-field{
+  font-family:var(--mono);
+  font-size:0.7rem;
+  color:var(--muted2);
+  margin-top:0.2rem;
+}
+
+/* Fields grid */
+.fields-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:0.5rem;
+  animation:fadeIn 0.5s ease;
+}
+
+.field-chip{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:0.6rem 0.85rem;
+}
+
+.field-name{
+  font-family:var(--mono);
+  font-size:0.65rem;
+  color:var(--muted2);
+  margin-bottom:0.2rem;
+}
+
+.field-value{
+  font-family:var(--mono);
+  font-size:0.78rem;
+  color:var(--accent2);
+  word-break:break-all;
+}
+
+.field-chip.missing{
+  border-color:rgba(255,77,109,0.3);
+  background:rgba(255,77,109,0.04);
+}
+
+.field-chip.missing .field-value{
+  color:var(--error);
+}
+
+/* Agents table */
+.agents-table{
+  width:100%;
+  border-collapse:collapse;
+  font-family:var(--mono);
+  font-size:0.75rem;
+  animation:fadeIn 0.5s ease;
+}
+
+.agents-table th{
+  text-align:left;
+  padding:0.6rem 0.85rem;
+  color:var(--muted);
+  font-size:0.65rem;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  border-bottom:1px solid var(--border);
+}
+
+.agents-table td{
+  padding:0.6rem 0.85rem;
+  border-bottom:1px solid var(--border);
+  color:var(--text);
+}
+
+.agents-table tr:last-child td{border-bottom:none}
+.agents-table tr:hover td{background:var(--surface)}
+
+.agent-risk-bar{
+  display:flex;
+  align-items:center;
+  gap:0.5rem;
+}
+
+.mini-bar{
+  flex:1;
+  height:4px;
+  background:var(--border);
+  border-radius:999px;
+  overflow:hidden;
+}
+
+.mini-fill{height:100%;border-radius:999px}
+
+/* Validate button */
+.validate-btn{
+  width:100%;
+  padding:1rem;
+  background:var(--accent);
+  color:var(--bg);
+  border:none;
+  font-family:var(--sans);
+  font-size:1rem;
+  font-weight:800;
+  cursor:pointer;
+  letter-spacing:0.02em;
+  transition:all 0.2s;
+  position:sticky;
+  bottom:0;
+}
+
+.validate-btn:hover{opacity:0.9;letter-spacing:0.05em}
+.validate-btn:active{transform:scaleY(0.98)}
+
+/* Samples bar */
+.samples-bar{
+  padding:0.75rem 1.5rem;
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  gap:0.75rem;
+  flex-wrap:wrap;
+}
+
+.samples-label{
+  font-family:var(--mono);
+  font-size:0.65rem;
+  color:var(--muted);
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  flex-shrink:0;
+}
+
+.sample-btn{
+  font-family:var(--mono);
+  font-size:0.65rem;
+  padding:0.3rem 0.75rem;
+  border:1px solid var(--border2);
+  border-radius:4px;
+  background:transparent;
+  color:var(--muted2);
+  cursor:pointer;
+  transition:all 0.15s;
+}
+
+.sample-btn:hover{border-color:var(--accent2);color:var(--accent2)}
+
+/* Empty state */
+.empty-state{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:1rem;
+  padding:3rem;
+  text-align:center;
+}
+
+.empty-icon{
+  font-size:3rem;
+  opacity:0.2;
+}
+
+.empty-text{
+  font-family:var(--mono);
+  font-size:0.75rem;
+  color:var(--muted);
+  line-height:1.8;
+}
+
+/* Footer */
+footer{
+  border-top:1px solid var(--border);
+  padding:1.5rem 2rem;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  max-width:1400px;
+  margin:0 auto;
+  position:relative;
+  z-index:1;
+  flex-wrap:wrap;
+  gap:1rem;
+}
+
+.footer-links{display:flex;gap:1.5rem;flex-wrap:wrap}
+.footer-links a{
+  font-family:var(--mono);
+  font-size:0.65rem;
+  color:var(--muted);
+  text-decoration:none;
+  letter-spacing:0.05em;
+  transition:color 0.2s;
+}
+.footer-links a:hover{color:var(--accent)}
+
+.footer-badge{
+  font-family:var(--mono);
+  font-size:0.65rem;
+  color:var(--muted);
+  display:flex;
+  align-items:center;
+  gap:0.5rem;
+}
+
+.pulse-dot{
+  width:6px;height:6px;
+  background:var(--accent);
+  border-radius:50%;
+  animation:pulse 2s infinite;
+}
+
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.8)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+
+/* Responsive */
+@media(max-width:900px){
+  .main{grid-template-columns:1fr}
+  #editor{min-height:300px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <span class="logo-badge">BXP</span>
+    <span class="logo-text"><span>Validator</span> & Playground</span>
+  </div>
+  <nav>
+    <a href="index.html">← Home</a>
+    <a href="/dashboard" target="_blank">Live Dashboard</a>
+    <a href="/docs" target="_blank">API Docs</a>
+    <a href="https://github.com/bxpprotocol/bxp-spec" target="_blank">GitHub</a>
+    <a href="https://doi.org/10.5281/zenodo.18906812" target="_blank">DOI</a>
+  </nav>
+</header>
+
+<div class="hero">
+  <div class="hero-eyebrow">Breathe Exposure Protocol v2.0</div>
+  <h1 class="hero-title">Validate & explore<br><span>BXP data instantly</span></h1>
+  <p class="hero-sub">Paste any JSON and validate it against the BXP v2.0 specification. Get instant feedback, calculated HRI scores, and WHO threshold analysis — no installation required.</p>
+</div>
+
+<div class="main">
+  <!-- Left: Editor -->
+  <div class="panel">
+    <div class="panel-header">
+      <span class="panel-title">Input — BXP JSON</span>
+      <div class="panel-actions">
+        <button class="btn-sm" onclick="clearEditor()">Clear</button>
+        <button class="btn-sm" onclick="copyEditor()">Copy</button>
+      </div>
+    </div>
+    <div class="samples-bar">
+      <span class="samples-label">Samples:</span>
+      <button class="sample-btn" onclick="loadSample('valid')">✓ Valid Reading</button>
+      <button class="sample-btn" onclick="loadSample('missing')">⚠ Missing Fields</button>
+      <button class="sample-btn" onclick="loadSample('invalid')">✗ Invalid Values</button>
+      <button class="sample-btn" onclick="loadSample('minimal')">Minimal</button>
+      <button class="sample-btn" onclick="loadSample('full')">Full Record</button>
+    </div>
+    <textarea id="editor" spellcheck="false"
+      placeholder='Paste your BXP JSON here, or click a sample above...
+
+Example:
+{
+  "bxpVersion": "2.0",
+  "fileType": "reading",
+  "deviceUuid": "550e8400-e29b-41d4-a716-446655440000",
+  "geohash": "s1v0g",
+  "timestampUs": 1710000000000000,
+  "agents": [
+    {
+      "agentId": "PM2_5",
+      "value": 47.3,
+      "unit": "ug/m3"
+    }
+  ],
+  "quality": {
+    "flag": "UNVALIDATED"
+  }
+}'></textarea>
+    <button class="validate-btn" onclick="validate()">▶ VALIDATE BXP</button>
+  </div>
+
+  <!-- Right: Results -->
+  <div class="panel">
+    <div class="panel-header">
+      <span class="panel-title">Results</span>
+      <div class="panel-actions">
+        <button class="btn-sm" onclick="copyResults()">Copy JSON</button>
+      </div>
+    </div>
+    <div class="results" id="results">
+      <div class="empty-state">
+        <div class="empty-icon">⬡</div>
+        <div class="empty-text">
+          Paste BXP JSON on the left<br>
+          and click VALIDATE<br><br>
+          or load a sample to get started
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-links">
+    <a href="https://github.com/bxpprotocol/bxp-spec" target="_blank">Specification</a>
+    <a href="https://bxp-node.onrender.com" target="_blank">Public Node</a>
+    <a href="https://doi.org/10.5281/zenodo.18906812" target="_blank">DOI: 10.5281/zenodo.18906812</a>
+    <a href="https://orcid.org/0009-0001-4856-4986" target="_blank">ORCID</a>
+    <a href="mailto:bxpprotocol@proton.me">Contact</a>
+  </div>
+  <div class="footer-badge">
+    <span class="pulse-dot"></span>
+    Apache 2.0 · The air is public. The data should be too.
+  </div>
+</footer>
+
+<script>
+// ─── BXP SPEC CONSTANTS ───────────────────
+
+const WHO_THRESHOLDS = {
+  PM2_5: 15.0, PM10: 45.0, NO2: 25.0,
+  O3: 100.0, CO: 4.0, SO2: 40.0,
+  TVOC: 500.0, BENZ: 1.0, FORM: 8.0,
+  TOLU: 50.0, PB: 0.5
+};
+
+const WEIGHTS = {
+  PM2_5: 0.35, PM10: 0.15, NO2: 0.15,
+  O3: 0.12, CO: 0.10, SO2: 0.05, TVOC: 0.04
+};
+
+const VALID_AGENTS = [
+  'PM1','PM2_5','PM10','BC','CO','CO2','NO2','NO','SO2','O3',
+  'H2S','NH3','TVOC','BENZ','FORM','TOLU','XYLE','NAPH',
+  'MOLD_S','POLL_G','POLL_T','BACT_T','DUST_M',
+  'PB','HG','AS','TEMP','RH','PRESS','UV'
+];
+
+const VALID_QUALITY_FLAGS = ['VALIDATED','UNVALIDATED','SUSPECT','INVALID'];
+const VALID_FILE_TYPES = ['reading','aggregate','agent','device','alert','meta'];
+const VALID_UNITS = ['ug/m3','ppb','ppm','mg/m3','CFU/m3','spores/m3','grains/m3','ng/m3','C','%','hPa','index'];
+
+const LEVEL_DATA = {
+  CLEAN:     {color:'#00E676', label:'CLEAN',     advice:'Air quality is excellent. Enjoy outdoor activities freely.'},
+  MODERATE:  {color:'#FFEB3B', label:'MODERATE',  advice:'Acceptable for most. Sensitive individuals should limit heavy exertion.'},
+  ELEVATED:  {color:'#FF9800', label:'ELEVATED',  advice:'Reduce prolonged outdoor exertion. Sensitive groups stay cautious.'},
+  HIGH:      {color:'#F44336', label:'HIGH',      advice:'Reduce outdoor activity. Wear N95 if outdoors. Close windows.'},
+  VERY_HIGH: {color:'#9C27B0', label:'VERY HIGH', advice:'Avoid outdoors. N95 mandatory. Seek medical help if symptomatic.'},
+  HAZARDOUS: {color:'#4A0000', label:'HAZARDOUS', advice:'Health emergency. Stay indoors. Evacuate if possible.'}
+};
+
+// ─── VALIDATION ENGINE ────────────────────
+
+function validateBXP(data) {
+  const errors = [];
+  const warnings = [];
+  const info = [];
+
+  // Required top-level fields
+  const required = ['bxpVersion','fileType','deviceUuid','geohash','timestampUs','agents','quality'];
+  for (const f of required) {
+    if (data[f] === undefined || data[f] === null) {
+      errors.push({code:'BXP_4002', message:`Missing required field: "${f}"`, field: f});
+    }
+  }
+
+  // bxpVersion
+  if (data.bxpVersion && data.bxpVersion !== '2.0') {
+    warnings.push({code:'BXP_WARN_001', message:`bxpVersion "${data.bxpVersion}" — this validator targets v2.0`, field:'bxpVersion'});
+  }
+
+  // fileType
+  if (data.fileType && !VALID_FILE_TYPES.includes(data.fileType)) {
+    errors.push({code:'BXP_4003', message:`Invalid fileType "${data.fileType}". Must be one of: ${VALID_FILE_TYPES.join(', ')}`, field:'fileType'});
+  }
+
+  // deviceUuid format
+  if (data.deviceUuid) {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(data.deviceUuid)) {
+      errors.push({code:'BXP_4002', message:`deviceUuid must be a valid UUID v4 format`, field:'deviceUuid'});
+    }
+  }
+
+  // geohash precision
+  if (data.geohash) {
+    if (typeof data.geohash !== 'string') {
+      errors.push({code:'BXP_4001', message:'geohash must be a string', field:'geohash'});
+    } else if (data.geohash.length < 5) {
+      errors.push({code:'BXP_4001', message:`Geohash precision ${data.geohash.length} is below minimum required (5). Got: "${data.geohash}"`, field:'geohash'});
+    } else if (data.geohash.length < 7) {
+      warnings.push({code:'BXP_WARN_002', message:`Geohash precision ${data.geohash.length} — recommended precision is 7 (~153m). Current: ~${data.geohash.length <= 5 ? '4.9km' : '1.2km'}`, field:'geohash'});
+    } else {
+      info.push({code:'BXP_OK', message:`Geohash precision ${data.geohash.length} — excellent spatial resolution`, field:'geohash'});
+    }
+  }
+
+  // timestampUs
+  if (data.timestampUs !== undefined) {
+    if (typeof data.timestampUs !== 'number') {
+      errors.push({code:'BXP_4005', message:'timestampUs must be a number (Unix epoch microseconds)', field:'timestampUs'});
+    } else {
+      const ms = data.timestampUs / 1000;
+      const now = Date.now();
+      if (ms < 1000000000000 || ms > now + 86400000) {
+        errors.push({code:'BXP_4005', message:`timestampUs appears invalid. Must be Unix epoch in microseconds. Got: ${data.timestampUs}`, field:'timestampUs'});
+      } else {
+        const date = new Date(ms);
+        info.push({code:'BXP_OK', message:`Timestamp: ${date.toISOString()}`, field:'timestampUs'});
+      }
+    }
+  }
+
+  // agents array
+  if (data.agents !== undefined) {
+    if (!Array.isArray(data.agents)) {
+      errors.push({code:'BXP_4002', message:'agents must be an array', field:'agents'});
+    } else if (data.agents.length === 0) {
+      errors.push({code:'BXP_4002', message:'agents array must contain at least one reading', field:'agents'});
+    } else {
+      data.agents.forEach((agent, i) => {
+        if (!agent.agentId) {
+          errors.push({code:'BXP_4003', message:`agents[${i}]: missing required field "agentId"`, field:`agents[${i}].agentId`});
+        } else if (!VALID_AGENTS.includes(agent.agentId)) {
+          errors.push({code:'BXP_4003', message:`agents[${i}]: unknown agentId "${agent.agentId}". See Appendix A of BXP spec for valid IDs.`, field:`agents[${i}].agentId`});
+        }
+        if (agent.value === undefined) {
+          errors.push({code:'BXP_4002', message:`agents[${i}]: missing required field "value"`, field:`agents[${i}].value`});
+        } else if (typeof agent.value !== 'number') {
+          errors.push({code:'BXP_4002', message:`agents[${i}]: "value" must be a number, got ${typeof agent.value}`, field:`agents[${i}].value`});
+        } else {
+          // Range checks
+          if (agent.agentId === 'PM2_5' && (agent.value < 0 || agent.value > 1000)) {
+            errors.push({code:'BXP_4002', message:`agents[${i}]: PM2_5 value ${agent.value} outside valid range 0–1000 μg/m³`, field:`agents[${i}].value`});
+          }
+          if (agent.agentId === 'RH' && (agent.value < 0 || agent.value > 100)) {
+            errors.push({code:'BXP_4002', message:`agents[${i}]: RH value ${agent.value} outside valid range 0–100%`, field:`agents[${i}].value`});
+          }
+        }
+        if (!agent.unit) {
+          warnings.push({code:'BXP_WARN_003', message:`agents[${i}]: missing "unit" field — recommended for "${agent.agentId}"`, field:`agents[${i}].unit`});
+        }
+        if (agent.belowLod === undefined) {
+          warnings.push({code:'BXP_WARN_004', message:`agents[${i}]: "belowLod" not set — recommended (true/false)`, field:`agents[${i}].belowLod`});
+        }
+      });
+    }
+  }
+
+  // quality
+  if (data.quality !== undefined) {
+    if (typeof data.quality !== 'object') {
+      errors.push({code:'BXP_4002', message:'quality must be an object', field:'quality'});
+    } else if (!data.quality.flag) {
+      errors.push({code:'BXP_4002', message:'quality.flag is required', field:'quality.flag'});
+    } else if (!VALID_QUALITY_FLAGS.includes(data.quality.flag)) {
+      errors.push({code:'BXP_4002', message:`Invalid quality.flag "${data.quality.flag}". Must be: ${VALID_QUALITY_FLAGS.join(', ')}`, field:'quality.flag'});
+    }
+    if (!data.quality.confidence) {
+      warnings.push({code:'BXP_WARN_005', message:'quality.confidence not set — recommended (0.0–1.0)', field:'quality.confidence'});
+    } else if (data.quality.confidence < 0 || data.quality.confidence > 1) {
+      errors.push({code:'BXP_4002', message:`quality.confidence ${data.quality.confidence} outside valid range 0.0–1.0`, field:'quality.confidence'});
+    }
+  }
+
+  // Optional recommended fields
+  if (!data.latitude || !data.longitude) {
+    warnings.push({code:'BXP_WARN_006', message:'latitude/longitude not set — recommended alongside geohash for full precision', field:'latitude/longitude'});
+  }
+  if (!data.indoorOutdoor) {
+    warnings.push({code:'BXP_WARN_007', message:'"indoorOutdoor" not set — recommended ("indoor" or "outdoor")', field:'indoorOutdoor'});
+  }
+  if (!data.durationS) {
+    warnings.push({code:'BXP_WARN_008', message:'"durationS" not set — recommended (measurement duration in seconds)', field:'durationS'});
+  }
+
+  return {errors, warnings, info};
+}
+
+// ─── HRI CALCULATOR ───────────────────────
+
+function calculateHRI(agents) {
+  if (!Array.isArray(agents)) return null;
+  let raw = 0;
+  const breakdown = [];
+  for (const agent of agents) {
+    const id = agent.agentId;
+    const val = agent.value;
+    if (typeof val !== 'number') continue;
+    const thresh = WHO_THRESHOLDS[id];
+    const weight = WEIGHTS[id];
+    if (thresh && weight) {
+      const risk = Math.min(1.0, val / thresh);
+      raw += risk * weight;
+      breakdown.push({id, val, thresh, risk, weight, contribution: risk * weight});
+    }
+  }
+  const hri = Math.min(100, Math.round(raw * 100 * 10) / 10);
+  let level = 'CLEAN';
+  if (hri > 90) level = 'HAZARDOUS';
+  else if (hri > 75) level = 'VERY_HIGH';
+  else if (hri > 60) level = 'HIGH';
+  else if (hri > 40) level = 'ELEVATED';
+  else if (hri > 20) level = 'MODERATE';
+  return {hri, level, breakdown};
+}
+
+// ─── RENDER RESULTS ───────────────────────
+
+function renderResults(data, validation, hriResult) {
+  const {errors, warnings, info} = validation;
+  const isValid = errors.length === 0;
+  const totalIssues = errors.length + warnings.length;
+
+  let html = '';
+
+  // Status banner
+  if (isValid) {
+    html += `<div class="status-banner valid">
+      <div class="status-icon">✓</div>
+      <div>
+        <div class="status-title">Valid BXP v2.0</div>
+        <div class="status-sub">${warnings.length} warning${warnings.length !== 1 ? 's' : ''} · ${info.length} info · 0 errors</div>
+      </div>
+    </div>`;
+  } else {
+    html += `<div class="status-banner invalid">
+      <div class="status-icon">✗</div>
+      <div>
+        <div class="status-title">Invalid BXP</div>
+        <div class="status-sub">${errors.length} error${errors.length !== 1 ? 's' : ''} · ${warnings.length} warning${warnings.length !== 1 ? 's' : ''}</div>
+      </div>
+    </div>`;
+  }
+
+  // HRI Score
+  if (hriResult && hriResult.hri >= 0) {
+    const ld = LEVEL_DATA[hriResult.level] || LEVEL_DATA.CLEAN;
+    html += `<div class="hri-card">
+      <div class="hri-score-big" style="color:${ld.color}">${hriResult.hri}</div>
+      <div>
+        <div class="hri-level" style="color:${ld.color}">${ld.label}</div>
+        <div class="hri-advice">${ld.advice}</div>
+        <div class="hri-bar-wrap">
+          <div class="hri-bar" style="width:${hriResult.hri}%;background:${ld.color}"></div>
+        </div>
+      </div>
+    </div>`;
+
+    // Agent breakdown table
+    if (hriResult.breakdown.length > 0) {
+      html += `<div>
+        <div class="section-label">Agent Analysis</div>
+        <table class="agents-table">
+          <thead>
+            <tr>
+              <th>Agent</th>
+              <th>Value</th>
+              <th>WHO Limit</th>
+              <th>Risk %</th>
+              <th>HRI Contribution</th>
+            </tr>
+          </thead>
+          <tbody>`;
+      for (const a of hriResult.breakdown) {
+        const pct = Math.round(a.risk * 100);
+        const barColor = pct < 50 ? '#00E676' : pct < 100 ? '#FF9800' : '#F44336';
+        html += `<tr>
+          <td>${a.id}</td>
+          <td>${a.val}</td>
+          <td>${a.thresh}</td>
+          <td>
+            <div class="agent-risk-bar">
+              <div class="mini-bar">
+                <div class="mini-fill" style="width:${Math.min(pct,100)}%;background:${barColor}"></div>
+              </div>
+              <span style="color:${barColor};font-size:0.65rem;min-width:30px">${pct}%</span>
+            </div>
+          </td>
+          <td style="color:#94a3b8">+${(a.contribution * 100).toFixed(1)}</td>
+        </tr>`;
+      }
+      html += '</tbody></table></div>';
+    }
+  }
+
+  // Errors
+  if (errors.length > 0) {
+    html += `<div class="errors-section">
+      <div class="section-label">Errors — must fix</div>`;
+    for (const e of errors) {
+      html += `<div class="error-item">
+        <div class="error-code">${e.code}</div>
+        <div>
+          <div class="error-msg">${e.message}</div>
+          ${e.field ? `<div class="error-field">${e.field}</div>` : ''}
+        </div>
+      </div>`;
+    }
+    html += '</div>';
+  }
+
+  // Warnings
+  if (warnings.length > 0) {
+    html += `<div class="errors-section">
+      <div class="section-label">Warnings — recommended</div>`;
+    for (const w of warnings) {
+      html += `<div class="error-item warn-item">
+        <div class="error-code">${w.code}</div>
+        <div>
+          <div class="error-msg">${w.message}</div>
+          ${w.field ? `<div class="error-field">${w.field}</div>` : ''}
+        </div>
+      </div>`;
+    }
+    html += '</div>';
+  }
+
+  // Info / passing checks
+  if (info.length > 0) {
+    html += `<div class="errors-section">
+      <div class="section-label">Passing checks</div>`;
+    for (const i of info) {
+      html += `<div class="error-item ok-item">
+        <div class="error-code">${i.code}</div>
+        <div>
+          <div class="error-msg">${i.message}</div>
+          ${i.field ? `<div class="error-field">${i.field}</div>` : ''}
+        </div>
+      </div>`;
+    }
+    html += '</div>';
+  }
+
+  // Key fields summary
+  const fieldMap = {
+    bxpVersion: data.bxpVersion,
+    fileType: data.fileType,
+    deviceUuid: data.deviceUuid ? data.deviceUuid.substring(0,8) + '...' : undefined,
+    geohash: data.geohash,
+    indoorOutdoor: data.indoorOutdoor,
+    durationS: data.durationS !== undefined ? data.durationS + 's' : undefined,
+    'quality.flag': data.quality?.flag,
+    'quality.confidence': data.quality?.confidence,
+    latitude: data.latitude,
+    longitude: data.longitude,
+    'agents count': Array.isArray(data.agents) ? data.agents.length : undefined,
+  };
+
+  html += `<div>
+    <div class="section-label">Fields</div>
+    <div class="fields-grid">`;
+  for (const [name, val] of Object.entries(fieldMap)) {
+    const missing = val === undefined || val === null;
+    html += `<div class="field-chip ${missing ? 'missing' : ''}">
+      <div class="field-name">${name}</div>
+      <div class="field-value">${missing ? 'not set' : String(val)}</div>
+    </div>`;
+  }
+  html += '</div></div>';
+
+  return html;
+}
+
+// ─── MAIN VALIDATE ────────────────────────
+
+let lastResult = null;
+
+function validate() {
+  const raw = document.getElementById('editor').value.trim();
+  if (!raw) {
+    document.getElementById('results').innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">⬡</div>
+        <div class="empty-text">Nothing to validate.<br>Paste BXP JSON on the left.</div>
+      </div>`;
+    return;
+  }
+
+  let data;
+  try {
+    data = JSON.parse(raw);
+  } catch(e) {
+    document.getElementById('results').innerHTML = `
+      <div class="status-banner invalid">
+        <div class="status-icon">✗</div>
+        <div>
+          <div class="status-title">Invalid JSON</div>
+          <div class="status-sub">${e.message}</div>
+        </div>
+      </div>
+      <div class="errors-section">
+        <div class="section-label">JSON Parse Error</div>
+        <div class="error-item">
+          <div class="error-code">JSON_ERR</div>
+          <div>
+            <div class="error-msg">Could not parse JSON: ${e.message}</div>
+            <div class="error-field">Check for missing commas, unclosed brackets, or unquoted keys</div>
+          </div>
+        </div>
+      </div>`;
+    return;
+  }
+
+  const validation = validateBXP(data);
+  const hriResult = data.agents ? calculateHRI(data.agents) : null;
+  lastResult = {data, validation, hriResult};
+
+  document.getElementById('results').innerHTML = renderResults(data, validation, hriResult);
+}
+
+function clearEditor() {
+  document.getElementById('editor').value = '';
+  document.getElementById('results').innerHTML = `
+    <div class="empty-state">
+      <div class="empty-icon">⬡</div>
+      <div class="empty-text">Paste BXP JSON on the left<br>and click VALIDATE</div>
+    </div>`;
+}
+
+function copyEditor() {
+  navigator.clipboard.writeText(document.getElementById('editor').value);
+}
+
+function copyResults() {
+  if (lastResult) {
+    navigator.clipboard.writeText(JSON.stringify(lastResult, null, 2));
+  }
+}
+
+// ─── SAMPLES ──────────────────────────────
+
+const SAMPLES = {
+  valid: {
+    bxpVersion: "2.0",
+    fileType: "reading",
+    deviceUuid: "550e8400-e29b-41d4-a716-446655440000",
+    geohash: "s1v0g8k",
+    latitude: 5.5571,
+    longitude: -0.1969,
+    timestampUs: Date.now() * 1000,
+    durationS: 60,
+    indoorOutdoor: "outdoor",
+    agents: [
+      {agentId:"PM2_5", value:47.3, unit:"ug/m3", uncertainty:3.1, method:"optical", belowLod:false},
+      {agentId:"NO2",   value:38.0, unit:"ug/m3", uncertainty:2.0, method:"electrochemical", belowLod:false},
+      {agentId:"CO",    value:1.2,  unit:"ppm",   uncertainty:0.1, method:"electrochemical", belowLod:false},
+      {agentId:"O3",    value:55.0, unit:"ppb",   uncertainty:4.0, method:"uv_photometry",   belowLod:false}
+    ],
+    context: {temperatureC:28.4, humidityPct:72.1, pressureHpa:1012.3},
+    quality: {flag:"VALIDATED", confidence:0.94, qcMethod:"automated-v2"}
+  },
+  missing: {
+    bxpVersion: "2.0",
+    fileType: "reading",
+    agents: [
+      {agentId:"PM2_5", value:25.0, unit:"ug/m3"}
+    ],
+    quality: {flag:"UNVALIDATED"}
+  },
+  invalid: {
+    bxpVersion: "2.0",
+    fileType: "reading",
+    deviceUuid: "not-a-valid-uuid",
+    geohash: "s1v",
+    timestampUs: 12345,
+    agents: [
+      {agentId:"UNKNOWN_GAS", value:-50, unit:"ug/m3"},
+      {agentId:"RH", value:150}
+    ],
+    quality: {flag:"MAYBE", confidence:2.5}
+  },
+  minimal: {
+    bxpVersion: "2.0",
+    fileType: "reading",
+    deviceUuid: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    geohash: "s1v0g",
+    timestampUs: Date.now() * 1000,
+    agents: [{agentId:"PM2_5", value:12.0, unit:"ug/m3", belowLod:false}],
+    quality: {flag:"UNVALIDATED", confidence:0.7}
+  },
+  full: {
+    bxpVersion: "2.0",
+    fileType: "reading",
+    deviceUuid: "550e8400-e29b-41d4-a716-446655440000",
+    geohash: "s1v0g8k",
+    latitude: 5.5571,
+    longitude: -0.1969,
+    altitudeM: 61.0,
+    timestampUs: Date.now() * 1000,
+    durationS: 60,
+    indoorOutdoor: "outdoor",
+    agents: [
+      {agentId:"PM2_5", value:47.3, unit:"ug/m3", uncertainty:3.1, method:"optical", belowLod:false},
+      {agentId:"PM10",  value:68.0, unit:"ug/m3", uncertainty:5.0, method:"optical", belowLod:false},
+      {agentId:"NO2",   value:38.0, unit:"ug/m3", uncertainty:2.0, method:"electrochemical", belowLod:false},
+      {agentId:"CO",    value:1.2,  unit:"ppm",   uncertainty:0.1, method:"electrochemical", belowLod:false},
+      {agentId:"SO2",   value:12.0, unit:"ppb",   uncertainty:1.5, method:"electrochemical", belowLod:false},
+      {agentId:"O3",    value:55.0, unit:"ppb",   uncertainty:4.0, method:"uv_photometry",   belowLod:false},
+      {agentId:"TVOC",  value:280.0,unit:"ppb",   uncertainty:20,  method:"pid",             belowLod:false},
+      {agentId:"TEMP",  value:28.4, unit:"C",     belowLod:false},
+      {agentId:"RH",    value:72.1, unit:"%",     belowLod:false}
+    ],
+    context: {
+      temperatureC:28.4, humidityPct:72.1,
+      pressureHpa:1012.3, windSpeedMs:2.1, windDirDeg:220
+    },
+    quality: {flag:"VALIDATED", confidence:0.94, qcMethod:"automated-v2", notes:""},
+    signature: ""
+  }
+};
+
+function loadSample(name) {
+  const s = SAMPLES[name];
+  if (!s) return;
+  document.getElementById('editor').value = JSON.stringify(s, null, 2);
+  validate();
+}
+
+// Auto-validate on paste
+document.getElementById('editor').addEventListener('paste', () => {
+  setTimeout(validate, 100);
+});
+
+// Ctrl+Enter to validate
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') validate();
+});
+</script>
+</body>
+</html>
