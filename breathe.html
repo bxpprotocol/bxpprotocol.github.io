@@ -218,6 +218,13 @@ footer a{color:var(--muted)}
         <option value="0">Forever (until you delete)</option>
       </select>
     </div>
+    <div>
+      <label for="node">BXP node (optional)</label>
+      <input id="node" type="url" spellcheck="false" placeholder="http://localhost:5000">
+      <p class="hint">Run the reference node locally and Breathe will read real
+      measurements from <code>/bxp/v2/nearby</code> alongside the modelled feed.
+      Leave blank to use the modelled source only.</p>
+    </div>
   </div>
   <div class="dlg-foot">
     <button value="cancel">Cancel</button>
@@ -251,14 +258,19 @@ const CONFIG = {
   whoNo2: 25
 };
 
-// Public read-only endpoints. No API keys, no accounts.
+// Public read-only sources. No API keys, no accounts, no CORS proxy.
 const SOURCES = [
-  { id: "openaq", name: "OpenAQ", kind: "monitoring station", needsKey: false },
-  { id: "waqi",   name: "WAQI",   kind: "aggregated station", needsKey: false },
-  { id: "purpleair", name: "PurpleAir", kind: "community sensor", needsKey: false }
+  { id: "openmeteo", name: "Open-Meteo", kind: "modelled + station blend", modelled: true },
+  { id: "bxpnode",   name: "Local BXP node", kind: "measured (your own node)", modelled: false }
 ];
 
-const state = { loc: null, map: null, last: null };
+// A BXP node you run yourself, e.g. `cd reference-server && python server.py`
+// Read lazily so changing it in the Privacy dialog takes effect immediately.
+function bxpNode() {
+  return (localStorage.getItem("breathe.node") || "").replace(/\/+$/, "") || "http://localhost:5000";
+}
+
+const state = { loc: null, map: null, last: null, status: "" };
 
 // ── Storage ───────────────────────────────────────────────
 const store = {
@@ -298,6 +310,13 @@ const store = {
     });
   },
   async count() { return (await store.recent(100000)).length; },
+  delete(id) {
+    return new Promise((res, rej) => {
+      const t = store.db.transaction(CONFIG.store, "readwrite");
+      t.objectStore(CONFIG.store).delete(id);
+      t.oncomplete = res; t.onerror = () => rej(t.error);
+    });
+  },
   async clear() {
     return new Promise((res, rej) => {
       const t = store.db.transaction(CONFIG.store, "readwrite");
@@ -308,11 +327,22 @@ const store = {
 };
 
 // ── Location ──────────────────────────────────────────────
-const RADIUS = { exact: 4, area: 3, city: 2, none: 0 };
+// Precision index matches the Privacy dialog's option order:
+// 0 = none, 1 = city, 2 = area (~1 km), 3 = exact.
+const PRECISION = [
+  { decimals: null, label: "location not stored" },
+  { decimals: 1,    label: "city (~10 km)"  },
+  { decimals: 2,    label: "area (~1 km)"   },
+  { decimals: 6,    label: "exact"          }
+];
+
+function precIndex() {
+  const p = parseInt(localStorage.getItem("breathe.precision") ?? "2", 10);
+  return Number.isInteger(p) && p >= 0 && p <= 3 ? p : 2;
+}
 
 function coords() {
-  const p = parseInt(localStorage.getItem("breathe.precision") || "2", 10);
-  return RADIUS[["exact","area","city","none"][p]] ?? 3;
+  return PRECISION[precIndex()].decimals;
 }
 
 function location_() {
@@ -326,62 +356,87 @@ function location_() {
   });
 }
 
-// Round coordinates to the precision the user chose.
+// Round coordinates to the precision the user chose. This is the
+// only place location is coarsened before anything is stored.
 function applyPrivacy(lat, lon) {
-  const p = parseInt(localStorage.getItem("breathe.precision") || "2", 10);
-  const d = p === 0 ? null : Math.pow(10, p === 1 ? 0 : p === 2 ? 1 : p === 3 ? 2 : 4);
-  if (d === null) return { lat: null, lon: null, label: "location not stored" };
-  return { lat: +lat.toFixed(d), lon: +lon.toFixed(d), label: ["city", "city", "~1 km", "~10 m", "precise"][p] };
+  const { decimals, label } = PRECISION[precIndex()];
+  if (decimals === null) return { lat: null, lon: null, label };
+  return { lat: +lat.toFixed(decimals), lon: +lon.toFixed(decimals), label };
 }
 
 // ── Fetch air quality ─────────────────────────────────────
-// A CORS proxy is required because these APIs do not send
-// Access-Control-Allow-Origin. All requests are GET and read-only.
-const PROXY = "https://corsproxy.io/?url=";
+// Two independent sources, both keyless and CORS-readable from
+// the browser. No third-party proxy is involved: the previous
+// corsproxy.io hop was unreliable and the OpenAQ v2 endpoint it
+// called has been sunset.
 
-async function viaProxy(url) {
-  const res = await fetch(PROXY + encodeURIComponent(url));
-  if (!res.ok) throw new Error("HTTP " + res.status);
-  return res.json();
+// 1. Open-Meteo Air Quality — CORS-enabled, no key required.
+async function fetchOpenMeteo(lat, lon) {
+  const url = "https://air-quality-api.open-meteo.com/v1/air-quality"
+    + `?latitude=${lat}&longitude=${lon}`
+    + "&current=pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,sulphur_dioxide,ozone"
+    + "&timezone=UTC";
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("Open-Meteo HTTP " + res.status);
+  const d = await res.json();
+  const c = d.current || {};
+  const out = [];
+  const push = (param, value, unit) => {
+    if (value == null || Number.isNaN(value)) return;
+    out.push({ param, value, unit, source: "Open-Meteo", modelled: true, station: "regional model" });
+  };
+  push("pm25", c.pm2_5, "µg/m³");
+  push("pm10", c.pm10, "µg/m³");
+  push("no2",  c.nitrogen_dioxide, "µg/m³");
+  push("o3",   c.ozone, "µg/m³");
+  push("so2",  c.sulphur_dioxide, "µg/m³");
+  push("co",   c.carbon_monoxide, "µg/m³");
+  return out;
 }
 
-async function fetchOpenAQ(lat, lon) {
-  const d = await viaProxy(
-    `https://api.openaq.org/v2/locations?coordinates=${lat},${lon}&radius=25000&limit=5`
-  );
+// 2. A BXP node running on localhost — real measurements, real BXP records.
+async function fetchBXPNode(lat, lon) {
+  const base = bxpNode();
+  const url = `${base}/bxp/v2/nearby?lat=${lat}&lon=${lon}&radiusKm=25&limit=5`;
+  const res = await fetch(url, { headers: { Accept: "application/json" } });
+  if (!res.ok) throw new Error("BXP node HTTP " + res.status);
+  const d = await res.json();
+  const list = d.readings || d.data || [];
   const out = [];
-  for (const loc of d.results || []) {
-    for (const s of (loc.sensors || [])) {
-      for (const p of (s.parameters || [])) {
-        if (!["pm25","pm10","no2","o3"].includes(p.name)) continue;
-        out.push({ param: p.name, unit: p.unit || "µg/m³", source: "OpenAQ", modelled: false, station: loc.name });
-      }
+  for (const r of list) {
+    for (const a of (r.agents || [])) {
+      if (a.value == null) continue;
+      // BXP agent IDs are PM2_5 / PM10 / NO2 … ; normalise to the
+      // short names the rest of the app keys on.
+      const id = String(a.agentId || "").toLowerCase();
+      const param = id === "pm2_5" ? "pm25" : id === "pm2_5 " ? "pm25" : id;
+      out.push({
+        param,
+        value: a.value,
+        unit: a.unit || "µg/m³",
+        source: "Local BXP node",
+        modelled: false,
+        station: r.source || "bxp"
+      });
     }
   }
   return out;
 }
 
-async function fetchWAQI(lat, lon) {
-  const d = await viaProxy(`https://api.waqi.info/feed/geo:${lat};${lon}/`);
-  if (d.status !== "ok") return [];
-  const iaqi = d.data?.iaqi || {};
-  const out = [];
-  for (const [param, key] of [["pm25","pm25"],["pm10","pm10"],["no2","no2"],["o3","o3"]]) {
-    if (iaqi[key]?.v === undefined) continue;
-    // WAQI returns a US AQI index, not a concentration. Do not
-    // present an index as if it were a measured concentration.
-    out.push({ param, value: iaqi[key].v, unit: "AQI", source: "WAQI", modelled: false, station: d.data.city?.name || "nearby" });
-  }
-  return out;
-}
-
 async function fetchAll(lat, lon) {
-  const results = await Promise.allSettled([fetchOpenAQ(lat, lon), fetchWAQI(lat, lon)]);
+  const results = await Promise.allSettled([fetchOpenMeteo(lat, lon), fetchBXPNode(lat, lon)]);
   const vals = [], errors = [];
   results.forEach((r, i) => {
-    if (r.status === "fulfilled") vals.push(...r.value);
-    else errors.push(SOURCES[i].name);
+    if (r.status === "fulfilled") {
+      vals.push(...r.value);
+      if (!r.value.length) errors.push(SOURCES[i].name + " (no data)");
+    } else {
+      errors.push(SOURCES[i].name);
+    }
   });
+  if (!vals.length) {
+    return { vals, errors: errors.length ? errors : ["no source returned data"] };
+  }
   return { vals, errors };
 }
 
@@ -475,24 +530,38 @@ function initMap(lat, lon) {
 }
 
 // ── Main cycle ────────────────────────────────────────────
+const FALLBACK = { lat: 5.6037, lon: -0.1870, label: "Accra (default)" }; // used when geolocation is denied
+
 async function sample() {
   const raw = await location_();
-  if (!raw) {
-    $("locBadge").textContent = "Location unavailable";
+  const origin = raw ? { lat: raw.lat, lon: raw.lon } : FALLBACK;
+  const priv = raw ? applyPrivacy(raw.lat, raw.lon) : { lat: FALLBACK.lat, lon: FALLBACK.lon, label: FALLBACK.label };
+  $("locBadge").textContent = priv.label;
+  $("locBadge").classList.toggle("warn", !raw);
+
+  // Query with the real coordinates, but only ever persist the
+  // coarsened ones the privacy setting allows.
+  const { vals, errors } = await fetchAll(origin.lat, origin.lon);
+
+  if (!vals.length) {
+    state.status = "No data: " + errors.join(", ");
+    $("sources").innerHTML = `<div class="row"><span class="k bad">${esc(state.status)}</span></div>`;
+    $("srcBadge").textContent = "Sources: none";
     $("locBadge").classList.add("warn");
+    await render();
     return;
   }
-  const priv = applyPrivacy(raw.lat, raw.lon);
-  $("locBadge").textContent = priv.label;
-  $("locBadge").classList.remove("warn");
 
-  const { vals, errors } = await fetchAll(raw.lat, raw.lon);
-
+  state.status = "";
   const rec = {
     id: `${Date.now()}`,
     ts: Date.now(),
     agents: vals,
-    sources: [...new Map(vals.map(v => [v.source, { name: v.source, kind: "monitoring data", modelled: v.modelled }])).values()],
+    sources: [...new Map(vals.map(v => [v.source, {
+      name: v.source,
+      kind: v.modelled ? "modelled" : "measured",
+      modelled: v.modelled
+    }])).values()],
     errors
   };
   await store.put(rec);
@@ -550,15 +619,16 @@ function importBxp() {
 
 // ── Privacy ───────────────────────────────────────────────
 const PREC_HINTS = [
-  "Only your city is stored. Coarsest option.",
-  "Coordinates rounded to ~1 km. Good balance.",
-  "Coordinates rounded to ~10 m.",
-  "Full precision stored. Best data, highest sensitivity."
+  "Nothing is stored. Breathe still fetches data but keeps no coordinates at all.",
+  "Coordinates rounded to 1 decimal (~10 km). Only your city is retained.",
+  "Coordinates rounded to 2 decimals (~1 km). Good balance of usefulness and privacy.",
+  "Full precision retained. Best local data, highest sensitivity."
 ];
 
 function openPrivacy() {
-  $("prec").value = ["none","city","area","exact"][parseInt(localStorage.getItem("breathe.precision") || "2", 10)];
+  $("prec").value = ["none","city","area","exact"][precIndex()];
   $("ret").value = localStorage.getItem("breathe.retention") || "30";
+  $("node").value = localStorage.getItem("breathe.node") || "";
   $("precHint").textContent = PREC_HINTS[$("prec").selectedIndex] || "";
   $("privacyDlg").showModal();
 }
@@ -571,7 +641,11 @@ $("privacyDlg").addEventListener("close", async () => {
   if ($("privacyDlg").returnValue === "save") {
     localStorage.setItem("breathe.precision", $("prec").selectedIndex);
     localStorage.setItem("breathe.retention", $("ret").value);
+    const node = $("node").value.trim();
+    if (node) localStorage.setItem("breathe.node", node.replace(/\/+$/, ""));
+    else localStorage.removeItem("breathe.node");
     await render();
+    await sample();
   }
 });
 

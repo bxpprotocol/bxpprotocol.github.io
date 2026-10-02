@@ -713,6 +713,16 @@ const VALID_AGENTS = [
 
 const VALID_QUALITY_FLAGS = ['VALIDATED','UNVALIDATED','SUSPECT','INVALID'];
 const VALID_FILE_TYPES = ['reading','aggregate','agent','device','alert','meta'];
+
+// SPEC.md §6.8 — Source Classification taxonomy
+const VALID_SOURCES = ['native','imported','community','research','simulated'];
+const SOURCE_NOTES = {
+  native:    'BXP-certified sensor operated by the publisher',
+  imported:  'External API feed, not operated by the publisher',
+  community: 'Community-reported observation',
+  research:  'Research institution measurement',
+  simulated: 'Synthetic or test data — never treat as a measurement'
+};
 const VALID_UNITS = ['ug/m3','ppb','ppm','mg/m3','CFU/m3','spores/m3','grains/m3','ng/m3','C','%','hPa','index'];
 
 const LEVEL_DATA = {
@@ -732,10 +742,33 @@ function validateBXP(data) {
   const info = [];
 
   // Required top-level fields
-  const required = ['bxpVersion','fileType','deviceUuid','geohash','timestampUs','agents','quality'];
+  const required = ['bxpVersion','fileType','source','deviceUuid','geohash','timestampUs','agents','quality'];
   for (const f of required) {
     if (data[f] === undefined || data[f] === null) {
       errors.push({code:'BXP_4002', message:`Missing required field: "${f}"`, field: f});
+    }
+  }
+
+  // source — SPEC.md §6.8
+  if (data.source !== undefined && data.source !== null) {
+    if (typeof data.source !== 'string' || !VALID_SOURCES.includes(data.source)) {
+      errors.push({code:'BXP_4002', message:`Invalid source "${data.source}". Must be one of: ${VALID_SOURCES.join(', ')} (SPEC.md §6.8)`, field:'source'});
+    } else {
+      if (data.source === 'simulated') {
+        warnings.push({code:'BXP_WARN_006', message:'source is "simulated" — this record is synthetic and must not be used as a measurement', field:'source'});
+      } else if (data.source === 'imported') {
+        info.push({code:'BXP_OK', message:`source: imported — ${SOURCE_NOTES.imported}`, field:'source'});
+      } else {
+        info.push({code:'BXP_OK', message:`source: ${data.source} — ${SOURCE_NOTES[data.source]}`, field:'source'});
+      }
+    }
+  }
+
+  // quality.flag VALIDATED must be justified — SPEC.md §5.5.1
+  if (data.quality && data.quality.flag === 'VALIDATED') {
+    const hasCorrection = Array.isArray(data.agents) && data.agents.some(a => a && a.correction && a.correction.applied);
+    if (!data.quality.qcMethod && !hasCorrection) {
+      warnings.push({code:'BXP_WARN_005', message:'quality.flag is VALIDATED but no qcMethod or applied correction is present (SPEC.md §5.5.1)', field:'quality.flag'});
     }
   }
 
@@ -1011,6 +1044,7 @@ function renderResults(data, validation, hriResult) {
   const fieldMap = {
     bxpVersion: data.bxpVersion,
     fileType: data.fileType,
+    source: data.source,
     deviceUuid: data.deviceUuid ? data.deviceUuid.substring(0,8) + '...' : undefined,
     geohash: data.geohash,
     indoorOutdoor: data.indoorOutdoor,
@@ -1109,6 +1143,7 @@ const SAMPLES = {
   valid: {
     bxpVersion: "2.0",
     fileType: "reading",
+    source: "native",
     deviceUuid: "550e8400-e29b-41d4-a716-446655440000",
     geohash: "s1v0g8k",
     latitude: 5.5571,
@@ -1136,6 +1171,7 @@ const SAMPLES = {
   invalid: {
     bxpVersion: "2.0",
     fileType: "reading",
+    source: "NOT_A_CLASS",
     deviceUuid: "not-a-valid-uuid",
     geohash: "s1v",
     timestampUs: 12345,
@@ -1148,6 +1184,7 @@ const SAMPLES = {
   minimal: {
     bxpVersion: "2.0",
     fileType: "reading",
+    source: "community",
     deviceUuid: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
     geohash: "s1v0g",
     timestampUs: Date.now() * 1000,
@@ -1157,6 +1194,7 @@ const SAMPLES = {
   full: {
     bxpVersion: "2.0",
     fileType: "reading",
+    source: "research",
     deviceUuid: "550e8400-e29b-41d4-a716-446655440000",
     geohash: "s1v0g8k",
     latitude: 5.5571,
