@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Breathe — what is the air around me?</title>
+<meta name="description" content="Breathe tracks the air around you and what you have been exposed to over time. Open data standard (BXP).">
+<meta name="color-scheme" content="dark">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0c0a;
+  --surface:#131613;
+  --surface2:#1a1e1a;
+  --border:#2a2f2a;
+  --text:#f2f5f2;
+  --muted:#8a948a;
+  --muted2:#5f6a5f;
+  --good:#4ade80;
+  --bad:#f87171;
+  --warn:#fbbf24;
+  --info:#60a5fa;
+  --radius:14px;
+}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font:400 16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif;
+  padding:1rem;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1080px;margin:0 auto}
+
+/* Header */
+header{
+  display:flex;flex-wrap:wrap;gap:1rem;
+  align-items:center;justify-content:space-between;
+  padding:.75rem 0 1.5rem;
+  border-bottom:1px solid var(--border);
+  margin-bottom:1.5rem;
+}
+.brand{font-size:1.15rem;font-weight:600;letter-spacing:-.02em}
+.brand span{color:var(--muted2);font-weight:400}
+.badges{display:flex;gap:.5rem;flex-wrap:wrap}
+.badge{
+  font:500 .72rem/1 system-ui,sans-serif;
+  padding:.4rem .65rem;border-radius:999px;
+  background:var(--surface);border:1px solid var(--border);
+  color:var(--muted);
+  white-space:nowrap;
+}
+
+/* Cards */
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:1.25rem;
+  margin-bottom:1rem;
+}
+.card h2{
+  font:600 .72rem/1 system-ui,sans-serif;
+  letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted2);
+  margin-bottom:.9rem;
+}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1rem;margin-bottom:1rem}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem}
+.stat dt{font:500 .72rem/1 system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--muted2)}
+.stat dd{font-size:2.25rem;font-weight:600;line-height:1.1;margin-top:.5rem;font-variant-numeric:tabular-nums}
+.stat .note{font-size:.75rem;color:var(--muted2);margin-top:.25rem}
+.good{color:var(--good)} .bad{color:var(--bad)} .warn{color:var(--warn)}
+
+/* Map */
+#map{height:380px;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface)}
+
+/* Rows */
+.row{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:.7rem 0;border-bottom:1px solid var(--border);font-size:.875rem}
+.row:last-child{border-bottom:0}
+.row .k{color:var(--muted)}
+.row .v{font-variant-numeric:tabular-nums;text-align:right}
+
+/* Buttons */
+.actions{display:flex;gap:.5rem;flex-wrap:wrap;margin:1.25rem 0}
+button,.btn{
+  font:500 .8rem/1 system-ui,sans-serif;
+  min-height:44px;padding:.6rem 1rem;
+  background:transparent;border:1px solid var(--border);border-radius:9px;
+  color:var(--text);cursor:pointer;
+  transition:border-color .15s,background .15s;
+}
+button:hover,.btn:hover{border-color:var(--muted);background:var(--surface)}
+button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--good);outline-offset:2px}
+button.danger{border-color:rgba(248,113,113,.4);color:var(--bad)}
+button.primary{background:var(--good);border-color:var(--good);color:#06210f;font-weight:600}
+button.primary:hover{background:#3ec972;border-color:#3ec972}
+
+/* Dialog */
+dialog{
+  background:var(--surface);color:var(--text);
+  border:1px solid var(--border);border-radius:var(--radius);
+  max-width:440px;width:calc(100% - 2rem);padding:0;
+}
+dialog::backdrop{background:rgba(0,0,0,.7)}
+.dlg-head{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.25rem;border-bottom:1px solid var(--border)}
+.dlg-head h2{font-size:1rem;font-weight:600;letter-spacing:0;text-transform:none;color:var(--text);margin:0}
+.dlg-body{padding:1.25rem;display:flex;flex-direction:column;gap:1rem}
+.dlg-foot{padding:1rem 1.25rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:.5rem}
+label{display:block;font-size:.8rem;color:var(--muted);margin-bottom:.4rem}
+select,input[type=file]{
+  width:100%;padding:.6rem;background:var(--bg);color:var(--text);
+  border:1px solid var(--border);border-radius:8px;font:inherit;font-size:.85rem;
+}
+.hint{font-size:.75rem;color:var(--muted2);margin-top:.4rem;line-height:1.5}
+
+footer{border-top:1px solid var(--border);margin-top:2rem;padding:1.5rem 0;font-size:.8rem;color:var(--muted2)}
+footer a{color:var(--muted)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media(max-width:520px){.stat dd{font-size:1.9rem}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="brand">Breathe <span>· personal air-quality exposure</span></div>
+  <div class="badges">
+    <span class="badge" id="locBadge" role="status">Locating…</span>
+    <span class="badge" id="srcBadge">Sources: —</span>
+    <span class="badge" id="freshBadge">Updated: —</span>
+  </div>
+</header>
+
+<div class="stats">
+  <dl class="stat">
+    <dt>Air quality now</dt>
+    <dd id="nowScore">—</dd>
+    <div class="note" id="nowNote">waiting for data</div>
+  </dl>
+  <dl class="stat">
+    <dt>PM2.5</dt>
+    <dd id="nowPm25">—</dd>
+    <div class="note">WHO 24h guideline 15 µg/m³</div>
+  </dl>
+  <dl class="stat">
+    <dt>Hours above guideline</dt>
+    <dd id="debt">—</dd>
+    <div class="note" id="debtNote">last 24 readings</div>
+  </dl>
+  <dl class="stat">
+    <dt>Readings stored</dt>
+    <dd id="count">—</dd>
+    <div class="note">on this device only</div>
+  </dl>
+</div>
+
+<div class="card" style="padding:0;overflow:hidden;border:0">
+  <div id="map" role="region" aria-label="Map of your current location"></div>
+</div>
+
+<div class="card">
+  <h2>Pollutants</h2>
+  <div id="pollutants"><div class="row"><span class="k">No data yet</span></div></div>
+</div>
+
+<div class="card">
+  <h2>Where this comes from</h2>
+  <div id="sources"><div class="row"><span class="k">Not loaded</span></div></div>
+  <p class="hint">Values marked <em>modelled</em> are estimates from a regional model, not a measurement at your location. Breathe never blurs that distinction.</p>
+</div>
+
+<div class="card">
+  <h2>Recent</h2>
+  <div id="recent"><div class="row"><span class="k">Waiting for data…</span></div></div>
+</div>
+
+<div class="actions">
+  <button class="primary" id="refreshBtn">Refresh now</button>
+  <button id="exportBtn">Export BXP</button>
+  <button id="importBtn">Import</button>
+  <button id="privacyBtn">Privacy</button>
+</div>
+
+<footer>
+  <p>Breathe is an independent application built on the open
+  <a href="https://github.com/bxpprotocol/bxp-spec" target="_blank" rel="noopener">BXP</a> standard.
+  Your readings stay in this browser. Breathe does not define BXP.</p>
+</footer>
+</div>
+
+<dialog id="privacyDlg" aria-labelledby="privacyTitle">
+  <form method="dialog">
+  <div class="dlg-head">
+    <h2 id="privacyTitle">Privacy</h2>
+    <button value="cancel" aria-label="Close">✕</button>
+  </div>
+  <div class="dlg-body">
+    <div>
+      <label for="prec">Location precision</label>
+      <select id="prec">
+        <option value="exact">Precise — best data, reveals your exact position</option>
+        <option value="area" selected>Approximate — rounded to ~1 km</option>
+        <option value="city">City level — only your city is stored</option>
+        <option value="none">Do not store location at all</option>
+      </select>
+      <p class="hint" id="precHint"></p>
+    </div>
+    <div>
+      <label for="ret">Keep readings for</label>
+      <select id="ret">
+        <option value="7">7 days</option>
+        <option value="30" selected>30 days</option>
+        <option value="90">90 days</option>
+        <option value="0">Forever (until you delete)</option>
+      </select>
+    </div>
+  </div>
+  <div class="dlg-foot">
+    <button value="cancel">Cancel</button>
+    <button class="primary" value="save" id="savePrivacy">Save</button>
+  </div>
+  </form>
+</dialog>
+
+<dialog id="dangerDlg" aria-labelledby="dangerTitle">
+  <form method="dialog">
+  <div class="dlg-head"><h2 id="dangerTitle">Delete everything?</h2><button value="cancel" aria-label="Close">✕</button></div>
+  <div class="dlg-body"><p>This permanently erases every reading Breathe has stored on this device. It cannot be undone.</p></div>
+  <div class="dlg-foot">
+    <button value="cancel">Cancel</button>
+    <button class="danger" value="confirm" id="confirmDelete">Delete all data</button>
+  </div>
+  </form>
+</dialog>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+"use strict";
+
+// ── Config ────────────────────────────────────────────────
+const CONFIG = {
+  db: "breathe",
+  store: "readings",
+  intervalMs: 15 * 60 * 1000,   // sample every 15 min while the tab is open
+  whoPm25: 15,                   // µg/m³, WHO 2021 24h guideline
+  whoPm10: 45,
+  whoNo2: 25
+};
+
+// Public read-only endpoints. No API keys, no accounts.
+const SOURCES = [
+  { id: "openaq", name: "OpenAQ", kind: "monitoring station", needsKey: false },
+  { id: "waqi",   name: "WAQI",   kind: "aggregated station", needsKey: false },
+  { id: "purpleair", name: "PurpleAir", kind: "community sensor", needsKey: false }
+];
+
+const state = { loc: null, map: null, last: null };
+
+// ── Storage ───────────────────────────────────────────────
+const store = {
+  db: null,
+  open() {
+    return new Promise((res, rej) => {
+      const r = indexedDB.open(CONFIG.db, 1);
+      r.onupgradeneeded = e => {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains(CONFIG.store)) {
+          const s = db.createObjectStore(CONFIG.store, { keyPath: "id" });
+          s.createIndex("ts", "ts");
+        }
+      };
+      r.onsuccess = () => { store.db = r.result; res(); };
+      r.onerror = () => rej(r.error);
+    });
+  },
+  put(rec) {
+    return new Promise((res, rej) => {
+      const t = store.db.transaction(CONFIG.store, "readwrite");
+      t.objectStore(CONFIG.store).put(rec);
+      t.oncomplete = res; t.onerror = () => rej(t.error);
+    });
+  },
+  recent(limit = 500) {
+    return new Promise((res, rej) => {
+      const out = [];
+      const t = store.db.transaction(CONFIG.store, "readonly");
+      const cur = t.objectStore(CONFIG.store).index("ts").openCursor(null, "prev");
+      cur.onsuccess = e => {
+        const c = e.target.result;
+        if (c && out.length < limit) { out.push(c.value); c.continue(); }
+        else res(out);
+      };
+      cur.onerror = () => rej(cur.error);
+    });
+  },
+  async count() { return (await store.recent(100000)).length; },
+  async clear() {
+    return new Promise((res, rej) => {
+      const t = store.db.transaction(CONFIG.store, "readwrite");
+      t.objectStore(CONFIG.store).clear();
+      t.oncomplete = res; t.onerror = () => rej(t.error);
+    });
+  }
+};
+
+// ── Location ──────────────────────────────────────────────
+const RADIUS = { exact: 4, area: 3, city: 2, none: 0 };
+
+function coords() {
+  const p = parseInt(localStorage.getItem("breathe.precision") || "2", 10);
+  return RADIUS[["exact","area","city","none"][p]] ?? 3;
+}
+
+function location_() {
+  return new Promise(res => {
+    if (!navigator.geolocation) return res(null);
+    navigator.geolocation.getCurrentPosition(
+      p => res({ lat: p.coords.latitude, lon: p.coords.longitude, acc: p.coords.accuracy }),
+      () => res(null),
+      { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 }
+    );
+  });
+}
+
+// Round coordinates to the precision the user chose.
+function applyPrivacy(lat, lon) {
+  const p = parseInt(localStorage.getItem("breathe.precision") || "2", 10);
+  const d = p === 0 ? null : Math.pow(10, p === 1 ? 0 : p === 2 ? 1 : p === 3 ? 2 : 4);
+  if (d === null) return { lat: null, lon: null, label: "location not stored" };
+  return { lat: +lat.toFixed(d), lon: +lon.toFixed(d), label: ["city", "city", "~1 km", "~10 m", "precise"][p] };
+}
+
+// ── Fetch air quality ─────────────────────────────────────
+// A CORS proxy is required because these APIs do not send
+// Access-Control-Allow-Origin. All requests are GET and read-only.
+const PROXY = "https://corsproxy.io/?url=";
+
+async function viaProxy(url) {
+  const res = await fetch(PROXY + encodeURIComponent(url));
+  if (!res.ok) throw new Error("HTTP " + res.status);
+  return res.json();
+}
+
+async function fetchOpenAQ(lat, lon) {
+  const d = await viaProxy(
+    `https://api.openaq.org/v2/locations?coordinates=${lat},${lon}&radius=25000&limit=5`
+  );
+  const out = [];
+  for (const loc of d.results || []) {
+    for (const s of (loc.sensors || [])) {
+      for (const p of (s.parameters || [])) {
+        if (!["pm25","pm10","no2","o3"].includes(p.name)) continue;
+        out.push({ param: p.name, unit: p.unit || "µg/m³", source: "OpenAQ", modelled: false, station: loc.name });
+      }
+    }
+  }
+  return out;
+}
+
+async function fetchWAQI(lat, lon) {
+  const d = await viaProxy(`https://api.waqi.info/feed/geo:${lat};${lon}/`);
+  if (d.status !== "ok") return [];
+  const iaqi = d.data?.iaqi || {};
+  const out = [];
+  for (const [param, key] of [["pm25","pm25"],["pm10","pm10"],["no2","no2"],["o3","o3"]]) {
+    if (iaqi[key]?.v === undefined) continue;
+    // WAQI returns a US AQI index, not a concentration. Do not
+    // present an index as if it were a measured concentration.
+    out.push({ param, value: iaqi[key].v, unit: "AQI", source: "WAQI", modelled: false, station: d.data.city?.name || "nearby" });
+  }
+  return out;
+}
+
+async function fetchAll(lat, lon) {
+  const results = await Promise.allSettled([fetchOpenAQ(lat, lon), fetchWAQI(lat, lon)]);
+  const vals = [], errors = [];
+  results.forEach((r, i) => {
+    if (r.status === "fulfilled") vals.push(...r.value);
+    else errors.push(SOURCES[i].name);
+  });
+  return { vals, errors };
+}
+
+// ── Score ─────────────────────────────────────────────────
+// Deliberately simple and explainable. Not a health assessment.
+function score(pm25) {
+  if (pm25 == null) return null;
+  if (pm25 <= 15) return { value: Math.round(pm25 / 15 * 25), label: "Good", cls: "good" };
+  if (pm25 <= 35) return { value: 25 + Math.round((pm25 - 15) / 20 * 25), label: "Moderate", cls: "warn" };
+  if (pm25 <= 55) return { value: 50 + Math.round((pm25 - 35) / 20 * 25), label: "Poor", cls: "warn" };
+  return { value: Math.min(100, 75 + Math.round((pm25 - 55) / 45 * 25)), label: "Very poor", cls: "bad" };
+}
+
+// ── Render ────────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
+const ago = ts => {
+  const m = Math.round((Date.now() - ts) / 60000);
+  if (m < 1) return "just now";
+  if (m < 60) return m + " min ago";
+  const h = Math.round(m / 60);
+  return h < 24 ? h + "h ago" : Math.round(h / 24) + "d ago";
+};
+
+async function render() {
+  const all = await store.recent();
+
+  $("count").textContent = all.length;
+
+  const latest = all[0];
+  if (latest) {
+    state.last = latest;
+    const pm25 = latest.agents.find(a => a.param === "pm25");
+    const s = score(pm25?.value);
+    $("nowScore").textContent = s ? s.value : "—";
+    $("nowScore").className = s ? s.cls : "";
+    $("nowNote").textContent = s ? s.label : "no PM2.5 reading";
+    $("nowPm25").textContent = pm25 ? pm25.value.toFixed(1) : "—";
+    $("nowPm25").className = pm25 && pm25.value > CONFIG.whoPm25 ? "bad" : "good";
+    $("freshBadge").textContent = "Updated: " + ago(latest.ts);
+
+    const over = all.slice(0, 24).filter(r => {
+      const v = r.agents.find(a => a.param === "pm25")?.value;
+      return v != null && v > CONFIG.whoPm25;
+    }).length;
+    $("debt").textContent = over;
+    $("debt").className = over > 8 ? "bad" : over > 2 ? "warn" : "good";
+    $("debtNote").textContent = `of last ${Math.min(24, all.length)} readings`;
+
+    $("pollutants").innerHTML = latest.agents.length
+      ? latest.agents.map(a => `<div class="row">
+          <span class="k">${esc(a.param.toUpperCase())}${a.modelled ? " · modelled" : ""}</span>
+          <span class="v">${esc(a.value)} ${esc(a.unit)}</span>
+        </div>`).join("")
+      : `<div class="row"><span class="k">No pollutant data</span></div>`;
+
+    $("sources").innerHTML = latest.sources.length
+      ? latest.sources.map(s2 => `<div class="row">
+          <span class="k">${esc(s2.name)} <span style="color:var(--muted2)">· ${esc(s2.kind)}</span></span>
+          <span class="v" style="color:var(--muted2);font-size:.8rem">${s2.modelled ? "modelled" : "measured"}</span>
+        </div>`).join("")
+      : `<div class="row"><span class="k">No sources responded</span></div>`;
+    $("srcBadge").textContent = "Sources: " + (latest.sources.length || "none");
+
+    $("recent").innerHTML = all.slice(0, 8).map(r => {
+      const v = r.agents.find(a => a.param === "pm25")?.value;
+      return `<div class="row">
+        <span class="k">${esc(new Date(r.ts).toLocaleString())}</span>
+        <span class="v">${v != null ? v.toFixed(1) + " µg/m³" : "—"}</span>
+      </div>`;
+    }).join("");
+  }
+
+  // Retention
+  const days = parseInt(localStorage.getItem("breathe.retention") || "30", 10);
+  if (days > 0 && all.length) {
+    const cutoff = Date.now() - days * 86400000;
+    const stale = all.filter(r => r.ts < cutoff);
+    stale.forEach(r => store.delete?.(r.id));
+  }
+}
+
+function initMap(lat, lon) {
+  if (state.map) { state.map.setView([lat, lon], 12); return; }
+  state.map = L.map("map", { scrollWheelZoom: false }).setView([lat, lon], 12);
+  L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+    attribution: "&copy; OpenStreetMap contributors"
+  }).addTo(state.map);
+  L.circleMarker([lat, lon], { radius: 8, color: "#4ade80", fillOpacity: 0.5, weight: 2 })
+    .addTo(state.map).bindPopup("Approximate area");
+}
+
+// ── Main cycle ────────────────────────────────────────────
+async function sample() {
+  const raw = await location_();
+  if (!raw) {
+    $("locBadge").textContent = "Location unavailable";
+    $("locBadge").classList.add("warn");
+    return;
+  }
+  const priv = applyPrivacy(raw.lat, raw.lon);
+  $("locBadge").textContent = priv.label;
+  $("locBadge").classList.remove("warn");
+
+  const { vals, errors } = await fetchAll(raw.lat, raw.lon);
+
+  const rec = {
+    id: `${Date.now()}`,
+    ts: Date.now(),
+    agents: vals,
+    sources: [...new Map(vals.map(v => [v.source, { name: v.source, kind: "monitoring data", modelled: v.modelled }])).values()],
+    errors
+  };
+  await store.put(rec);
+  if (priv.lat != null) initMap(priv.lat, priv.lon);
+  await render();
+}
+
+// ── Import / export ───────────────────────────────────────
+function exportBxp() {
+  store.recent(100000).then(all => {
+    const payload = {
+      bxpVersion: "2.0",
+      fileType: "reading",
+      source: "imported",
+      exportedAt: new Date().toISOString(),
+      readings: all
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `breathe-export-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+}
+
+function importBxp() {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = "application/json,.json";
+  input.onchange = e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async () => {
+      let n = 0;
+      try {
+        const parsed = JSON.parse(reader.result);
+        const rows = Array.isArray(parsed) ? parsed : (parsed.readings || []);
+        for (const r of rows) {
+          if (!r || typeof r.ts !== "number") continue;
+          await store.put({ id: r.id || `${r.ts}`, ts: r.ts, agents: r.agents || [], sources: r.sources || [] });
+          n++;
+        }
+        await render();
+        alert(`Imported ${n} reading${n === 1 ? "" : "s"}.`);
+      } catch {
+        alert("That file could not be read as a Breathe export.");
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+// ── Privacy ───────────────────────────────────────────────
+const PREC_HINTS = [
+  "Only your city is stored. Coarsest option.",
+  "Coordinates rounded to ~1 km. Good balance.",
+  "Coordinates rounded to ~10 m.",
+  "Full precision stored. Best data, highest sensitivity."
+];
+
+function openPrivacy() {
+  $("prec").value = ["none","city","area","exact"][parseInt(localStorage.getItem("breathe.precision") || "2", 10)];
+  $("ret").value = localStorage.getItem("breathe.retention") || "30";
+  $("precHint").textContent = PREC_HINTS[$("prec").selectedIndex] || "";
+  $("privacyDlg").showModal();
+}
+
+$("prec").addEventListener("change", () => {
+  $("precHint").textContent = PREC_HINTS[$("prec").selectedIndex] || "";
+});
+
+$("privacyDlg").addEventListener("close", async () => {
+  if ($("privacyDlg").returnValue === "save") {
+    localStorage.setItem("breathe.precision", $("prec").selectedIndex);
+    localStorage.setItem("breathe.retention", $("ret").value);
+    await render();
+  }
+});
+
+$("confirmDelete").addEventListener("click", async e => {
+  e.preventDefault();
+  await store.clear();
+  localStorage.clear();
+  $("dangerDlg").close();
+  location.reload();
+});
+
+// ── Wire up ───────────────────────────────────────────────
+$("refreshBtn").addEventListener("click", sample);
+$("exportBtn").addEventListener("click", exportBxp);
+$("importBtn").addEventListener("click", importBxp);
+$("privacyBtn").addEventListener("click", openPrivacy);
+
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) render();
+});
+
+(async function start() {
+  try {
+    await store.open();
+    await render();
+    await sample();
+    setInterval(sample, CONFIG.intervalMs);
+  } catch (err) {
+    $("locBadge").textContent = "Storage unavailable";
+    console.error(err);
+  }
+})();
+</script>
+</body>
+</html>
