@@ -3,14 +3,218 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>BXP — Breathe Exposure Protocol</title>
-<meta name="description" content="The open universal standard for atmospheric exposure data. BXP is to air quality what MP4 is to video — a universal format any system can read, write, and exchange. Free forever.">
-<meta property="og:title" content="BXP — Breathe Exposure Protocol">
-<meta property="og:description" content="Open universal standard for atmospheric exposure data. 31 agents. WHO-derived HRI. Federated nodes. Privacy-first.">
-<meta property="og:type" content="website">
-<meta name="twitter:card" content="summary_large_image">
+<title>BXP — Breathe Exposure Protocol | Open Universal Standard for Atmospheric Exposure Data</title>
+<meta name="description" content="BXP is the open universal protocol for atmospheric exposure data interoperability. 31+ agents, WHO-derived Health Risk Index, federated nodes, privacy-first. Free forever. Apache 2.0.">
+<meta name="keywords" content="air quality protocol, atmospheric exposure data, BXP, Breathe Exposure Protocol, open standard, environmental data interoperability, health risk index, federated air quality network, PM2.5 API, sensor data format">
+<meta name="author" content="BXP Protocol Contributors">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+<meta name="googlebot" content="index, follow">
+<meta name="theme-color" content="#00e5ff">
+<meta name="color-scheme" content="dark light">
+<link rel="canonical" href="https://bxpprotocol.github.io/bxp-spec/">
+<link rel="alternate" type="application/rss+xml" title="BXP Protocol Updates" href="https://github.com/bxpprotocol/bxp-spec/releases.atom">
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">
+<link rel="manifest" href="/manifest.json">
+
+<!-- Open Graph / Facebook / LinkedIn -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://bxpprotocol.github.io/bxp-spec/">
+<meta property="og:title" content="BXP — Breathe Exposure Protocol | Open Universal Standard for Atmospheric Exposure Data">
+<meta property="og:description" content="The open universal protocol for atmospheric exposure data. 31+ agents, WHO-derived HRI, federated nodes, privacy-first. Free forever.">
+<meta property="og:image" content="https://bxpprotocol.github.io/bxp-spec/assets/og-banner.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="BXP Protocol — Atmospheric Exposure Data Interoperability">
+<meta property="og:site_name" content="BXP Protocol">
+<meta property="og:locale" content="en_US">
+
+<!-- Twitter / X Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:url" content="https://bxpprotocol.github.io/bxp-spec/">
+<meta name="twitter:title" content="BXP — Breathe Exposure Protocol">
+<meta name="twitter:description" content="Open universal standard for atmospheric exposure data. 31+ agents, WHO-derived HRI, federated nodes, privacy-first. Free forever.">
+<meta name="twitter:image" content="https://bxpprotocol.github.io/bxp-spec/assets/og-banner.png">
+<meta name="twitter:image:alt" content="BXP Protocol — Atmospheric Exposure Data Interoperability">
+<meta name="twitter:site" content="@bxpprotocol">
+<meta name="twitter:creator" content="@bxpprotocol">
+
+<!-- JSON-LD Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareSourceCode",
+  "name": "BXP — Breathe Exposure Protocol",
+  "description": "Open universal protocol for atmospheric exposure data interoperability. 31+ atmospheric agents, WHO-derived Health Risk Index, federated nodes, privacy-first framework.",
+  "url": "https://bxpprotocol.github.io/bxp-spec/",
+  "codeRepository": "https://github.com/bxpprotocol/bxp-spec",
+  "programmingLanguage": ["Python", "TypeScript", "HTML", "CSS"],
+  "license": "https://www.apache.org/licenses/LICENSE-2.0",
+  "datePublished": "2026-09-01",
+  "dateModified": "2026-10-01",
+  "version": "2.0",
+  "developmentStatus": "https://schema.org/PrototypeStage",
+  "operatingSystem": "Cross-platform",
+  "applicationCategory": "DeveloperApplication",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD",
+    "availability": "https://schema.org/InStock"
+  },
+  "author": {
+    "@type": "Organization",
+    "name": "BXP Protocol Contributors",
+    "url": "https://github.com/bxpprotocol/bxp-spec/graphs/contributors",
+    "email": "bxpprotocol@proton.me",
+    "sameAs": [
+      "https://github.com/bxpprotocol",
+      "https://orcid.org/0009-0001-4856-4986"
+    ]
+  },
+  "maintainer": {
+    "@type": "Person",
+    "name": "Elvarin",
+    "url": "https://github.com/bxpprotocol/bxp-spec",
+    "email": "bxpprotocol@proton.me"
+  },
+  "contributor": {
+    "@type": "Organization",
+    "name": "BXP Protocol Community",
+    "url": "https://github.com/bxpprotocol/bxp-spec/graphs/contributors"
+  },
+  "isPartOf": {
+    "@type": "Project",
+    "name": "BXP Protocol",
+    "url": "https://bxpprotocol.github.io/bxp-spec/",
+    "description": "Open universal standard for atmospheric exposure data interoperability"
+  },
+  "citation": [
+    "https://doi.org/10.5281/zenodo.18906812",
+    "https://doi.org/10.5281/zenodo.18907003"
+  ],
+  "keywords": "air quality protocol, atmospheric exposure data, environmental data interoperability, health risk index, federated network, open standard, PM2.5 API, sensor data format",
+  "featureList": [
+    "Universal file format (.bxp.json, .bxp binary)",
+    "31+ atmospheric agents (PM, gases, VOCs, biological, heavy metals, environmental)",
+    "WHO-derived Health Risk Index (0-100)",
+    "REST API with federated sync",
+    "Privacy framework (SHA-256 hashing, geohash precision, k-anonymity)",
+    "Native binary format with CRC32 checksums and gzip compression",
+    "Python and TypeScript SDKs",
+    "CLI tool, MQTT bridge, OpenAQ importer",
+    "17 conformance test vectors"
+  ],
+  "documentation": "https://bxpprotocol.github.io/bxp-spec/docs/",
+  "downloadUrl": "https://github.com/bxpprotocol/bxp-spec/archive/refs/heads/main.zip",
+  "installUrl": "https://bxpprotocol.github.io/bxp-spec/#quick-start",
+  "readme": "https://github.com/bxpprotocol/bxp-spec/blob/main/README.md",
+  "issueTracker": "https://github.com/bxpprotocol/bxp-spec/issues",
+  "sourceCode": "https://github.com/bxpprotocol/bxp-spec"
+}
+</script>
+
+<!-- JSON-LD for Organization -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "BXP Protocol",
+  "alternateName": "Breathe Exposure Protocol",
+  "url": "https://bxpprotocol.github.io/bxp-spec/",
+  "logo": "https://bxpprotocol.github.io/bxp-spec/assets/logo.svg",
+  "sameAs": [
+    "https://github.com/bxpprotocol",
+    "https://orcid.org/0009-0001-4856-4986"
+  ],
+  "email": "bxpprotocol@proton.me",
+  "description": "Open universal standard for atmospheric exposure data interoperability",
+  "foundingDate": "2026-01",
+  "knowsAbout": [
+    "Air quality data",
+    "Environmental monitoring",
+    "Open standards",
+    "Data interoperability",
+    "Public health",
+    "Atmospheric science"
+  ],
+  "areaServed": "World",
+  "license": "https://www.apache.org/licenses/LICENSE-2.0"
+}
+</script>
+
+<!-- JSON-LD for WebSite with SearchAction -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "BXP Protocol",
+  "url": "https://bxpprotocol.github.io/bxp-spec/",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": {
+      "@type": "EntryPoint",
+      "urlTemplate": "https://github.com/bxpprotocol/bxp-spec/search?q={search_term_string}"
+    },
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
+
+<!-- JSON-LD for FAQPage -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is BXP Protocol?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "BXP (Breathe Exposure Protocol) is an open universal standard for atmospheric exposure data interoperability. It defines a universal file format (.bxp.json and binary .bxp), a REST API, a composite Health Risk Index (BXP-HRI), and a privacy framework — enabling any sensor, agency, or application to exchange air quality data seamlessly."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is BXP free to use?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. BXP is licensed under Apache 2.0 — free to use, implement, modify, and distribute. No royalties, no restrictions, no gatekeepers."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What atmospheric agents does BXP support?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "BXP supports 31+ agents including PM1, PM2.5, PM10, NO₂, O₃, CO, SO₂, benzene, formaldehyde, mold spores, heavy metals (lead, mercury, arsenic), and environmental parameters (temperature, humidity, pressure, UV index)."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is BXP-HRI?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "BXP-HRI (Health Risk Index) is an experimental composite 0–100 score incorporating all available agents simultaneously, weighted by WHO disability-adjusted life year burden data. Not clinically or epidemiologically validated — do not use for medical decisions."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I run a BXP node?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Run with Docker: 'docker compose up' — starts a FastAPI reference node at localhost:5000 with dashboard, API docs, and live global city data via OpenAQ."
+      }
+    }
+  ]
+}
+</script>
+
+<!-- Preload critical assets -->
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 
@@ -732,7 +936,7 @@ footer{
     </div>
     <div class="stat">
       <div class="stat-num">0–100</div>
-      <div class="stat-label">BXP_HRI Scale</div>
+      <div class="stat-label">BXP-HRI (experimental) Scale</div>
     </div>
     <div class="stat">
       <div class="stat-num">DOI</div>
@@ -789,7 +993,7 @@ footer{
       <div class="what-features">
         <div class="wf"><div class="wf-icon">📄</div><div class="wf-text"><h5>.bxp File Format</h5><p>JSON-based container carrying readings, location, quality flags, payload hash for integrity, and HRI score. Machine-readable and human-readable.</p></div></div>
         <div class="wf"><div class="wf-icon">🌐</div><div class="wf-text"><h5>REST API Standard</h5><p>Standard endpoints any server can implement. Submit readings, query by geohash, aggregate over time windows, verify integrity.</p></div></div>
-        <div class="wf"><div class="wf-icon">📊</div><div class="wf-text"><h5>BXP_HRI Score</h5><p>WHO-derived composite Health Risk Index on a 0–100 scale. Comparable across all agents, locations, and time periods.</p></div></div>
+        <div class="wf"><div class="wf-icon">📊</div><div class="wf-text"><h5>BXP-HRI (experimental) Score</h5><p>WHO-derived composite Health Risk Index on a 0–100 scale. Comparable across all agents, locations, and time periods. <strong>Not clinically validated.</strong></p></div></div>
         <div class="wf"><div class="wf-icon">🔒</div><div class="wf-text"><h5>Privacy by Design</h5><p>SHA-256 hashed person IDs, geohash-5 spatial floor, k≥5 anonymity on aggregates, cryptographic deletion proof.</p></div></div>
         <div class="wf"><div class="wf-icon">🕸</div><div class="wf-text"><h5>Federated Architecture</h5><p>Any institution can run a node. Nodes interoperate. No central owner. Data sovereignty preserved at the source.</p></div></div>
       </div>
@@ -1000,9 +1204,9 @@ python cli/bxp_cli.py server-status</pre>
       </div>
       <div class="pillar">
         <div class="pillar-icon">📊</div>
-        <div class="pillar-title">BXP_HRI Score</div>
-        <div class="pillar-body">WHO-derived composite Health Risk Index. Weighted across 7 primary agents. Adjustable for exposure duration (1h/8h/24h) and population sensitivity.</div>
-        <div class="pillar-badge">§3 · HRI Specification</div>
+        <div class="pillar-title">BXP-HRI (experimental) Score</div>
+        <div class="pillar-body">WHO-derived composite Health Risk Index. Weighted across 7 primary agents. Adjustable for exposure duration (1h/8h/24h) and population sensitivity. <strong>Not clinically validated.</strong></div>
+        <div class="pillar-badge">§13 · HRI Specification</div>
       </div>
       <div class="pillar">
         <div class="pillar-icon">🔒</div>
@@ -1054,7 +1258,7 @@ python cli/bxp_cli.py server-status</pre>
   <div class="container">
     <div class="section-tag">Health Risk Index</div>
     <h2 class="section-title">One number that explains the air</h2>
-    <p class="section-sub">BXP_HRI translates complex multi-pollutant data into a single 0–100 score that is comparable across locations, agents, and time.</p>
+    <p class="section-sub">BXP-HRI (experimental) translates complex multi-pollutant data into a single 0–100 score that is comparable across locations, agents, and time. <strong>Not clinically validated.</strong></p>
 
     <div class="hri-scale" style="margin-top:2rem">
       <div class="hri-band" style="background:#00E676;flex:20"></div>
@@ -1199,7 +1403,7 @@ python cli/bxp_cli.py server-status</pre>
         <div class="eco-body">Importable Postman collection covering every BXP API endpoint. Test any node in 30 seconds.</div>
         <div class="eco-tag">Postman · Bruno</div>
       </a>
-      <a class="eco-card" href="https://github.com/bxpprotocol/bxp-spec/blob/main/spec/bxp-v2.0.md" target="_blank">
+      <a class="eco-card" href="https://github.com/bxpprotocol/bxp-spec/blob/main/SPEC.md" target="_blank">
         <div class="eco-icon">📑</div>
         <div class="eco-title">Full Specification</div>
         <div class="eco-body">The complete BXP v2.0 protocol specification. All 9 sections — file format, agents, HRI, API, privacy, federation, QC framework.</div>
@@ -1281,7 +1485,7 @@ python cli/bxp_cli.py server-status</pre>
     </div>
     <div class="footer-col">
       <h5>Protocol</h5>
-      <a href="https://github.com/bxpprotocol/bxp-spec/blob/main/spec/bxp-v2.0.md" target="_blank">Specification v2.0</a>
+      <a href="https://github.com/bxpprotocol/bxp-spec/blob/main/SPEC.md" target="_blank">Specification v2.0</a>
       <a href="https://github.com/bxpprotocol/bxp-spec/blob/main/docs/api_documentation.md" target="_blank">API Reference</a>
       <a href="https://github.com/bxpprotocol/bxp-spec/blob/main/docs/protocol_overview.md" target="_blank">Protocol Overview</a>
       <a href="https://github.com/bxpprotocol/bxp-spec/blob/main/docs/developer_guide.md" target="_blank">Developer Guide</a>
@@ -1305,7 +1509,7 @@ python cli/bxp_cli.py server-status</pre>
     </div>
   </div>
   <div class="footer-bottom">
-    <span class="footer-bottom-text">© 2024 BXP Protocol · Apache 2.0 · The air is public. The data should be too.</span>
+    <span class="footer-bottom-text">© 2026 BXP Protocol · Apache 2.0 · The air is public. The data should be too.</span>
     <div class="footer-bottom-links">
       <a href="https://github.com/bxpprotocol/bxp-spec" target="_blank">GitHub</a>
       <a href="https://doi.org/10.5281/zenodo.18906812" target="_blank">DOI</a>

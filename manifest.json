@@ -1,0 +1,57 @@
+{
+  "name": "BXP — Breathe Exposure Protocol",
+  "short_name": "BXP Protocol",
+  "description": "Open universal standard for atmospheric exposure data interoperability. 31+ agents, WHO-derived HRI, federated nodes, privacy-first.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#060a14",
+  "theme_color": "#00e5ff",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["developer", "science", "health", "environment"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Validator",
+      "short_name": "Validate",
+      "description": "Validate BXP JSON files and calculate HRI",
+      "url": "/validator.html",
+      "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "API Docs",
+      "short_name": "API",
+      "description": "Interactive Swagger/OpenAPI documentation",
+      "url": "/docs",
+      "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "GitHub",
+      "short_name": "GitHub",
+      "description": "View source code and contribute",
+      "url": "https://github.com/bxpprotocol/bxp-spec",
+      "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "related_applications": [
+    {
+      "platform": "web",
+      "url": "https://bxpprotocol.github.io/bxp-spec/"
+    }
+  ],
+  "prefer_related_applications": false
+}

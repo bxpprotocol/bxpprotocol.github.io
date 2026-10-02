@@ -1,0 +1,16 @@
+# BXP Protocol - robots.txt
+# Allow all crawlers full access to public documentation
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://bxpprotocol.github.io/bxp-spec/sitemap.xml
+
+# Crawl-delay for polite crawling (optional)
+Crawl-delay: 10
+
+# Host directive (deprecated but still used by some)
+Host: bxpprotocol.github.io
+
+# No disallow rules - all content is public and intended for indexing
+# The project is open source under Apache 2.0
