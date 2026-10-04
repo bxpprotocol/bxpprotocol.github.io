@@ -1,0 +1,1007 @@
+openapi: 3.1.0
+info:
+  title: BXP Protocol Node
+  description: 'This is the normative REST contract for a BXP v2.0 node.
+
+
+    Every field, unit, enum, and error code is specified in the BXP specification. Implementations are
+    expected to expose this contract unchanged so that any BXP client can query any BXP node.
+
+
+    **Versioning.** MAJOR versions of the *protocol* are negotiated by the `major` path segment. MINOR
+    additions are backward compatible and unknown response fields must be ignored-and-preserved (SPEC.md
+    5.7).
+
+
+    **Conformance.** An implementation is BXP 2.0 compliant when it passes the golden-vector conformance
+    suite, not merely when it serves these endpoints.
+
+
+    **BXP-HRI is experimental.** The `bxpHri` field is a composite index weighted by WHO DALY data. It
+    is not clinically or epidemiologically validated and must not be used for medical decisions.'
+  version: '2.0'
+  summary: Open protocol for atmospheric exposure data. BXP is to air quality what HTTP is to the web.
+  contact:
+    name: BXP Protocol contributors
+    url: https://github.com/bxpprotocol/bxp-spec
+    email: bxpprotocol@proton.me
+  license:
+    name: Apache-2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+    identifier: Apache-2.0
+  termsOfService: https://github.com/bxpprotocol/bxp-spec/blob/main/GOVERNANCE.md
+  externalDocs:
+    description: BXP Protocol specification v2.0
+    url: https://github.com/bxpprotocol/bxp-spec/blob/main/SPEC.md
+paths:
+  /:
+    get:
+      summary: Root
+      operationId: root__get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            text/html:
+              schema:
+                type: string
+  /bxp/v2/health:
+    get:
+      summary: Health
+      operationId: health_bxp_v2_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /bxp/v2/city/{city}:
+    get:
+      summary: Get City
+      operationId: get_city_bxp_v2_city__city__get
+      parameters:
+      - name: city
+        in: path
+        required: true
+        schema:
+          type: string
+          title: City
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /bxp/v2/readings:
+    get:
+      summary: Get Readings
+      description: 'List stored readings (offset pagination). With no filters, returns live
+
+        data for the default cities. format=binary returns one binary `.bxp`
+
+        container (SPEC.md 5.4, fileType="aggregate") wrapping {"readings": [...]}.'
+      operationId: get_readings_bxp_v2_readings_get
+      parameters:
+      - name: geohash
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Geohash
+      - name: from_ts
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: From Ts
+      - name: to_ts
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: To Ts
+      - name: agent
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Agent
+      - name: quality
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Quality
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+          title: Offset
+      - name: format
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Format
+      - name: compress
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+          title: Compress
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      summary: Submit Readings
+      description: 'Accept BXP readings as JSON (SPEC.md 2) or a binary `.bxp` container
+
+        (SPEC.md 5.1/5.2, auto-detected by magic number). The batch is stored
+
+        atomically; a reading whose ID already exists is reported, never overwritten.
+
+
+        Ownership: an authenticated device may only submit under its own UUID, and
+
+        a UUID that belongs to a registered device can only be used with that
+
+        device''s token. Otherwise anyone could plant readings under (or claim the
+
+        deletion rights of) someone else''s device.'
+      operationId: submit_readings_bxp_v2_readings_post
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /bxp/v2/readings/{reading_id}:
+    get:
+      summary: Get Reading By Id
+      description: format=binary returns the reading as a binary `.bxp` container (fileType="reading").
+      operationId: get_reading_by_id_bxp_v2_readings__reading_id__get
+      parameters:
+      - name: reading_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Reading Id
+      - name: format
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Format
+      - name: compress
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+          title: Compress
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      summary: Delete Reading Endpoint
+      description: 'Delete a reading with cryptographic proof (SPEC.md 9). The authenticated
+
+        device must be the one that submitted it. The reading''s content is erased;
+
+        only a tombstone remains so the deletion replicates to peers.'
+      operationId: delete_reading_endpoint_bxp_v2_readings__reading_id__delete
+      parameters:
+      - name: reading_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Reading Id
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /bxp/v2/readings/{reading_id}/verify:
+    get:
+      summary: Verify Reading Endpoint
+      operationId: verify_reading_endpoint_bxp_v2_readings__reading_id__verify_get
+      parameters:
+      - name: reading_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Reading Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /bxp/v2/locations/{geohash}/latest:
+    get:
+      summary: Get Location Latest
+      operationId: get_location_latest_bxp_v2_locations__geohash__latest_get
+      parameters:
+      - name: geohash
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Geohash
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /bxp/v2/locations/{geohash}/history:
+    get:
+      summary: Get Location History
+      operationId: get_location_history_bxp_v2_locations__geohash__history_get
+      parameters:
+      - name: geohash
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Geohash
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /bxp/v2/locations/{geohash}/aggregate:
+    get:
+      summary: Get Location Aggregate
+      description: 'Privacy-safe aggregate (SPEC.md 9): only returned when >= 5 readings contribute.'
+      operationId: get_location_aggregate_bxp_v2_locations__geohash__aggregate_get
+      parameters:
+      - name: geohash
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Geohash
+      - name: from_ts
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: From Ts
+      - name: to_ts
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: To Ts
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /bxp/v2/search:
+    get:
+      summary: Search
+      description: Search by city name (live AQICN data) and/or coordinates (stored readings in that cell).
+      operationId: search_bxp_v2_search_get
+      parameters:
+      - name: q
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Q
+      - name: lat
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: number
+            maximum: 90.0
+            minimum: -90.0
+          - type: 'null'
+          title: Lat
+      - name: lon
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: number
+            maximum: 180.0
+            minimum: -180.0
+          - type: 'null'
+          title: Lon
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 20
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /bxp/v2/nearby:
+    get:
+      summary: Get Nearby
+      description: 'Relevance-ranked "closest useful observation" lookup (SPEC.md 7 Stage 6,
+
+        8.2.1) for a caller with no sensor of their own. Ranking blends distance,
+
+        freshness and quality; see database.get_nearby_readings.'
+      operationId: get_nearby_bxp_v2_nearby_get
+      parameters:
+      - name: lat
+        in: query
+        required: true
+        schema:
+          type: number
+          maximum: 90.0
+          minimum: -90.0
+          title: Lat
+      - name: lon
+        in: query
+        required: true
+        schema:
+          type: number
+          maximum: 180.0
+          minimum: -180.0
+          title: Lon
+      - name: radiusM
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 50000
+          minimum: 1
+          default: 2000
+          title: Radiusm
+      - name: maxAgeS
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 2592000
+          minimum: 1
+          default: 3600
+          title: Maxages
+      - name: agent
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Agent
+      - name: minQuality
+        in: query
+        required: false
+        schema:
+          type: string
+          default: UNVALIDATED
+          title: Minquality
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 50
+          minimum: 1
+          default: 1
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /bxp/v2/community/reports:
+    post:
+      summary: Submit Report
+      operationId: submit_report_bxp_v2_community_reports_post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommunityReportRequest'
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    get:
+      summary: Get Reports
+      operationId: get_reports_bxp_v2_community_reports_get
+      parameters:
+      - name: geohash
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Geohash
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /bxp/v2/devices/register:
+    post:
+      summary: Register Device Endpoint
+      operationId: register_device_endpoint_bxp_v2_devices_register_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceRegisterRequest'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /bxp/v2/devices/{device_uuid}:
+    get:
+      summary: Get Device Endpoint
+      operationId: get_device_endpoint_bxp_v2_devices__device_uuid__get
+      parameters:
+      - name: device_uuid
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Device Uuid
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /bxp/v2/nodes:
+    get:
+      summary: List Nodes
+      operationId: list_nodes_bxp_v2_nodes_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /bxp/v2/nodes/announce:
+    post:
+      summary: Announce Node
+      description: 'Register a peer node so it appears in GET /nodes. This is a directory
+
+        entry only - this server never fetches the announced URL - and a node_id
+
+        cannot be re-pointed at a different baseUrl (see database.upsert_node).'
+      operationId: announce_node_bxp_v2_nodes_announce_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NodeAnnounceRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /bxp/v2/sync:
+    get:
+      summary: Sync Pull
+      description: 'Federation pull (SPEC.md 7 Stage 7, 8.2.2). Returns every change after the
+
+        opaque cursor `since` (default 0 = from the beginning), oldest first, plus
+
+        `nextCursor` to resume from. Deleted readings arrive as tombstones
+
+        ({"readingId", "deleted": true, "deletionProof"}) that a replica must apply.
+
+
+        The cursor is the node''s ingest sequence, not an observation timestamp, so
+
+        late-arriving readings are never skipped and a bogus far-future timestamp
+
+        cannot stall replication. Each reading carries its originating `nodeId`.
+
+        Gated by BXP_NODE_SYNC_TOKEN when set; trust, dedup across multiple peers
+
+        and conflict resolution are deferred (SPEC.md 7 Stage 7).'
+      operationId: sync_pull_bxp_v2_sync_get
+      parameters:
+      - name: since
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+          title: Since
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 2000
+          minimum: 1
+          default: 500
+          title: Limit
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /metrics:
+    get:
+      summary: Metrics
+      description: Prometheus-compatible metrics.
+      operationId: metrics_metrics_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            text/plain:
+              schema:
+                type: string
+  /widget/{city}:
+    get:
+      summary: Widget
+      description: Embeddable iframe widget.
+      operationId: widget_widget__city__get
+      parameters:
+      - name: city
+        in: path
+        required: true
+        schema:
+          type: string
+          title: City
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            text/html:
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /dashboard:
+    get:
+      summary: Dashboard Home
+      operationId: dashboard_home_dashboard_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            text/html:
+              schema:
+                type: string
+  /map:
+    get:
+      summary: Map View
+      operationId: map_view_map_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            text/html:
+              schema:
+                type: string
+  /compare:
+    get:
+      summary: Compare View
+      operationId: compare_view_compare_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            text/html:
+              schema:
+                type: string
+  /dashboard/{city}:
+    get:
+      summary: Dashboard
+      operationId: dashboard_dashboard__city__get
+      parameters:
+      - name: city
+        in: path
+        required: true
+        schema:
+          type: string
+          title: City
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            text/html:
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    CommunityReportRequest:
+      properties:
+        latitude:
+          type: number
+          maximum: 90.0
+          minimum: -90.0
+          title: Latitude
+        longitude:
+          type: number
+          maximum: 180.0
+          minimum: -180.0
+          title: Longitude
+        reportType:
+          type: string
+          maxLength: 64
+          title: Reporttype
+          default: observation
+        description:
+          anyOf:
+          - type: string
+            maxLength: 2000
+          - type: 'null'
+          title: Description
+        severity:
+          anyOf:
+          - type: string
+            maxLength: 32
+          - type: 'null'
+          title: Severity
+        submitterHash:
+          anyOf:
+          - type: string
+            maxLength: 128
+          - type: 'null'
+          title: Submitterhash
+      type: object
+      required:
+      - latitude
+      - longitude
+      title: CommunityReportRequest
+    DeviceRegisterRequest:
+      properties:
+        deviceUuid:
+          anyOf:
+          - type: string
+            pattern: ^[A-Za-z0-9._:\-]{1,64}$
+          - type: 'null'
+          title: Deviceuuid
+        label:
+          anyOf:
+          - type: string
+            maxLength: 128
+          - type: 'null'
+          title: Label
+        ownerHash:
+          anyOf:
+          - type: string
+            maxLength: 128
+          - type: 'null'
+          title: Ownerhash
+      type: object
+      title: DeviceRegisterRequest
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    NodeAnnounceRequest:
+      properties:
+        nodeId:
+          type: string
+          pattern: ^[A-Za-z0-9._:\-]{1,64}$
+          title: Nodeid
+        baseUrl:
+          type: string
+          maxLength: 256
+          minLength: 8
+          title: Baseurl
+        bxpVersion:
+          type: string
+          maxLength: 16
+          title: Bxpversion
+          default: '2.0'
+        nodeType:
+          type: string
+          maxLength: 32
+          title: Nodetype
+          default: unknown
+        readingCount:
+          type: integer
+          maximum: 1000000000000.0
+          minimum: 0.0
+          title: Readingcount
+          default: 0
+      type: object
+      required:
+      - nodeId
+      - baseUrl
+      title: NodeAnnounceRequest
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+  securitySchemes:
+    DeviceToken:
+      type: http
+      scheme: bearer
+      description: Device token issued by POST /bxp/v2/devices/register. Required for mutations and for
+        ownership checks on DELETE.
+    NodeToken:
+      type: http
+      scheme: bearer
+      description: Shared secret for inter-node /sync. A deliberate placeholder for the node trust model
+        that SPEC.md 7 Stage 7 defers to a future RFC.
+tags:
+- name: Readings
+  description: Submit and query exposure observations.
+- name: Locations
+  description: Geohash-scoped latest, history, and aggregate views.
+- name: Discovery
+  description: Find relevant observations and readings near a point.
+- name: Federation
+  description: Pull-based replication between independent nodes.
+- name: Devices
+  description: Device registration and provenance.
+- name: Community
+  description: Qualitative community observation reports.
+- name: Nodes
+  description: Node directory and announcement.
+- name: Operations
+  description: Health, metrics, and dashboard pages.
+servers:
+- url: http://localhost:5000
+  description: Local reference node
+x-bxp:
+  protocol: Breathe Exposure Protocol
+  specification: https://github.com/bxpprotocol/bxp-spec/blob/main/SPEC.md
+  specificationDoi: https://doi.org/10.5281/zenodo.18906812
+  implementationDoi: https://doi.org/10.5281/zenodo.18907003
+  repository: https://github.com/bxpprotocol/bxp-spec
+  license: Apache-2.0
+  hriStatus: experimental
+  hriWarning: bxpHri is an experimental composite index. Not clinically or epidemiologically validated.
+    Do not use for medical decisions.
+  conformance:
+    vectors: 17
+    verify:
+    - python conformance/verify_python.py
+    - node conformance/verify_typescript.mjs

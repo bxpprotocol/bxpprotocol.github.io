@@ -39,6 +39,12 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://bxpprotocol.github.io/data.html</loc>
+    <lastmod>2026-10-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://bxpprotocol.github.io/versions.html</loc>
     <lastmod>2026-10-02</lastmod>
     <changefreq>monthly</changefreq>
@@ -46,9 +52,21 @@
   </url>
   <url>
     <loc>https://bxpprotocol.github.io/llms.txt</loc>
-    <lastmod>2026-10-02</lastmod>
+    <lastmod>2026-10-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://bxpprotocol.github.io/llms-full.txt</loc>
+    <lastmod>2026-10-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://bxpprotocol.github.io/feed.xml</loc>
+    <lastmod>2026-10-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.4</priority>
   </url>
 
   <!-- Prose documentation also mirrored from the source repository. -->

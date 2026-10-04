@@ -1,0 +1,591 @@
+{
+  "bxpVersion": "2.0",
+  "datasetName": "BXP Global Air Quality Sample Dataset",
+  "description": "Synthetic demonstration dataset: 10 illustrative atmospheric exposure readings across major world cities, showing the BXP record structure. These are NOT measurements. Every record carries source='simulated' and quality.flag='UNVALIDATED'. Apache 2.0.",
+  "generatedAt": "2026-03-07T10:00:00Z",
+  "sourceNode": "https://bxpprotocol.github.io",
+  "recordCount": 10,
+  "readings": [
+    {
+      "id": "bxp-sample-0001",
+      "bxpVersion": "2.0",
+      "source": "simulated",
+      "deviceUuid": "00000000-0000-0000-0000-000000000001",
+      "geohash": "s1v0g",
+      "latitude": 5.6037,
+      "longitude": -0.187,
+      "timestampUs": 1741342800000000,
+      "durationS": 600,
+      "indoorOutdoor": "outdoor",
+      "agents": [
+        {
+          "agentId": "PM2_5",
+          "value": 47.2,
+          "unit": "ug/m3"
+        },
+        {
+          "agentId": "PM10",
+          "value": 62.1,
+          "unit": "ug/m3"
+        },
+        {
+          "agentId": "NO2",
+          "value": 18.3,
+          "unit": "ppb"
+        },
+        {
+          "agentId": "O3",
+          "value": 12.0,
+          "unit": "ppb"
+        },
+        {
+          "agentId": "TEMP",
+          "value": 29.0,
+          "unit": "C"
+        },
+        {
+          "agentId": "RH",
+          "value": 78.0,
+          "unit": "%"
+        }
+      ],
+      "context": {
+        "location": "Accra, Ghana",
+        "country": "GH",
+        "nearbySource": "traffic"
+      },
+      "quality": {
+        "flag": "UNVALIDATED",
+        "confidence": 0.95,
+        "qcMethod": "synthetic_fixture",
+        "notes": "Demonstration record. Not an instrument measurement and not suitable for analysis or health decisions."
+      },
+      "bxpHri": 61.2,
+      "bxpHriLevel": "HIGH",
+      "bxpHriColor": "#CC0000"
+    },
+    {
+      "id": "bxp-sample-0002",
+      "bxpVersion": "2.0",
+      "source": "simulated",
+      "deviceUuid": "00000000-0000-0000-0000-000000000002",
+      "geohash": "s172h",
+      "latitude": 6.5244,
+      "longitude": 3.3792,
+      "timestampUs": 1741346400000000,
+      "durationS": 600,
+      "indoorOutdoor": "outdoor",
+      "agents": [
+        {
+          "agentId": "PM2_5",
+          "value": 68.4,
+          "unit": "ug/m3"
+        },
+        {
+          "agentId": "PM10",
+          "value": 89.2,
+          "unit": "ug/m3"
+        },
+        {
+          "agentId": "NO2",
+          "value": 44.1,
+          "unit": "ppb"
+        },
+        {
+          "agentId": "O3",
+          "value": 8.2,
+          "unit": "ppb"
+        },
+        {
+          "agentId": "TEMP",
+          "value": 31.0,
+          "unit": "C"
+        },
+        {
+          "agentId": "RH",
+          "value": 82.0,
+          "unit": "%"
+        }
+      ],
+      "context": {
+        "location": "Lagos, Nigeria",
+        "country": "NG",
+        "nearbySource": "traffic_industrial"
+      },
+      "quality": {
+        "flag": "UNVALIDATED",
+        "confidence": 0.93,
+        "qcMethod": "synthetic_fixture",
+        "notes": "Demonstration record. Not an instrument measurement and not suitable for analysis or health decisions."
+      },
+      "bxpHri": 79.8,
+      "bxpHriLevel": "VERY_HIGH",
+      "bxpHriColor": "#9B0000"
+    },
+    {
+      "id": "bxp-sample-0003",
+      "bxpVersion": "2.0",
+      "source": "simulated",
+      "deviceUuid": "00000000-0000-0000-0000-000000000003",
+      "geohash": "ttneq",
+      "latitude": 28.6139,
+      "longitude": 77.209,
+      "timestampUs": 1741350000000000,
+      "durationS": 600,
+      "indoorOutdoor": "outdoor",
+      "agents": [
+        {
+          "agentId": "PM2_5",
+          "value": 156.3,
+          "unit": "ug/m3"
+        },
+        {
+          "agentId": "PM10",
+          "value": 228.4,
+          "unit": "ug/m3"
+        },
+        {
+          "agentId": "NO2",
+          "value": 67.8,
+          "unit": "ppb"
+        },
+        {
+          "agentId": "O3",
+          "value": 5.1,
+          "unit": "ppb"
+        },
+        {
+          "agentId": "TEMP",
+          "value": 22.0,
+          "unit": "C"
+        },
+        {
+          "agentId": "RH",
+          "value": 45.0,
+          "unit": "%"
+        }
+      ],
+      "context": {
+        "location": "Delhi, India",
+        "country": "IN",
+        "nearbySource": "vehicles_crop_burning"
+      },
+      "quality": {
+        "flag": "UNVALIDATED",
+        "confidence": 0.94,
+        "qcMethod": "synthetic_fixture",
+        "notes": "Demonstration record. Not an instrument measurement and not suitable for analysis or health decisions."
+      },
+      "bxpHri": 100.0,
+      "bxpHriLevel": "HAZARDOUS",
+      "bxpHriColor": "#4A0000"
+    },
+    {
+      "id": "bxp-sample-0004",
+      "bxpVersion": "2.0",
+      "source": "simulated",
+      "deviceUuid": "00000000-0000-0000-0000-000000000004",
+      "geohash": "wx4g0",
+      "latitude": 39.9042,
+      "longitude": 116.4074,
+      "timestampUs": 1741353600000000,
+      "durationS": 600,
+      "indoorOutdoor": "outdoor",
+      "agents": [
+        {
+          "agentId": "PM2_5",
+          "value": 89.7,
+          "unit": "ug/m3"
+        },
+        {
+          "agentId": "PM10",
+          "value": 134.2,
+          "unit": "ug/m3"
+        },
+        {
+          "agentId": "NO2",
+          "value": 58.3,
+          "unit": "ppb"
+        },
+        {
+          "agentId": "O3",
+          "value": 11.4,
+          "unit": "ppb"
+        },
+        {
+          "agentId": "TEMP",
+          "value": 8.0,
+          "unit": "C"
+        },
+        {
+          "agentId": "RH",
+          "value": 38.0,
+          "unit": "%"
+        }
+      ],
+      "context": {
+        "location": "Beijing, China",
+        "country": "CN",
+        "nearbySource": "coal_traffic"
+      },
+      "quality": {
+        "flag": "UNVALIDATED",
+        "confidence": 0.95,
+        "qcMethod": "synthetic_fixture",
+        "notes": "Demonstration record. Not an instrument measurement and not suitable for analysis or health decisions."
+      },
+      "bxpHri": 94.2,
+      "bxpHriLevel": "HAZARDOUS",
+      "bxpHriColor": "#4A0000"
+    },
+    {
+      "id": "bxp-sample-0005",
+      "bxpVersion": "2.0",
+      "source": "simulated",
+      "deviceUuid": "00000000-0000-0000-0000-000000000005",
+      "geohash": "gcpvh",
+      "latitude": 51.5074,
+      "longitude": -0.1278,
+      "timestampUs": 1741357200000000,
+      "durationS": 600,
+      "indoorOutdoor": "outdoor",
+      "agents": [
+        {
+          "agentId": "PM2_5",
+          "value": 14.2,
+          "unit": "ug/m3"
+        },
+        {
+          "agentId": "PM10",
+          "value": 22.8,
+          "unit": "ug/m3"
+        },
+        {
+          "agentId": "NO2",
+          "value": 38.1,
+          "unit": "ppb"
+        },
+        {
+          "agentId": "O3",
+          "value": 44.2,
+          "unit": "ppb"
+        },
+        {
+          "agentId": "TEMP",
+          "value": 12.0,
+          "unit": "C"
+        },
+        {
+          "agentId": "RH",
+          "value": 72.0,
+          "unit": "%"
+        }
+      ],
+      "context": {
+        "location": "London, United Kingdom",
+        "country": "GB",
+        "nearbySource": "traffic_diesel"
+      },
+      "quality": {
+        "flag": "UNVALIDATED",
+        "confidence": 0.97,
+        "qcMethod": "synthetic_fixture",
+        "notes": "Demonstration record. Not an instrument measurement and not suitable for analysis or health decisions."
+      },
+      "bxpHri": 38.4,
+      "bxpHriLevel": "MODERATE",
+      "bxpHriColor": "#FFBB33"
+    },
+    {
+      "id": "bxp-sample-0006",
+      "bxpVersion": "2.0",
+      "source": "simulated",
+      "deviceUuid": "00000000-0000-0000-0000-000000000006",
+      "geohash": "6gyf4",
+      "latitude": -23.5505,
+      "longitude": -46.6333,
+      "timestampUs": 1741360800000000,
+      "durationS": 600,
+      "indoorOutdoor": "outdoor",
+      "agents": [
+        {
+          "agentId": "PM2_5",
+          "value": 31.8,
+          "unit": "ug/m3"
+        },
+        {
+          "agentId": "PM10",
+          "value": 48.6,
+          "unit": "ug/m3"
+        },
+        {
+          "agentId": "NO2",
+          "value": 52.4,
+          "unit": "ppb"
+        },
+        {
+          "agentId": "O3",
+          "value": 28.7,
+          "unit": "ppb"
+        },
+        {
+          "agentId": "TEMP",
+          "value": 24.0,
+          "unit": "C"
+        },
+        {
+          "agentId": "RH",
+          "value": 68.0,
+          "unit": "%"
+        }
+      ],
+      "context": {
+        "location": "Sao Paulo, Brazil",
+        "country": "BR",
+        "nearbySource": "vehicles_industry"
+      },
+      "quality": {
+        "flag": "UNVALIDATED",
+        "confidence": 0.94,
+        "qcMethod": "synthetic_fixture",
+        "notes": "Demonstration record. Not an instrument measurement and not suitable for analysis or health decisions."
+      },
+      "bxpHri": 62.7,
+      "bxpHriLevel": "HIGH",
+      "bxpHriColor": "#CC0000"
+    },
+    {
+      "id": "bxp-sample-0007",
+      "bxpVersion": "2.0",
+      "source": "simulated",
+      "deviceUuid": "00000000-0000-0000-0000-000000000007",
+      "geohash": "dr5re",
+      "latitude": 40.7128,
+      "longitude": -74.006,
+      "timestampUs": 1741364400000000,
+      "durationS": 600,
+      "indoorOutdoor": "outdoor",
+      "agents": [
+        {
+          "agentId": "PM2_5",
+          "value": 12.1,
+          "unit": "ug/m3"
+        },
+        {
+          "agentId": "PM10",
+          "value": 18.4,
+          "unit": "ug/m3"
+        },
+        {
+          "agentId": "NO2",
+          "value": 29.6,
+          "unit": "ppb"
+        },
+        {
+          "agentId": "O3",
+          "value": 52.3,
+          "unit": "ppb"
+        },
+        {
+          "agentId": "TEMP",
+          "value": 18.0,
+          "unit": "C"
+        },
+        {
+          "agentId": "RH",
+          "value": 61.0,
+          "unit": "%"
+        }
+      ],
+      "context": {
+        "location": "New York, USA",
+        "country": "US",
+        "nearbySource": "traffic_urban"
+      },
+      "quality": {
+        "flag": "UNVALIDATED",
+        "confidence": 0.97,
+        "qcMethod": "synthetic_fixture",
+        "notes": "Demonstration record. Not an instrument measurement and not suitable for analysis or health decisions."
+      },
+      "bxpHri": 29.1,
+      "bxpHriLevel": "MODERATE",
+      "bxpHriColor": "#FFBB33"
+    },
+    {
+      "id": "bxp-sample-0008",
+      "bxpVersion": "2.0",
+      "source": "simulated",
+      "deviceUuid": "00000000-0000-0000-0000-000000000008",
+      "geohash": "kznfu",
+      "latitude": -1.2921,
+      "longitude": 36.8219,
+      "timestampUs": 1741368000000000,
+      "durationS": 600,
+      "indoorOutdoor": "outdoor",
+      "agents": [
+        {
+          "agentId": "PM2_5",
+          "value": 38.9,
+          "unit": "ug/m3"
+        },
+        {
+          "agentId": "PM10",
+          "value": 54.7,
+          "unit": "ug/m3"
+        },
+        {
+          "agentId": "NO2",
+          "value": 22.1,
+          "unit": "ppb"
+        },
+        {
+          "agentId": "O3",
+          "value": 18.4,
+          "unit": "ppb"
+        },
+        {
+          "agentId": "TEMP",
+          "value": 20.0,
+          "unit": "C"
+        },
+        {
+          "agentId": "RH",
+          "value": 65.0,
+          "unit": "%"
+        }
+      ],
+      "context": {
+        "location": "Nairobi, Kenya",
+        "country": "KE",
+        "nearbySource": "traffic_cooking_fires"
+      },
+      "quality": {
+        "flag": "UNVALIDATED",
+        "confidence": 0.93,
+        "qcMethod": "synthetic_fixture",
+        "notes": "Demonstration record. Not an instrument measurement and not suitable for analysis or health decisions."
+      },
+      "bxpHri": 51.4,
+      "bxpHriLevel": "ELEVATED",
+      "bxpHriColor": "#FF8800"
+    },
+    {
+      "id": "bxp-sample-0009",
+      "bxpVersion": "2.0",
+      "source": "simulated",
+      "deviceUuid": "00000000-0000-0000-0000-000000000009",
+      "geohash": "qqgx4",
+      "latitude": -6.2088,
+      "longitude": 106.8456,
+      "timestampUs": 1741371600000000,
+      "durationS": 600,
+      "indoorOutdoor": "outdoor",
+      "agents": [
+        {
+          "agentId": "PM2_5",
+          "value": 71.3,
+          "unit": "ug/m3"
+        },
+        {
+          "agentId": "PM10",
+          "value": 98.6,
+          "unit": "ug/m3"
+        },
+        {
+          "agentId": "NO2",
+          "value": 41.7,
+          "unit": "ppb"
+        },
+        {
+          "agentId": "O3",
+          "value": 9.3,
+          "unit": "ppb"
+        },
+        {
+          "agentId": "TEMP",
+          "value": 33.0,
+          "unit": "C"
+        },
+        {
+          "agentId": "RH",
+          "value": 85.0,
+          "unit": "%"
+        }
+      ],
+      "context": {
+        "location": "Jakarta, Indonesia",
+        "country": "ID",
+        "nearbySource": "vehicles_industrial"
+      },
+      "quality": {
+        "flag": "UNVALIDATED",
+        "confidence": 0.92,
+        "qcMethod": "synthetic_fixture",
+        "notes": "Demonstration record. Not an instrument measurement and not suitable for analysis or health decisions."
+      },
+      "bxpHri": 82.1,
+      "bxpHriLevel": "VERY_HIGH",
+      "bxpHriColor": "#9B0000"
+    },
+    {
+      "id": "bxp-sample-0010",
+      "bxpVersion": "2.0",
+      "source": "simulated",
+      "deviceUuid": "00000000-0000-0000-0000-000000000010",
+      "geohash": "stq4q",
+      "latitude": 30.0444,
+      "longitude": 31.2357,
+      "timestampUs": 1741375200000000,
+      "durationS": 600,
+      "indoorOutdoor": "outdoor",
+      "agents": [
+        {
+          "agentId": "PM2_5",
+          "value": 93.4,
+          "unit": "ug/m3"
+        },
+        {
+          "agentId": "PM10",
+          "value": 187.3,
+          "unit": "ug/m3"
+        },
+        {
+          "agentId": "NO2",
+          "value": 49.2,
+          "unit": "ppb"
+        },
+        {
+          "agentId": "O3",
+          "value": 7.8,
+          "unit": "ppb"
+        },
+        {
+          "agentId": "TEMP",
+          "value": 28.0,
+          "unit": "C"
+        },
+        {
+          "agentId": "RH",
+          "value": 35.0,
+          "unit": "%"
+        }
+      ],
+      "context": {
+        "location": "Cairo, Egypt",
+        "country": "EG",
+        "nearbySource": "desert_dust_traffic"
+      },
+      "quality": {
+        "flag": "UNVALIDATED",
+        "confidence": 0.91,
+        "qcMethod": "synthetic_fixture",
+        "notes": "Demonstration record. Not an instrument measurement and not suitable for analysis or health decisions."
+      },
+      "bxpHri": 97.3,
+      "bxpHriLevel": "HAZARDOUS",
+      "bxpHriColor": "#4A0000"
+    }
+  ],
+  "dataClassification": "synthetic demonstration data — not observational data"
+}

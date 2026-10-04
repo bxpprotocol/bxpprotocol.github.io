@@ -1,0 +1,58 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  "name": "BXP Global Air Quality Sample Dataset",
+  "alternateName": "BXP .bxp.json sample readings",
+  "description": "Synthetic demonstration dataset of 10 atmospheric exposure records across major world cities, published in the BXP (.bxp.json) format. Illustrates the BXP record structure: geohash plus coordinates, per-agent measurements with canonical units, quality flags, and the experimental composite health risk index. Records are synthetic demonstration data, not measurements, and are marked source=simulated and quality.flag=UNVALIDATED.",
+  "url": "https://bxpprotocol.github.io/data.html",
+  "license": "https://www.apache.org/licenses/LICENSE-2.0",
+  "isAccessibleForFree": true,
+  "keywords": [
+    "air quality data",
+    "atmospheric exposure",
+    "PM2.5",
+    "air pollution",
+    "environmental sensor data",
+    "open data format",
+    "BXP",
+    "synthetic demonstration data"
+  ],
+  "creator": {
+    "@type": "Organization",
+    "name": "BXP Protocol contributors",
+    "url": "https://bxpprotocol.github.io"
+  },
+  "isPartOf": {
+    "@type": "Dataset",
+    "name": "BXP Global Air Quality Sample Dataset",
+    "url": "https://bxpprotocol.github.io/data.html"
+  },
+  "distribution": [
+    {
+      "@type": "DataDownload",
+      "encodingFormat": "application/json",
+      "contentURL": "https://bxpprotocol.github.io/sample_readings.bxp.json",
+      "encodingSchema": "https://github.com/bxpprotocol/bxp-spec/blob/main/SPEC.md",
+      "description": "BXP .bxp.json records. Ten synthetic demonstration readings."
+    },
+    {
+      "@type": "DataDownload",
+      "encodingFormat": "application/json",
+      "contentURL": "https://github.com/bxpprotocol/bxp-spec/blob/main/datasets/sample_readings.bxp.json",
+      "description": "Same dataset in the source repository."
+    }
+  ],
+  "datePublished": "2026-03-07",
+  "dateModified": "2026-03-07",
+  "version": "2.0",
+  "variableMeasured": [
+    "pm25",
+    "pm10",
+    "no2",
+    "o3",
+    "so2",
+    "co",
+    "temperature",
+    "humidity"
+  ]
+}

@@ -1,0 +1,2141 @@
+# BXP — Breathe Exposure Protocol
+
+Extended documentation for retrieval. This file contains the substantive
+content of the BXP specification, API documentation, and developer guide
+in plain text, so an assistant can answer questions about the format, the
+API, and the conformance model without fetching five separate documents.
+
+For navigation rather than content, see https://bxpprotocol.github.io/llms.txt
+
+**BXP-HRI is experimental and is not clinically validated.** It must not be
+used for medical decisions.
+
+---
+
+
+==============================================================================
+## SPECIFICATION v2.0
+Source: https://github.com/bxpprotocol/bxp-spec/blob/main/SPEC.md
+==============================================================================
+
+BXP Technical Specification v2.0
+
+> Breathe Exposure Protocol — Complete Technical Reference
+>
+> | | |
+> |---|---|
+> | Status | Stable. The v2.0 wire format is frozen. |
+> | Version | 2.0 |
+> | Frozen in v2 | The 32-byte container framing, checksum placement, and agent ID registry. These will not change within major version 2. |
+> | Still open in MINOR | Optional fields, endpoints, and agents may be added. Implementations must ignore-and-preserve what they do not recognise (§5.7). |
+> | Breaking changes | Require a new major version, 18 months advance notice, and dual-version support (§12). |
+> | License | Apache 2.0 |
+> | Conformance | 17 golden vectors, §15 |
+>
+> BXP-HRI (§13) is experimental. It is not clinically or epidemiologically
+> validated and must not be used for medical decisions.
+
+---
+
+Table of Contents
+
+1. 1. Abstract
+2. 2. Terminology
+3. 3. Design Philosophy
+4. 4. Recommended Node Storage Layout (informative, non-normative)
+5. 5. The .bxp File Format
+6. 6. Agent Schema
+7. 6.8. Source Classification
+8. 7. Protocol Stages
+9. 8. REST API Specification
+10. 9. Security & Privacy Framework
+11. 10. Community Reporting Layer
+12. 11. Implementation Guide
+13. 12. Governance & Versioning
+14. 13. BXP-HRI (Experimental) — Health Risk Index
+15. 14. Compatibility Matrix
+16. 15. Conformance & Test Vectors
+17. Appendix A — Complete Agent Reference
+18. Appendix B — Geohash Reference
+19. Appendix C — Error Codes
+20. Appendix D — Glossary
+21. Origin & Authorship
+22. References
+
+1. Abstract
+
+BXP (Breathe Exposure Protocol) is an open, universal file system
+specification and data standard for the capture, storage, transmission,
+and interpretation of atmospheric exposure data.
+
+It defines the structural foundation upon which air quality applications,
+governmental monitoring systems, research databases, health platforms,
+and community reporting tools can interoperate — using a single,
+standardized, open data layer.
+
+BXP is a pure software protocol standard. Like HTTP, PDF, MP3, and SSL —
+it requires no proprietary hardware, no centralized infrastructure, and
+no licensing fees. It runs on any device, any platform, any geography,
+at any scale.
+
+BXP is to breath exposure data what HTTP is to the web.
+
+1.1 The Problem
+
+Air pollution causes 7 million premature deaths annually — more than
+HIV, malaria, and tuberculosis combined (WHO, 2024). The tools to
+measure, track, and respond to air pollution exist. The problem is
+the data infrastructure does not.
+
+Four critical failures define the current ecosystem:
+
+|  Failure | Description |
+| ---------|-------------|
+|  Fragmentation | Every device, app, and agency uses incompatible formats |
+|  Proprietary lock-in | Closed ecosystems with expensive licensing |
+|  Geographic inequality | Monitoring concentrated in wealthy nations |
+|  No universal standard | No open protocol exists for air exposure data |
+
+A sensor in Accra cannot speak to a hospital in Nairobi.
+A citizen reading in Delhi cannot contribute to a government map.
+A researcher in London cannot access ground-truth data from Lagos.
+
+BXP eliminates this fragmentation permanently.
+
+1.2 Scope
+
+BXP v2.0 covers all outdoor and indoor atmospheric exposure data
+including particulate matter, gaseous pollutants, volatile organic
+compounds, biological agents, heavy metal particulates, and
+environmental variables. Extension into waterborne and soil
+contamination is planned for v3.0.
+
+---
+
+2. Terminology
+
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+"SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
+document are to be interpreted as described in RFC 2119.
+
+|  Term | Definition |
+| ------|------------|
+|  BXP Volume | A complete BXP file system instance on any storage substrate |
+|  Agent | Any atmospheric substance or biological entity tracked by BXP |
+|  Reading | A single point-in-time measurement record |
+|  Aggregate | A computed summary of multiple readings over time or space |
+|  Geohash | A compact geographic coordinate encoding system |
+|  BXP-HRI (experimental) | BXP Health Risk Index — composite health risk score (0–100), not clinically validated |
+|  Container | A portable, self-verifying file bundling one or more readings |
+|  Device Token | Authentication credential issued to a data source |
+|  Quality Flag | A metadata tag describing data reliability |
+
+---
+
+3. Design Philosophy
+
+BXP is built on six non-negotiable principles:
+
+3.1 Universality
+BXP MUST work for any data source, any platform, any geography,
+and any scale — from a single phone to a planetary monitoring network.
+
+3.2 Interoperability
+Any BXP-compliant system MUST be able to read any BXP-compliant file
+regardless of origin, device, or platform.
+
+3.3 Openness
+The standard is fully open. No licensing fees. No closed sections.
+No gatekeepers. MIT and Apache 2.0 licensed. Forever free.
+
+3.4 Accessibility
+BXP MUST be implementable on low-resource devices including basic
+smartphones, embedded systems, and offline environments.
+
+3.5 Privacy-First
+Individual exposure records are private by default. Cryptographic
+controls operate at the file level. No surveillance assumptions
+are permitted.
+
+3.6 Extensibility
+The standard MUST grow without breaking existing implementations.
+All extensions use versioned namespaces. Backward compatibility
+is maintained across all MINOR versions.
+
+3.7 Conformance Model — what is normative
+
+Earlier drafts of this specification left it ambiguous which parts an
+independent implementation is required to reproduce byte-for-byte, and
+which parts are merely one way a node might choose to organize its
+own storage. That ambiguity is resolved here, explicitly, because it
+determines what "BXP-compliant" actually means.
+
+Normative (an implementation MUST get these exactly right to
+interoperate; conformance test vectors exist for these — see §15):
+
+- §5 The .bxp record — its JSON schema, its binary encoding, byte
+  layout, checksums, and the lossless JSON⇄binary conversion rule.
+- §5.5 Verification (canonical serialization, SHA-256 payload hash).
+- Versioning and compatibility rules (§3.6, §5.9, §12.2).
+- The Agent Schema (§6) — agent IDs, units, canonical value ranges.
+
+Informative / recommended (useful defaults a node or application
+MAY follow, but which carry no interoperability obligation — two
+compliant BXP implementations that disagree about these are both
+still compliant):
+
+- §4 the "BXP Volume" directory layout below. This describes one
+  reasonable way a node might index and cache records it has
+  collected — it is not a filesystem or database format that .bxp
+  itself must implement, and no .bxp file is required to reflect
+  this layout in any way.
+- §8 the REST API's exact route names beyond the wire payloads they
+  carry.
+- §11 example code.
+
+Why this matters: a .bxp file is one self-contained record —
+analogous to a .png or .mp4 file, not to a directory tree. A
+sensor, an ESP32, a phone, and a BXP node all read and write the same
+.bxp bytes. What any of them do with those bytes afterwards —
+store them in a directory tree, a relational database, an S3 bucket,
+or nothing at all — is an application-layer decision, not part of the
+interoperability contract. Earlier text in this document (§4) blurred
+that line by describing the directory tree in normative-sounding
+language ("A BXP volume is a logical file system structure"); that
+framing is corrected below.
+
+---
+
+4. Recommended Node Storage Layout (informative, non-normative)
+
+This section describes one reasonable way a BXP node — a server,
+gateway, or application that accumulates many .bxp records — MAY
+organize them for its own indexing and retrieval. It is not part of
+the wire format, it is not required for conformance, and no other
+implementation needs to know or care whether a given node uses it.
+A node MAY instead use a SQL database (as reference-server/ does),
+a key-value store, flat files, or anything else, provided it can
+still produce and accept valid .bxp records (§5) at its boundary.
+
+It can be implemented on any physical storage: local disk, cloud
+object store (S3, GCS), a relational database, or embedded flash.
+The logical structure below is a naming convention, not a required
+schema.
+
+4.1 Root Structure
+
+BXP:/
+├── /meta/
+├── /locations/
+├── /agents/
+├── /exposures/
+├── /devices/
+├── /alerts/
+├── /community/
+├── /research/
+└── /system/
+
+4.2 /meta — Volume Metadata
+
+/meta/
+├── volume.bxp         — volume identity, version, owner, created
+├── schema.bxp         — schema version in use
+├── index.bxp          — master index of all records
+├── checksums.bxp      — Merkle tree integrity hashes
+└── extensions/        — custom extension definitions
+
+Every BXP volume MUST contain a valid /meta/volume.bxp file.
+
+4.3 /locations — Geographic Hierarchy
+
+/locations/
+└── [continent]/
+    └── [country-iso]/
+        └── [region]/
+            └── [geohash-5]/          (~4.9km × 4.9km cell)
+                └── [geohash-7]/      (~153m × 153m cell)
+                    ├── current.bxp
+                    ├── history/
+                    │   └── YYYY/
+                    │       └── MM/
+                    │           └── DD.bxp
+                    ├── events/
+                    └── profile.bxp
+
+4.4 /agents — Pollutant Definitions
+
+/agents/
+├── particulates/
+│   ├── PM1.agent.bxp
+│   ├── PM2_5.agent.bxp
+│   └── PM10.agent.bxp
+├── gases/
+│   ├── CO.agent.bxp
+│   ├── CO2.agent.bxp
+│   ├── NO2.agent.bxp
+│   ├── SO2.agent.bxp
+│   ├── O3.agent.bxp
+│   ├── H2S.agent.bxp
+│   └── NH3.agent.bxp
+├── vocs/
+│   ├── TVOC.agent.bxp
+│   ├── benzene.agent.bxp
+│   ├── formaldehyde.agent.bxp
+│   └── toluene.agent.bxp
+├── biological/
+│   ├── mold.agent.bxp
+│   ├── pollen.agent.bxp
+│   ├── bacteria.agent.bxp
+│   └── virus.agent.bxp
+├── heavy_metals/
+│   ├── lead.agent.bxp
+│   ├── mercury.agent.bxp
+│   └── arsenic.agent.bxp
+└── environmental/
+    ├── temperature.agent.bxp
+    ├── humidity.agent.bxp
+    ├── pressure.agent.bxp
+    └── uv_index.agent.bxp
+
+4.5 /exposures — Exposure Records
+
+/exposures/
+├── devices/
+│   └── [device-uuid]/
+│       ├── raw/               — immutable raw readings
+│       └── processed/         — calibrated, validated readings
+├── persons/                   — encrypted by default
+│   └── [sha256-of-person-id]/
+│       ├── timeline.bxp
+│       ├── risk_profile.bxp
+│       └── health_events/
+└── aggregates/
+    ├── hourly/
+    ├── daily/
+    ├── monthly/
+    └── annual/
+
+4.6 /devices — Device Registry
+
+/devices/
+└── [device-uuid]/
+    ├── identity.bxp
+    ├── calibration/
+    │   └── YYYY-MM-DD.cal.bxp
+    ├── location_history/
+    └── health/
+
+4.7 /community — Community Reports
+
+/community/
+├── reports/
+│   └── [geohash-7]/
+│       └── YYYY-MM-DD/
+│           └── [report-uuid].bxp
+└── events/
+    └── [event-uuid]/
+        ├── metadata.bxp
+        └── attachments/
+
+---
+
+5. The .bxp File Format
+
+5.1 Overview
+
+The .bxp file format is BXP's native data format — a structured,
+versioned, optionally compressed and encrypted container. Two
+representations exist:
+
+- Binary .bxp — compact, efficient, designed for devices
+- JSON .bxp.json — human-readable, designed for APIs
+
+Both are semantically identical. Any BXP implementation MUST support
+both and MUST be capable of lossless conversion between them.
+
+5.2 Binary Header (32 bytes)
+
+|  Offset | Length | Field | Description |
+| --------|--------|-------|-------------|
+|  0x00 | 4 bytes | Magic Number | 0x42585000 ("BXP\0") |
+|  0x04 | 2 bytes | Major Version | Schema major version (uint16 big-endian) |
+|  0x06 | 2 bytes | Minor Version | Schema minor version (uint16 big-endian) |
+|  0x08 | 1 byte | File Type | 0x01=reading, 0x02=aggregate, 0x03=agent, 0x04=device, 0x05=alert, 0x06=meta |
+|  0x09 | 1 byte | Flags | bit0=compressed, bit1=encrypted, bit2=signed, bit3=draft |
+|  0x0A | 2 bytes | Reserved | Must be 0x0000 in v2.0 |
+|  0x0C | 8 bytes | Timestamp | Unix epoch microseconds (int64 big-endian) |
+|  0x14 | 4 bytes | Payload Length | Payload size in bytes (uint32 big-endian) |
+|  0x18 | 4 bytes | Header Checksum | CRC32 of bytes 0x00–0x17 |
+|  0x1C | 4 bytes | Payload Checksum | CRC32 of entire payload |
+
+5.3 Reading Record Schema
+
+{
+  "bxpVersion": "2.0",
+  "fileType": "reading",
+  "deviceUuid": "550e8400-e29b-41d4-a716-446655440000",
+  "geohash": "s1v0g",
+  "latitude": 5.5571,
+  "longitude": -0.1969,
+  "altitudeM": 61.0,
+  "timestampUs": 1710000000000000,
+  "durationS": 60,
+  "indoorOutdoor": "outdoor",
+  "agents": [
+    {
+      "agentId": "PM2_5",
+      "value": 47.3,
+      "unit": "ug/m3",
+      "uncertainty": 3.1,
+      "method": "optical",
+      "belowLod": false
+    },
+    {
+      "agentId": "CO",
+      "value": 1.2,
+      "unit": "ppm",
+      "uncertainty": 0.1,
+      "method": "electrochemical",
+      "belowLod": false
+    }
+  ],
+  "context": {
+    "temperatureC": 28.4,
+    "humidityPct": 72.1,
+    "pressureHpa": 1012.3,
+    "windSpeedMs": 2.1,
+    "windDirDeg": 220
+  },
+  "quality": {
+    "flag": "VALIDATED",
+    "confidence": 0.94,
+    "qcMethod": "automated-v2",
+    "notes": ""
+  },
+  "signature": ""
+}
+
+5.5.1 Calibration & Correction (per-agent, OPTIONAL)
+
+This is deliberately called out on its own because it's where a large,
+well-documented, real-world failure mode lives: low-cost PM2.5 sensors
+(the optical scattering sensors used in most Tier 1/2 hardware) read
+high in humid conditions and need a correction against a colocated
+reference instrument to be trustworthy — mixing corrected and
+uncorrected values in one dataset without saying which is which is a
+known source of bad air-quality decisions. BXP does not mandate any
+particular correction algorithm, but it does mandate that if a value
+has been corrected, that fact travels with the value:
+
+{
+  "agentId": "PM2_5",
+  "value": 31.8,
+  "unit": "ug/m3",
+  "uncertainty": 4.2,
+  "method": "optical",
+  "belowLod": false,
+  "correction": {
+    "applied": true,
+    "rawValue": 47.3,
+    "model": "epa_pm25_humidity_v1",
+    "referenceDeviceUuid": "9c1e2b0a-....-....-....-............",
+    "correctedAt": 1710000012000000
+  }
+}
+
+- If correction is omitted, the value is exactly what the sensor
+  reported (correction.applied is implicitly false). This MUST be
+  the default assumption a reader makes about an agent entry with no
+  correction object.
+- If correction.applied is true, value is the corrected value
+  and rawValue SHOULD be included so nothing is destroyed —
+  a downstream consumer that trusts a different correction model can
+  recover the original reading.
+- model is a free-text identifier (not enumerated here on purpose;
+  correction science moves faster than protocol revisions) but SHOULD
+  be documented wherever the device or node publishes its methodology.
+- referenceDeviceUuid, when present, names the reference-grade
+  device (Tier 3, see below) this correction was derived from or
+  colocated against, giving an auditable link from a Tier 1/2 reading
+  back to the reference data that made it trustworthy.
+- A writer MUST NOT set quality.flag to VALIDATED for a Tier 1/2
+  source unless either correction.applied is true or an equally
+  explicit qcMethod justifies it in quality.notes — an unvalidated
+  raw sensor value being labeled VALIDATED just because someone judged
+  it was "probably fine" is exactly the kind of quiet drift this field
+  exists to prevent.
+
+5.4 Container Schema
+
+A BXP Container is a portable, self-verifying file bundling one
+or more readings. Derived from BXP v1.0 container specification.
+
+{
+  "containerSchema": "bxp.container.v2",
+  "payload": {
+    "protocol": "Breathe Exposure Protocol",
+    "version": "2.0",
+    "owner": "user",
+    "generatedAt": "2026-03-04T08:00:00Z",
+    "readings": []
+  },
+  "payloadHash": "sha256:...",
+  "signature": "ed25519:...",
+  "verification": {
+    "method": "sha256+ed25519",
+    "status": "Verified"
+  }
+}
+
+5.5 Verification Process
+
+Verification MUST follow this exact process:
+
+1. Canonically serialize payload using sorted JSON keys
+2. Compute SHA-256 hash of the UTF-8 encoded serialization
+3. Compare computed hash to payloadHash
+4. If hashes match: verification.status = "Verified"
+5. If hashes do not match: verification.status = "Tampered"
+6. If Ed25519 signature present: verify against device public key
+
+5.6 Quality Flags
+
+|  Flag | Code | Description |
+| ------|------|-------------|
+|  VALIDATED | 0 | Passed all automated QC checks |
+|  UNVALIDATED | 1 | Raw data, no QC applied |
+|  SUSPECT | 2 | Failed one or more QC checks |
+|  INVALID | 3 | Known bad data — do not use |
+
+5.7 Unknown and Future Fields
+
+This was previously unspecified; it is resolved as follows so that
+MINOR-version growth (§3.6) is actually safe in practice, not just in
+principle:
+
+- A conformant reader encountering a JSON payload key it does not
+  recognize MUST ignore that key and continue processing the rest of
+  the record. It MUST NOT reject the record solely because of an
+  unrecognized key.
+- A conformant reader/writer that round-trips a record it does not
+  fully understand (e.g. a relay or federation node) SHOULD preserve
+  unrecognized top-level keys unchanged, so that newer fields survive
+  passing through older infrastructure. Fields inside agents[]
+  entries follow the same rule per-entry.
+- New REQUIRED fields MUST NOT be introduced within a MAJOR version.
+  Only OPTIONAL fields may be added in a MINOR version (§12.2).
+- A reader MUST NOT infer meaning from an unrecognized field; "ignore
+  and preserve" is the entire contract. Interpreting an unknown field
+  is only safe once it is documented in a released MINOR version.
+
+5.8 Version Negotiation and Compatibility
+
+The binary header carries Major and Minor version separately (§5.2)
+specifically so this check can be done without parsing JSON:
+
+- Major version mismatch (file's major ≠ implementation's
+  supported major): the reader MUST refuse to interpret the payload
+  as a normal record. It MAY still report the file's declared version
+  back to the caller (e.g. for a diagnostic message), but MUST NOT
+  guess at the payload's structure.
+- Minor version higher than supported (same major, file's minor >
+  implementation's supported minor): the reader MUST still parse the
+  record, per §5.7 — newer optional fields it doesn't recognize are
+  ignored, not fatal.
+- Minor version lower than supported: always valid; older minor
+  versions never remove fields, only add them.
+- There is deliberately no PATCH component in the binary header.
+  PATCH-level changes to this specification (typo fixes, clarified
+  wording, tightened prose) never change wire bytes or parsing
+  behavior — if a change would alter what bytes are valid or how they
+  are interpreted, it is at minimum a MINOR change and must bump the
+  minor version field.
+
+5.9 Extension Mechanism
+
+Implementations that need to carry data this specification does not
+yet define MUST do so under a single top-level "ext" object, keyed
+by a short reverse-namespace string, e.g.:
+
+"ext": {
+  "org.example.mycompany": { "calibrationBatch": "B-2026-04" }
+}
+
+This keeps experimental or vendor-specific data from colliding with
+future officially-assigned field names, while remaining subject to
+the same ignore-and-preserve rule as any other unrecognized field
+(§5.7). Fields MUST NOT be added directly at the record's top level
+outside of an RFC-accepted MINOR version (§12.3); use ext instead.
+
+5.10 Encryption (flag bit1) — deliberately unspecified
+
+Flag bit1 in the binary header is reserved to indicate an encrypted
+payload, but this specification does not yet pin down a cipher suite
+or key-exchange mechanism, and no BXP implementation should claim to
+support it. Setting bit1 without a ratified encryption RFC is a
+non-conformant file. sdk/python/bxp_binary.py reflects this
+honestly: it raises rather than silently emitting a non-interoperable
+"encrypted" file. Encrypting a whole .bxp file at rest using
+external, off-the-shelf tooling (disk encryption, an encrypted
+archive, etc.) remains a fine and fully conformant thing to do — it
+just isn't this flag.
+
+---
+
+6. Agent Schema
+
+6.1 Particulate Matter
+
+|  Agent ID | Name | Unit | WHO Annual | WHO 24h | Health Impact |
+| ----------|------|------|-----------|---------|---------------|
+|  PM1 | Particulate Matter <1μm | μg/m³ | — | — | Deep lung penetration, bloodstream entry |
+|  PM2_5 | Fine Particulate Matter <2.5μm | μg/m³ | 5 | 15 | Cardiovascular disease, lung cancer, stroke |
+|  PM10 | Coarse Particulate Matter <10μm | μg/m³ | 15 | 45 | Respiratory inflammation, asthma |
+|  BC | Black Carbon | μg/m³ | — | — | Climate forcing; linked to PM2.5 effects |
+
+6.2 Gaseous Pollutants
+
+|  Agent ID | Name | Unit | WHO Limit | Primary Sources |
+| ----------|------|------|-----------|-----------------|
+|  CO | Carbon Monoxide | ppm | 4 mg/m³ (24h) | Combustion, generators, cooking fires |
+|  CO2 | Carbon Dioxide | ppm | 1000 (indoor) | Respiration, combustion |
+|  NO2 | Nitrogen Dioxide | ppb | 10 μg/m³ annual | Vehicle exhaust, power plants |
+|  SO2 | Sulphur Dioxide | ppb | 40 μg/m³ (24h) | Coal burning, industrial |
+|  O3 | Ground-level Ozone | ppb | 100 μg/m³ (8h) | Photochemical reaction |
+|  H2S | Hydrogen Sulphide | ppb | 7 ppb | Sewage, industrial waste |
+|  NH3 | Ammonia | ppm | 25 ppm | Agriculture, waste decomposition |
+
+6.3 Volatile Organic Compounds
+
+|  Agent ID | Compound | Unit | Threshold | Classification |
+| ----------|----------|------|-----------|----------------|
+|  TVOC | Total VOC | ppb | >500 ppb | Aggregate |
+|  BENZ | Benzene | ppb | >1 ppb | Group 1 Carcinogen (IARC) |
+|  FORM | Formaldehyde | ppb | >8 ppb | Group 1 Carcinogen (IARC) |
+|  TOLU | Toluene | ppm | >50 ppm | Neurotoxin |
+|  XYLE | Xylene | ppm | >100 ppm | Neurotoxin |
+|  NAPH | Naphthalene | ppb | >9.4 ppb | Possible carcinogen |
+
+6.4 Biological Agents
+
+|  Agent ID | Agent | Unit | Guideline |
+| ----------|-------|------|-----------|
+|  MOLD_S | Mold Spores | spores/m³ | >500 indoor concern |
+|  POLL_G | Grass Pollen | grains/m³ | >50 moderate season |
+|  POLL_T | Tree Pollen | grains/m³ | >100 high season |
+|  BACT_T | Total Bacteria | CFU/m³ | >500 indoor guideline |
+|  DUST_M | Dust Mite Allergen | ng/m³ | >2 ng/m³ |
+
+6.5 Heavy Metals
+
+|  Agent ID | Element | Unit | WHO Guideline |
+| ----------|---------|------|---------------|
+|  PB | Lead | μg/m³ | 0.5 μg/m³ annual |
+|  HG | Mercury | μg/m³ | 1 μg/m³ (1-year) |
+|  AS | Arsenic | ng/m³ | 6.6 ng/m³ annual |
+
+6.6 Environmental Variables
+
+|  Agent ID | Variable | Unit |
+| ----------|----------|------|
+|  TEMP | Temperature | °C |
+|  RH | Relative Humidity | % |
+|  PRESS | Atmospheric Pressure | hPa |
+|  UV | UV Index | index (0–11+) |
+
+6.7 Derived Indices
+
+|  Index ID | Name | Basis | Scale |
+| ----------|------|-------|-------|
+|  AQI_US | US Air Quality Index | PM2.5, PM10, CO, NO2, SO2, O3 | 0–500 |
+|  AQI_EU | European AQI | PM2.5, PM10, NO2, SO2, O3 | 1–5 bands |
+|  BXP_HRI_EXP | BXP Health Risk Index (experimental) | All available agents, weighted | 0–100 |
+
+---
+
+6.8 Source Classification
+
+Every BXP reading MUST carry a source field classifying its provenance. This prevents imported/external data from being misrepresented as native BXP-certified measurements.
+
+|  Source Class | Code | Description | Trust Level |
+| --------------|------|-------------|-------------|
+|  NATIVE | native | BXP-certified sensor, directly speaking BXP protocol | Highest — full QC chain |
+|  IMPORTED | imported | Converted from external API (OpenAQ, PurpleAir, AQICN, etc.) | Medium — depends on source QC |
+|  COMMUNITY | community | Low-cost / citizen sensor, no reference calibration | Low — UNVALIDATED by default |
+|  RESEARCH | research | Research-grade instrument, documented calibration | High — VALIDATED if documented |
+|  SIMULATED | simulated | Synthetic/test data, models, forecasts | None — for testing only |
+
+Rules:
+
+- source field is REQUIRED on all readings (top-level, not in agents[])
+- source MUST be one of the five codes above
+- NATIVE readings MUST include calibration object per agent (SPEC §5.5.1) or explicit qcMethod
+- IMPORTED readings MUST include ext.source with original API name (e.g., "openaq", "purpleair", "aqicn")
+- COMMUNITY readings default to quality.flag = "UNVALIDATED" unless QC evidence provided
+- SIMULATED readings MUST NOT be served on production /nearby or /latest endpoints
+
+Example:
+
+{
+  "source": "imported",
+  "ext": { "source": "openaq", "originalId": "location-8118" },
+  "quality": { "flag": "UNVALIDATED", "confidence": 0.5 }
+}
+
+---
+
+7. Protocol Stages
+
+Stage 1 — LOCATE
+
+Every BXP record MUST be geographically contextualized.
+
+Location Requirements:
+
+|  Requirement | Rule |
+| -------------|------|
+|  Minimum precision | Geohash precision 5 (~4.9km cell) |
+|  Recommended precision | Geohash precision 7 (~153m cell) |
+|  High precision | Geohash precision 9 (~4.8m cell) |
+|  Coordinates | WGS84 decimal degrees where available |
+|  Indoor flag | MUST be set for all records |
+|  Altitude | SHOULD be included where elevation affects readings |
+
+Location Acquisition Methods:
+
+|  Method | Code | Accuracy |
+| --------|------|----------|
+|  GPS/GNSS | GPS | 3–10m |
+|  Network/Cell | NET | 50–500m |
+|  Manual entry | MAN | Variable |
+|  IP geolocation | IPG | City-level (flagged LOW_PRECISION) |
+
+Stage 2 — DETECT
+
+BXP accepts data from any source. No proprietary hardware required.
+
+Data Source Tiers:
+
+|  Tier | Sources | Quality Flag |
+| ------|---------|-------------|
+|  Tier 1 | Phone-native sensors, manual observation, existing apps | UNVALIDATED |
+|  Tier 2 | Consumer sensors, government open data feeds, satellites | UNVALIDATED → VALIDATED |
+|  Tier 3 | Reference instruments, certified monitoring stations | VALIDATED |
+
+All tiers produce valid BXP data. Quality flags reflect reliability.
+A network of 10,000 Tier 1 sources provides more spatial coverage
+than 10 Tier 3 sources, even accounting for individual error.
+
+This is not a hypothetical trade-off: as of 2026, funding for
+government-operated reference-grade air monitoring networks has been
+shrinking in real, documented ways (site closures, reduced sampling
+frequency, discontinued public feeds), while low-cost sensor
+deployments (PurpleAir-style optical sensors, community and
+university networks across sub-Saharan Africa and elsewhere) have
+become the fastest-growing source of coverage, if not of
+individually reference-grade accuracy. BXP's job is not to pretend
+Tier 1/2 data is as good as Tier 3 — it is to carry the difference
+faithfully (§5.5.1) so an application built on BXP can make an honest
+trade-off between coverage and precision, instead of being forced to
+either discard low-cost data entirely or trust it uncritically.
+
+Required Fields for a Valid Reading:
+
+- deviceUuid — REQUIRED
+- geohash — minimum precision 5 — REQUIRED
+- timestampUs — Unix epoch microseconds UTC — REQUIRED
+- At least one agents entry with value, unit, agentId — REQUIRED
+- quality.flag — must be explicitly set — REQUIRED
+
+Stage 3 — INTERPRET
+
+Automated QC Rules (PM2.5 example):
+
+|  Check | Rule | Result |
+| -------|------|--------|
+|  Range | 0 ≤ PM2.5 ≤ 1000 μg/m³ | Outside range → INVALID |
+|  Spike | Change >200 μg/m³ in <60s | → SUSPECT |
+|  Flatline | Identical value >30 min | → SUSPECT |
+|  Humidity | RH >75% | Apply Barkjohn correction |
+|  Cross-sensor | >300% difference from nearby source | → SUSPECT |
+
+Unit Normalization:
+All readings MUST be converted to BXP canonical units:
+- Particulates: μg/m³ at standard conditions (25°C, 1 atm)
+- Gases: ppb at standard conditions
+- Temperature corrections MUST be applied before storage
+
+Stage 4 — PROTECT
+
+BXP Risk Level Framework (based on BXP-HRI experimental):
+
+|  Level | BXP-HRI (exp.) | AQI Equiv | Color | General Population | Sensitive Groups |
+| -------|---------|-----------|-------|-------------------|-----------------|
+|  CLEAN | 0–20 | 0–50 | Green | No restrictions | No restrictions |
+|  MODERATE | 21–40 | 51–100 | Yellow | Acceptable for most | Limit heavy exertion |
+|  ELEVATED | 41–60 | 101–150 | Orange | Reduce heavy outdoor exertion | Avoid outdoor exertion |
+|  HIGH | 61–75 | 151–200 | Red | N95 outdoors. Close windows. | Avoid outdoors. Air purifier. |
+|  VERY HIGH | 76–90 | 201–300 | Purple | Avoid outdoors. N95 mandatory. | Stay indoors. Seek medical help if symptomatic. |
+|  HAZARDOUS | 91–100 | 301–500 | Maroon | Emergency. Stay indoors. | Evacuate to cleaner air if possible. |
+
+Stage 5 — REPORT
+
+Community reports differ from device readings in that they include
+qualitative human observations alongside quantitative data.
+
+Report Components:
+- Sensor readings (optional but recommended)
+- Visual observations: smoke color, haze band, visibility
+- Olfactory observations: odor type and intensity
+- Symptom reports: correlated with location and time
+- Event tags: open_burning, traffic_jam, industrial_accident
+- Photo attachments with GPS EXIF metadata
+
+Stage 6 — DISCOVER
+
+A person's device does not need its own sensor to benefit from BXP.
+If a Tier 1–3 source recorded a reading nearby, recently, a BXP node
+SHOULD be able to surface it as the most relevant available
+observation — not simply the nearest row in a database.
+
+Relevance is a function of, at minimum:
+
+|  Factor | Effect |
+| --------|--------|
+|  Distance from query point | Closer is more relevant, up to radiusM |
+|  Freshness | Newer is more relevant, up to maxAgeS |
+|  Quality flag | VALIDATED > UNVALIDATED > SUSPECT; INVALID excluded |
+|  Uncertainty | Lower uncertainty on the agent value is more relevant |
+|  Source tier | Tier 3 (reference-grade) may be weighted above Tier 1 |
+
+No single factor should dominate to the point of returning a
+technically-nearest but stale or low-quality reading over a
+slightly-farther fresh, validated one. §8.2.1 defines the concrete
+query surface for this; the ranking function itself is intentionally
+not frozen into the wire protocol, since it is a quality-of-result
+concern, not an interoperability concern — two nodes may legitimately
+rank differently and both be BXP-compliant.
+
+Stage 7 — FEDERATE
+
+A single BXP node is useful. A network of independently operated BXP
+nodes, each able to replicate from the others, is what makes "a
+sensor in Accra" reachable from "a hospital in Nairobi" (§1.1).
+
+At this stage, BXP defines only the minimum viable federation
+primitive — a pull-based sync — deliberately leaving harder problems
+for later RFCs rather than guessing at them now:
+
+- Node identity & discovery: POST /nodes/announce lets a node
+  register itself with a peer (§8.2); there is no discovery protocol
+  beyond direct announcement yet (e.g. no DHT, no well-known registry).
+- Replication: GET /sync?since=<cursor> (§8.2.2) lets a node pull
+  everything newer than its last-seen watermark from a peer. This is
+  enough to build a full mesh by having every node periodically sync
+  from every other node it knows about (from GET /nodes).
+- Provenance: every replicated reading carries its originating
+  nodeId, so a record's chain of custody survives being copied
+  between nodes.
+- Deliberately NOT yet specified — trust/reputation between
+  nodes, deduplication policy when the same physical reading arrives
+  via two paths, conflict resolution for edited/deleted records,
+  partial-connectivity/offline-node backfill, and query routing
+  across a federation (asking node A to transparently include node
+  B's data in a /nearby response). These are real problems; they
+  are left open rather than answered with an untested design, because
+  a wrong answer here is expensive to walk back once nodes depend on
+  it. A future RFC (§12.3) should address them once real multi-node
+  deployments surface actual failure modes to design against.
+
+---
+
+8. REST API Specification
+
+8.1 Base URL
+
+https://[host]/bxp/v2/
+
+8.2 Endpoints
+
+Route names are informative (§3.7) — the payload shapes they carry
+are what implementations must agree on. The table below has been
+reconciled against reference-server/, the actual reference
+implementation, which is the one that previously drifted from this
+document. Columns marked Status: planned describe endpoints this
+specification recommends but which the reference server does not yet
+implement; treat those as a roadmap, not a claim of what exists today.
+
+|  Method | Endpoint | Description | Auth | Status |
+| --------|----------|-------------|------|--------|
+|  GET | /bxp/v2/health | Liveness/readiness check | No | Implemented |
+|  GET | /bxp/v2/readings | List/query readings (geohash, time range, agent, quality) | No | Implemented |
+|  POST | /bxp/v2/readings | Submit one or more readings (JSON or binary .bxp body) | Device Token | Implemented |
+|  GET | /bxp/v2/readings/{readingId} | Get reading by ID (?format=binary for .bxp) | No | Implemented |
+|  DELETE | /bxp/v2/readings/{readingId} | Delete a reading, with deletion proof | User/Device Token | Implemented |
+|  GET | /bxp/v2/readings/{readingId}/verify | Re-run §5.5 verification, return status | No | Implemented |
+|  GET | /bxp/v2/locations/{geohash}/latest | Most recent reading at a location | No | Implemented |
+|  GET | /bxp/v2/locations/{geohash}/history | Historical readings at a location | No | Implemented |
+|  GET | /bxp/v2/locations/{geohash}/aggregate | Statistical summary for a location | No | Implemented |
+|  GET | /bxp/v2/nearby | New (§7 Stage 6): most relevant observation(s) near a lat/lon, ranked by distance, freshness and quality — see §8.2.1 | No | Implemented |
+|  GET | /bxp/v2/search | Search by bounding box, time, agent | No | Implemented |
+|  POST | /bxp/v2/community/reports | Submit community report | User Token | Implemented |
+|  GET | /bxp/v2/community/reports | List community reports | No | Implemented |
+|  POST | /bxp/v2/devices/register | Register a new device or source | API Key | Implemented |
+|  GET | /bxp/v2/devices/{uuid} | Get device metadata | Device Token | Implemented |
+|  GET | /bxp/v2/nodes | List known federated nodes | No | Implemented |
+|  POST | /bxp/v2/nodes/announce | Announce this node to a peer | No | Implemented |
+|  GET | /bxp/v2/sync | New (§7 Stage 7): pull changes (readings and deletion tombstones) after a cursor, for federation replication — see §8.2.2 | Node Token | Implemented |
+|  GET | /bxp/v2/agents | List all supported agents | No | Planned |
+|  GET | /bxp/v2/agents/{agentId} | Full agent specification | No | Planned |
+|  POST | /bxp/v2/devices/{uuid}/calibration | Submit calibration record | Device Token | Planned |
+|  GET | /bxp/v2/alerts | Active alerts for a location | No | Planned |
+|  DELETE | /bxp/v2/persons/{hash} | Permanently delete personal records | User Token | Planned |
+
+8.2.1 GET /bxp/v2/nearby — relevance-ranked lookup
+
+This is the endpoint behind the "walking with no sensor of your own"
+use case (§7 Stage 6): the caller wants the single best available
+observation near them, not an arbitrary row from an exact grid cell.
+
+|  Parameter | Type | Default | Description |
+| -----------|------|---------|--------------|
+|  lat, lon | float | required | WGS84 query point |
+|  radiusM | integer | 2000 | Search radius in meters |
+|  maxAgeS | integer | 3600 | Discard readings older than this |
+|  agent | string | any | Restrict to one agent ID (e.g. PM2_5) |
+|  minQuality | enum | UNVALIDATED | Minimum acceptable quality flag |
+|  limit | integer | 1 | Number of ranked candidates to return |
+
+Candidates are found via geohash-prefix expansion (the query point's
+geohash-5 cell and its 8 neighbors, which always fully covers a
+radius up to ~4.9 km — see Appendix B), filtered to radiusM using
+true great-circle distance, and ranked by a relevance score that
+combines recency, distance, and quality rather than any single one of
+these alone. A field measurement 3 minutes old and 400m away should
+usually outrank one 55 minutes old and 50m away. The exact scoring
+weights are an implementation detail (see
+reference-server/database.py::get_nearby_readings); the contract is
+the ranking behavior, not a fixed formula, since better ranking
+heuristics are expected to evolve without breaking the API shape.
+
+8.2.2 GET /bxp/v2/sync — federation pull
+
+Query parameters: since (integer cursor, default 0 = from the beginning),
+limit (default 500, max 2000). The response carries the changes after that
+cursor, oldest first, and a nextCursor to resume from.
+
+- The cursor is an opaque, node-local ingest sequence, not an observation
+  timestamp. A timestamp cursor is unsound: a device can report any timestamp,
+  so one far-future reading would stall replication forever, and a reading that
+  arrives late from an offline device (older timestamp) would be skipped. A
+  caller MUST treat the cursor as opaque and only echo back nextCursor.
+- Each reading carries its originating nodeId (provenance, §7 Stage 6).
+- Deletions replicate. A deleted reading is delivered as a tombstone
+  {"readingId": "...", "deleted": true, "deletionProof": "sha256:..."}
+  containing no observation data. A replica MUST erase its copy on receipt
+  (§9.1: deletion is irreversible).
+- A reading whose readingId already exists is never overwritten; replicas
+  dedupe by readingId.
+
+This is the minimum a second node needs in order to replicate. What is
+deliberately not yet specified (trust, conflict resolution, cross-peer dedup
+policy) is listed in §7 Stage 7.
+
+---
+
+9. Security & Privacy Framework
+
+9.1 Privacy Architecture
+
+BXP treats individual exposure data as sensitive personal health
+information. The following rules are NON-NEGOTIABLE in any
+BXP-compliant implementation:
+
+- Personal exposure records are private by default
+- Person identifiers are NEVER stored in plain form
+- Only SHA-256 hashes of user-controlled identifiers are stored
+- Location precision for personal records defaults to Geohash 5
+- Community aggregates are k-anonymized before publication (minimum k=5)
+- Users can permanently delete all personal records via single API call
+- Deletion is cryptographically verifiable and irreversible
+
+9.2 Encryption Standards
+
+|  Data Type | Encryption | Key Derivation |
+| -----------|------------|----------------|
+|  Personal records at rest | AES-256-GCM | PBKDF2 from user credentials |
+|  Data in transit | TLS 1.3 minimum | — |
+|  Device readings (optional signing) | Ed25519 | Device key pair at registration |
+|  Volume integrity | SHA-256 Merkle tree | — |
+
+BXP servers MUST NOT accept connections below TLS 1.2.
+TLS 1.3 is REQUIRED for all personal data endpoints.
+
+9.3 Data Integrity Model
+
+BXP uses a four-layer integrity model:
+
+Layer 1 — File Level
+Every .bxp file includes CRC32 checksums of both header
+and payload. Corruption is detectable on any read.
+
+Layer 2 — Record Level
+Optional Ed25519 cryptographic signature per reading,
+verifiable against the device's registered public key.
+Signed readings cannot be forged or altered without detection.
+
+Layer 3 — Volume Level
+/meta/checksums.bxp maintains a Merkle tree of all file
+checksums. Enables efficient tamper detection across an
+entire volume without reading every file.
+
+Layer 4 — Audit Log
+All write operations are logged in /system/audit.log
+with timestamp, source UUID, operation type, and record hash.
+Audit logs are append-only and cryptographically chained.
+
+9.4 Regulatory Compliance
+
+BXP is designed for compliance with:
+
+|  Regulation | Region | Key BXP Feature |
+| ------------|--------|-----------------|
+|  GDPR | European Union | Right to erasure, data portability, purpose limitation |
+|  CCPA | California, USA | Right to access, right to delete, opt-out of sale |
+|  POPIA | South Africa | Data minimization, lawful processing |
+|  PDPA | Multiple Asian nations | Consent-based collection, breach notification |
+|  HIPAA | USA (health data) | Encryption at rest and in transit, audit logs |
+
+---
+
+10. Community Reporting Layer
+
+10.1 Overview
+
+Community reports combine human observation with structured data.
+They recognize that a person who can see smoke, smell chemicals,
+or feel eye irritation is a valid sensor — and that their
+observations, aggregated across thousands of people, produce
+intelligence that no hardware network can replicate.
+
+10.2 Community Report Schema
+
+{
+  "reportType": "community",
+  "reporterHash": "sha256:a3f9...",
+  "geohash": "s1v0g",
+  "latitude": 5.5571,
+  "longitude": -0.1969,
+  "timestampUs": 1710000000000000,
+  "observations": {
+    "visibleSmoke": true,
+    "smokeColor": "black",
+    "hazeBand": true,
+    "visibilityKm": 2.1,
+    "odorPresent": true,
+    "odorType": "burning_rubber",
+    "odorIntensity": 3
+  },
+  "symptoms": {
+    "eyeIrritation": true,
+    "coughing": true,
+    "headache": false,
+    "breathingDifficulty": false,
+    "skinIrritation": false
+  },
+  "eventTags": [
+    "open_burning",
+    "traffic_congestion"
+  ],
+  "sensorReadings": [],
+  "photoAttachments": [
+    {
+      "hash": "sha256:b7c2...",
+      "mimeType": "image/jpeg",
+      "sizeBytes": 204800,
+      "gpsLat": 5.5571,
+      "gpsLon": -0.1969
+    }
+  ],
+  "freeText": "Large fire visible at industrial site 200m north-west",
+  "confidence": 0.8,
+  "bxpVersion": "2.0"
+}
+
+10.3 Valid Event Tags
+
+|  Tag | Description |
+| -----|-------------|
+|  open_burning | Open waste or biomass burning |
+|  traffic_congestion | Heavy stationary traffic |
+|  industrial_accident | Industrial facility incident |
+|  dust_storm | Windblown dust event |
+|  harmattan | Harmattan dust season (West Africa) |
+|  wildfire | Wildfire smoke |
+|  construction | Active construction site |
+|  generator_exhaust | Generator operation nearby |
+|  cooking_smoke | Charcoal or biomass cooking |
+|  chemical_spill | Chemical release event |
+|  sewage | Sewage exposure event |
+|  pesticide_spray | Agricultural or urban spraying |
+
+10.4 Community QC Pipeline
+
+Community reports pass through five automated quality checks:
+
+Check 1 — Geospatial Clustering
+Reports within 500m and 30 minutes of each other are clustered.
+Clustered events receive confidence boosts proportional to
+the number of independent reporters.
+
+Check 2 — Cross-Validation
+Reports overlapping in space-time with sensor readings are
+cross-validated. Consistency increases confidence of both
+the report and the sensor reading.
+
+Check 3 — Outlier Detection
+Reports inconsistent with surrounding data are flagged SUSPECT
+and queued for manual review before inclusion in aggregates.
+
+Check 4 — Reporter Reliability Scoring
+Over time, reporters whose observations consistently align with
+verified data receive higher base confidence weights.
+New reporters start at confidence 0.5. Maximum is 1.0.
+
+Check 5 — Abuse Detection
+Automated detection of repeated identical submissions,
+geographically impossible submissions, timestamp manipulation,
+and bot-pattern behavior. Flagged accounts are suspended
+pending review.
+
+---
+
+11. Implementation Guide
+
+11.1 Implementing a BXP Data Source
+
+Any application, device, or system that produces BXP-formatted
+data is a BXP data source. No hardware is required.
+
+Minimum Viable Implementation — 6 Steps:
+
+Step 1 — Generate UUID
+Generate a UUID v4 for your source. This UUID is permanent.
+
+import uuid
+device_uuid = str(uuid.uuid4())
+# Example: "550e8400-e29b-41d4-a716-446655440000"
+
+Step 2 — Register with a BXP Volume
+
+import requests
+
+registration = {
+    "deviceUuid": device_uuid,
+    "sourceType": "phone_app",
+    "capabilities": ["PM2_5", "TEMP", "RH"],
+    "accuracyClass": "tier1",
+    "bxpVersion": "2.0"
+}
+
+response = requests.post(
+    "https://[bxp-server]/bxp/v2/devices/register",
+    json=registration,
+    headers={"Authorization": "Bearer [api-key]"}
+)
+
+device_token = response.json()["data"]["deviceToken"]
+
+Step 3 — Build a Reading Record
+
+from datetime import datetime, timezone
+import time
+
+reading = {
+    "bxpVersion": "2.0",
+    "fileType": "reading",
+    "deviceUuid": device_uuid,
+    "geohash": "s1v0g",
+    "latitude": 5.5571,
+    "longitude": -0.1969,
+    "timestampUs": int(time.time() * 1_000_000),
+    "durationS": 60,
+    "indoorOutdoor": "outdoor",
+    "agents": [
+        {
+            "agentId": "PM2_5",
+            "value": 47.3,
+            "unit": "ug/m3",
+            "uncertainty": 3.1,
+            "method": "optical",
+            "belowLod": False
+        }
+    ],
+    "context": {
+        "temperatureC": 28.4,
+        "humidityPct": 72.1,
+        "pressureHpa": 1012.3
+    },
+    "quality": {
+        "flag": "UNVALIDATED",
+        "confidence": 0.7
+    }
+}
+
+Step 4 — Compute and Attach Hash
+
+import json
+import hashlib
+
+payload_str = json.dumps(reading, sort_keys=True)
+payload_hash = hashlib.sha256(
+    payload_str.encode("utf-8")
+).hexdigest()
+
+container = {
+    "containerSchema": "bxp.container.v2",
+    "payload": reading,
+    "payloadHash": f"sha256:{payload_hash}",
+    "verification": {
+        "method": "sha256",
+        "status": "Unverified"
+    }
+}
+
+Step 5 — Submit
+
+response = requests.post(
+    "https://[bxp-server]/bxp/v2/readings",
+    json=container,
+    headers={"Authorization": f"Bearer {device_token}"}
+)
+
+Step 6 — Handle Offline / Buffer Locally
+
+import json
+import os
+from pathlib import Path
+
+BUFFER_PATH = Path("bxp_buffer/")
+BUFFER_PATH.mkdir(exist_ok=True)
+
+def submit_with_fallback(container, token):
+    try:
+        response = requests.post(
+            "https://[bxp-server]/bxp/v2/readings",
+            json=container,
+            headers={"Authorization": f"Bearer {token}"},
+            timeout=10
+        )
+        response.raise_for_status()
+        return True
+    except Exception:
+        # Buffer locally — file named by timestamp
+        ts = container["payload"]["timestampUs"]
+        buffer_file = BUFFER_PATH / f"{ts}.bxp.json"
+        with open(buffer_file, "w") as f:
+            json.dump(container, f)
+        return False
+
+11.2 Implementing a BXP Application
+
+Any application reading or displaying BXP data MUST:
+
+- Display quality flags clearly — never present SUSPECT or
+  INVALID data as reliable without explicit labeling
+- Use BXP canonical units with clear unit labels on all displays
+- Implement the BXP risk level framework (Section 7, Stage 4)
+- Use the correct BXP-HRI (experimental) color scheme for risk visualization
+- Never cache personal exposure data beyond the immediate session
+- Respect user deletion requests immediately and completely
+
+11.3 Reference Implementations
+
+|  Implementation | Language | Repository |
+| ----------------|----------|------------|
+|  bxp-server | Python 3.11+ | github.com/bxpprotocol/bxp-server |
+|  bxp-server-node | Node.js 20+ | github.com/bxpprotocol/bxp-server-node |
+|  bxp-sdk-python | Python 3.11+ | github.com/bxpprotocol/bxp-sdk-python |
+|  bxp-sdk-js | JavaScript/TypeScript | github.com/bxpprotocol/bxp-sdk-js |
+|  bxp-sdk-arduino | C/C++ Arduino | github.com/bxpprotocol/bxp-sdk-arduino |
+|  bxp-sdk-esp32 | C/C++ ESP-IDF | github.com/bxpprotocol/bxp-sdk-esp32 |
+|  bxp-mobile | React Native | github.com/bxpprotocol/bxp-mobile |
+
+---
+
+12. Governance & Versioning
+
+12.1 The BXP Foundation
+
+BXP is governed by the BXP Foundation — an independent,
+non-profit open standards body. Its mandate is to maintain,
+evolve, and promote the BXP specification in the public
+interest with no commercial bias and no single controlling entity.
+
+Structure:
+
+|  Body | Role |
+| ------|------|
+|  Technical Steering Committee | 7 elected members. Responsible for all specification changes and version releases |
+|  Working Groups | Domain-specific: hardware, software, privacy, health, community |
+|  Advisory Board | WHO, national environmental agencies, manufacturers, academic institutions, civil society |
+|  Open Community | Any individual or organization may participate and propose changes |
+
+12.2 Versioning Policy
+
+BXP uses semantic versioning — MAJOR.MINOR.PATCH:
+
+|  Change Type | Version Impact | Compatibility |
+| -------------|---------------|---------------|
+|  Bug fixes, clarifications | PATCH | Full backward and forward compatibility |
+|  New optional fields | MINOR | Backward compatible. Existing implementations do not break. |
+|  Breaking changes | MAJOR | 18 months advance notice required. Dual-version support during transition. |
+
+12.3 RFC Process
+
+All specification changes follow the BXP RFC process:
+
+1. Any person submits RFC proposal via GitHub
+2. Relevant Working Group reviews over 30-day public comment period
+3. Technical Steering Committee votes: accept, reject, or return for revision
+4. Accepted RFCs incorporated into next appropriate version release
+
+---
+
+13. BXP-HRI (Experimental) — Health Risk Index
+
+13.1 Overview
+
+BXP-HRI (experimental) is BXP's native composite health risk score on a 0–100
+scale. Unlike single-pollutant indices such as AQI, BXP-HRI
+incorporates all available agents with WHO-derived weighting,
+exposure duration, and population vulnerability modifiers.
+
+⚠️ Not clinically or epidemiologically validated. Do not use for medical decisions.
+
+13.2 Agent Weights
+
+|  Agent | Weight | Basis |
+| -------|--------|-------|
+|  PM2.5 | 0.35 | Highest global DALY burden (WHO 2021) |
+|  PM10 | 0.15 | Significant respiratory burden |
+|  NO2 | 0.15 | High urban prevalence, lung inflammation |
+|  O3 | 0.12 | Strong respiratory effects, summer peaks |
+|  CO | 0.10 | Acute toxicity, high developing-world burden |
+|  SO2 | 0.05 | Regional industrial variation |
+|  TVOC | 0.04 | Indoor carcinogen concern |
+|  Biological | 0.04 | Contextual, high in humid environments |
+
+13.3 Calculation Formula
+
+Step 1 — Normalize each agent to 0–1 risk scale:
+
+agent_risk(i) = min(1.0, value(i) / WHO_threshold(i))
+
+Step 2 — Compute weighted sum:
+
+raw_HRI = Σ ( agent_risk(i) × weight(i) )
+
+Step 3 — Apply duration and vulnerability modifiers:
+
+bxp_hri_experimental = min(100, raw_HRI × 100 × duration_factor
+                              × vulnerability_factor)
+
+Duration factors:
+
+|  Averaging Period | Factor |
+| -----------------|--------|
+|  1-hour average | 1.0 |
+|  8-hour average | 1.2 |
+|  24-hour average | 1.5 |
+
+Vulnerability factors:
+
+|  Population | Factor |
+| ------------|--------|
+|  General population | 1.0 |
+|  Sensitive groups (children, elderly, respiratory conditions) | 1.3 |
+
+13.4 Python Reference Implementation
+
+WHO_THRESHOLDS = {
+    "PM2_5": 15.0,
+    "PM10": 45.0,
+    "NO2": 25.0,
+    "O3": 100.0,
+    "CO": 4.0,
+    "SO2": 40.0,
+    "TVOC": 500.0,
+}
+
+WEIGHTS = {
+    "PM2_5": 0.35,
+    "PM10": 0.15,
+    "NO2": 0.15,
+    "O3": 0.12,
+    "CO": 0.10,
+    "SO2": 0.05,
+    "TVOC": 0.04,
+}
+
+DURATION_FACTORS = {
+    "1h": 1.0,
+    "8h": 1.2,
+    "24h": 1.5,
+}
+
+VULNERABILITY_FACTORS = {
+    "general": 1.0,
+    "sensitive": 1.3,
+}
+
+def calculate_bxp_hri_experimental(agents, duration="1h", population="general"):
+    raw_hri = 0.0
+    for agent_id, value in agents.items():
+        if agent_id in WHO_THRESHOLDS and agent_id in WEIGHTS:
+            risk = min(1.0, value / WHO_THRESHOLDS[agent_id])
+            raw_hri += risk * WEIGHTS[agent_id]
+    duration_factor = DURATION_FACTORS.get(duration, 1.0)
+    vulnerability_factor = VULNERABILITY_FACTORS.get(population, 1.0)
+    bxp_hri_exp = min(100.0, raw_hri * 100 * duration_factor
+                                       * vulnerability_factor)
+    return round(bxp_hri_exp, 2)
+
+# Example usage
+agents = {
+    "PM2_5": 47.3,
+    "NO2": 38.0,
+    "CO": 1.2,
+}
+
+hri = calculate_bxp_hri_experimental(agents, duration="1h", population="general")
+print(f"BXP-HRI (experimental): {hri}")
+# Output: BXP-HRI (experimental): 34.21  →  MODERATE
+
+---
+
+14. Compatibility Matrix
+
+|  Standard | Organization | BXP Compatibility |
+| ----------|-------------|-------------------|
+|  AQI | US EPA | BXP-HRI (experimental) maps directly. AQI_US is a supported derived field. |
+|  WHO Air Quality Guidelines 2021 | World Health Organization | All BXP thresholds align with WHO 2021 guidelines. |
+|  HL7 FHIR R4 | HL7 International | BXP exposure records map to FHIR Observation resources. |
+|  OGC SensorThings API | Open Geospatial Consortium | BXP implements a compatible observation model. |
+|  OpenAQ | OpenAQ | BXP can ingest and re-export OpenAQ data in standard format. |
+|  IEC 62484 | International Electrotechnical Commission | BXP binary format compatible with IEC sensor data standard. |
+|  Schema.org | W3C Community Group | BXP JSON uses Schema.org vocabulary where applicable. |
+|  GDPR | European Union | Privacy framework designed for full compliance. |
+
+---
+
+15. Conformance & Test Vectors
+
+An implementation is BXP-conformant for the native format (§3.7) if it
+produces and accepts byte-identical .bxp files for the same logical
+record as the reference vectors in /conformance/vectors/.
+
+15.1 What the vector suite covers
+
+- Valid vectors: a fixed set of records (minimal reading, full
+  reading with all optional fields, aggregate, device, each file
+  type, each flag combination) encoded once by the Python reference
+  encoder and checked into the repository as golden .bxp files. Any
+  implementation's decoder MUST reproduce the same record from these
+  bytes. For uncompressed vectors, any implementation's encoder,
+  given the same input record, MUST also reproduce the exact same
+  bytes (encoding is fully deterministic there — sorted JSON keys,
+  fixed separators, no encode-time-generated values). For
+  compressed vectors, only the decoded record is required to
+  match exactly; the compressed byte stream itself is not required to
+  be bit-identical across independent gzip implementations (DEFLATE
+  does not guarantee identical output across libraries even for
+  identical input and mtime), so conformance there is defined as
+  round-trip correctness, not byte-for-byte re-encoding.
+- Malformed vectors: bad magic number, truncated header, truncated
+  payload, corrupted header checksum, corrupted payload checksum, and
+  an unsupported major version. Every conformant decoder MUST reject
+  each of these with an error (not a crash, not a silently-wrong
+  parse) when run with verification enabled.
+- manifest.json describes every vector: its filename, whether it
+  is expected to decode successfully, and if so the expected record
+  and header fields; if not, which check is expected to fail.
+
+15.2 Running the suite
+
+Each implementation ships a small runner that reads manifest.json
+and checks its own encoder/decoder against it:
+
+python3 conformance/verify_python.py
+node    conformance/verify_typescript.mjs
+./conformance/c/bxp_conformance          # built from embedded/c/
+
+All three currently pass against the same vector files — this is the
+concrete evidence that the Python, TypeScript, and embedded-C
+implementations agree byte-for-byte on the native format, independent
+of the HTTP server or any single SDK's internal representation.
+
+15.3 Adding a vector
+
+New edge cases (an additional flag combination, a boundary timestamp,
+a newly-discovered malformed-input class) should be added as a new
+file under conformance/vectors/ plus a corresponding entry in
+manifest.json, generated via conformance/generate_vectors.py so
+every vector's provenance (which encoder, which inputs) stays
+reproducible.
+
+---
+
+Appendix A — Complete Agent Reference
+
+|  Agent ID | Full Name | Category | Unit | WHO Limit |
+| ----------|-----------|----------|------|-----------|
+|  PM1 | Particulate Matter <1μm | Particulates | μg/m³ | — |
+|  PM2_5 | Particulate Matter <2.5μm | Particulates | μg/m³ | 5 annual |
+|  PM10 | Particulate Matter <10μm | Particulates | μg/m³ | 15 annual |
+|  BC | Black Carbon | Particulates | μg/m³ | — |
+|  CO | Carbon Monoxide | Gas | ppm | 4 mg/m³ 24h |
+|  CO2 | Carbon Dioxide | Gas | ppm | 1000 indoor |
+|  NO2 | Nitrogen Dioxide | Gas | ppb | 10 μg/m³ annual |
+|  NO | Nitric Oxide | Gas | ppb | — |
+|  SO2 | Sulphur Dioxide | Gas | ppb | 40 μg/m³ 24h |
+|  O3 | Ground-level Ozone | Gas | ppb | 100 μg/m³ 8h |
+|  H2S | Hydrogen Sulphide | Gas | ppb | 7 ppb |
+|  NH3 | Ammonia | Gas | ppm | 25 ppm |
+|  TVOC | Total VOC | VOC | ppb | 500 ppb |
+|  BENZ | Benzene | VOC | ppb | No safe level |
+|  FORM | Formaldehyde | VOC | ppb | 8 ppb |
+|  TOLU | Toluene | VOC | ppm | 50 ppm |
+|  XYLE | Xylene | VOC | ppm | 100 ppm |
+|  NAPH | Naphthalene | VOC | ppb | 9.4 ppb |
+|  MOLD_S | Mold Spores | Biological | spores/m³ | 500 indoor |
+|  POLL_G | Grass Pollen | Biological | grains/m³ | 50 moderate |
+|  POLL_T | Tree Pollen | Biological | grains/m³ | 100 high |
+|  BACT_T | Total Airborne Bacteria | Biological | CFU/m³ | 500 indoor |
+|  DUST_M | Dust Mite Allergen | Biological | ng/m³ | 2 ng/m³ |
+|  PB | Lead | Heavy Metal | μg/m³ | 0.5 annual |
+|  HG | Mercury | Heavy Metal | μg/m³ | 1 annual |
+|  AS | Arsenic | Heavy Metal | ng/m³ | 6.6 annual |
+|  TEMP | Temperature | Environmental | °C | — |
+|  RH | Relative Humidity | Environmental | % | — |
+|  PRESS | Atmospheric Pressure | Environmental | hPa | — |
+|  UV | UV Index | Environmental | index | — |
+|  AQI_US | US Air Quality Index | Derived | 0–500 | — |
+|  BXP_HRI_EXP | BXP Health Risk Index (experimental) | Derived | 0–100 | — |
+
+---
+
+Appendix B — Geohash Reference
+
+|  Precision | Characters | Cell Width | Cell Height | BXP Use |
+| -----------|------------|------------|-------------|---------|
+|  1 | 1 | ~5,000 km | ~5,000 km | Continental aggregates only |
+|  2 | 2 | ~1,250 km | ~625 km | Country aggregates |
+|  3 | 3 | ~156 km | ~156 km | Regional aggregates |
+|  4 | 4 | ~39 km | ~20 km | City aggregates |
+|  5 | 5 | ~4.9 km | ~4.9 km | Minimum valid BXP reading |
+|  6 | 6 | ~1.2 km | ~0.61 km | Neighborhood level |
+|  7 | 7 | ~153 m | ~153 m | Recommended for fixed sources |
+|  8 | 8 | ~38 m | ~19 m | Street level |
+|  9 | 9 | ~4.8 m | ~4.8 m | BXP-HIGHRES personal sensors |
+
+---
+
+Appendix C — Error Codes
+
+|  Code | HTTP Status | Meaning |
+| ------|-------------|---------|
+|  BXP_4001 | 400 | Geohash precision below minimum (5) |
+|  BXP_4002 | 400 | Missing required field |
+|  BXP_4003 | 400 | Invalid agent ID |
+|  BXP_4004 | 400 | Unit not recognized for agent |
+|  BXP_4005 | 400 | Timestamp outside acceptable range |
+|  BXP_4006 | 400 | Payload hash mismatch — container tampered |
+|  BXP_4007 | 400 | Schema version not supported |
+|  BXP_4010 | 401 | Missing or invalid authentication token |
+|  BXP_4011 | 401 | Device token revoked |
+|  BXP_4030 | 403 | Insufficient permissions for operation |
+|  BXP_4040 | 404 | Reading or resource not found |
+|  BXP_4290 | 429 | Rate limit exceeded |
+|  BXP_5000 | 500 | Internal server error |
+|  BXP_5030 | 503 | BXP volume temporarily unavailable |
+
+---
+
+Appendix D — Glossary
+
+|  Term | Definition |
+| ------|------------|
+|  Agent | Any atmospheric substance or biological entity BXP can track |
+|  BXP Volume | A complete BXP file system instance on any storage substrate |
+|  Container | A portable self-verifying file bundling one or more readings |
+|  Geohash | A compact geographic coordinate encoding used for spatial indexing |
+|  BXP_HRI | BXP Health Risk Index — composite health risk score 0–100 |
+|  Reading | A single point-in-time measurement record from one source |
+|  Aggregate | A computed summary of multiple readings over time or space |
+|  Device Token | Authentication credential for a data source writing to BXP |
+|  Community Report | A human-submitted observation record |
+|  Calibration Record | Links device readings to a reference standard at a point in time |
+|  Quality Flag | Metadata tag describing data reliability: VALIDATED through INVALID |
+|  k-anonymization | Privacy technique — no aggregate published with fewer than k sources |
+|  Tier 1/2/3 | BXP source capability tiers — Tier 1 phone/manual, Tier 3 reference |
+|  DALY | Disability-Adjusted Life Year — WHO measure of disease burden |
+|  Geohash-7 | ~153m × 153m geographic cell — BXP recommended precision |
+|  Prior Art | Publicly documented evidence of an invention before any patent claim |
+
+---
+
+Origin & Authorship
+
+BXP was conceived and first implemented by Elvarin on
+February 15, 2026. The original v1 specification established
+the foundational concepts of user-owned data, offline-first
+architecture, portable containers, and SHA-256 verification.
+
+This document is the official BXP v2.0 Technical Specification
+— a direct continuation of that original work.
+
+---
+References
+
+Simcoe, T. (2012). Standard setting committees: Consensus 
+governance for shared technology platforms. 
+American Economic Review, 102(1), 305-336.
+
+World Health Organization (2021). WHO Global Air Quality 
+Guidelines. Geneva: World Health Organization.
+
+Copyright 2026 Elvarin — Licensed under Apache 2.0
+The air is public. The data should be too.
+
+
+==============================================================================
+## API DOCUMENTATION
+Source: https://github.com/bxpprotocol/bxp-spec/blob/main/docs/api_documentation.md
+==============================================================================
+
+BXP API Reference v2.0
+
+Base URL: http://localhost:5000/bxp/v2/
+Interactive docs: http://localhost:5000/docs
+
+All responses use the standard BXP envelope:
+
+{
+  "status": "ok",
+  "bxpVersion": "2.0",
+  "requestId": "uuid",
+  "timestamp": "ISO8601",
+  "data": { ... },
+  "errors": []
+}
+
+---
+
+POST /readings
+
+Submit one or more readings.
+
+Request body:
+
+{
+  "readings": [
+    {
+      "deviceUuid": "550e8400-e29b-41d4-a716-446655440000",
+      "latitude": 5.6037,
+      "longitude": -0.1870,
+      "agents": [
+        { "agentId": "PM2_5", "value": 47.2, "unit": "ug/m3" },
+        { "agentId": "NO2",   "value": 18.3, "unit": "ppb"   }
+      ]
+    }
+  ]
+}
+
+Response 201:
+
+{
+  "status": "ok",
+  "data": {
+    "submitted": 1,
+    "readings": [
+      {
+        "readingId": "uuid",
+        "geohash": "s1v0gx4",
+        "bxpHri": 61.2,
+        "bxpHriLevel": "HIGH",
+        "qualityFlag": "UNVALIDATED"
+      }
+    ]
+  }
+}
+
+---
+
+GET /readings
+
+Get all readings with optional filters.
+
+Query parameters:
+- geohash — filter by geohash prefix (e.g. s1v0); must be valid geohash characters
+- agent — only readings that include this agent (e.g. PM2_5)
+- quality — filter by quality flag (VALIDATED, UNVALIDATED, etc.)
+- from_ts, to_ts — observation time range, microseconds
+- limit — max records (default 50, 1–200; out of range is a 422)
+- offset — pagination offset (≥ 0)
+- format=binary — return one native .bxp container instead of JSON
+
+total in the response counts every match, so offset/limit paging is consistent with any filter.
+
+Example: GET /bxp/v2/readings?geohash=s1v0&limit=10
+
+---
+
+GET /readings/{id}
+
+Get a specific reading by ID.
+
+Example: GET /bxp/v2/readings/550e8400-e29b-41d4-a716-446655440000
+
+---
+
+GET /locations/{geohash}/latest
+
+Get the most recent reading for a geohash location.
+
+Minimum geohash precision: 5
+
+Example: GET /bxp/v2/locations/s1v0g/latest
+
+Response:
+
+{
+  "data": {
+    "geohash": "s1v0g",
+    "reading": { ... },
+    "bxpHri": 61.2,
+    "bxpHriLevel": "HIGH",
+    "bxpHriColor": "#CC0000"
+  }
+}
+
+---
+
+GET /locations/{geohash}/history
+
+Get reading history for a geohash.
+
+Query: limit (default 50, max 500)
+
+---
+
+GET /agents
+
+List all supported atmospheric agents.
+
+Response:
+
+{
+  "data": {
+    "agents": [
+      {
+        "agentId": "PM2_5",
+        "name": "Fine Particulate Matter",
+        "unit": "μg/m³",
+        "whoLimit": 15.0,
+        "hriWeight": 0.35
+      }
+    ],
+    "count": 17
+  }
+}
+
+---
+
+POST /hri/calculate
+
+Calculate BXP_HRI from agent values.
+
+Query parameters:
+- duration — 1h | 8h | 24h (default 1h)
+- population — general | sensitive (default general)
+
+Request body:
+
+[
+  { "agentId": "PM2_5", "value": 67.0, "unit": "ug/m3" },
+  { "agentId": "NO2",   "value": 31.0, "unit": "ppb"   }
+]
+
+Response:
+
+{
+  "data": {
+    "hri": {
+      "score": 72.4,
+      "level": "HIGH",
+      "color": "#CC0000",
+      "breakdown": {
+        "PM2_5": { "value": 67.0, "normalizedRisk": 1.0, "contribution": 0.35 },
+        "NO2":   { "value": 31.0, "normalizedRisk": 0.48, "contribution": 0.072 }
+      }
+    }
+  }
+}
+
+---
+
+GET /nearby
+
+The closest useful observation for someone with no sensor of their own. Candidates
+within radiusM and maxAgeS are ranked by distance, freshness and quality together,
+so a fresh validated reading 400 m away can beat a stale one 50 m away.
+
+Query parameters: lat, lon (required); radiusM (default 2000, 1–50000);
+maxAgeS (default 3600); agent; minQuality (SUSPECT, UNVALIDATED (default),
+VALIDATED; INVALID is never returned); limit (default 1, max 50).
+
+Example: GET /bxp/v2/nearby?lat=5.6037&lon=-0.187&radiusM=1500&agent=PM2_5
+
+Each result carries distanceM and relevanceScore. Anonymous submissions are stored
+at geohash-5 precision (about 5 km), so their reported position is a cell centre; only
+readings from registered devices resolve to metre-level positions.
+
+---
+
+DELETE /readings/{id}
+
+Requires Authorization: Bearer <device token>. Only the device that submitted the
+reading may delete it (403 otherwise). The reading's content is erased and cannot be
+recovered; a content-free tombstone remains so the deletion replicates. Returns a
+deletionProof.
+
+---
+
+GET /sync
+
+Federation pull: the changes on this node after a cursor, oldest first.
+
+Query parameters: since (opaque cursor, default 0), limit (default 500, max 2000).
+
+Response: data.readings plus nextCursor. Store nextCursor and send it as since
+next time. The cursor is an ingest sequence, not a timestamp: late-arriving readings
+are never skipped and a bogus timestamp cannot stall replication.
+
+A deleted reading arrives as {"readingId": "...", "deleted": true, "deletionProof": "..."}.
+A replica must erase its copy. Every reading carries its origin nodeId.
+
+If the node sets BXP_NODE_SYNC_TOKEN, send Authorization: Bearer <token>.
+
+---
+
+GET /health
+
+Server health check.
+
+Response:
+
+{
+  "status": "ok",
+  "data": {
+    "nodeType": "community",
+    "bxpVersion": "2.0",
+    "readingCount": 10,
+    "uptime": "operational"
+  }
+}
+
+---
+
+Error Codes
+
+|  Code      | HTTP | Meaning                              |
+| -----------|------|--------------------------------------|
+|  BXP_4001  | 400  | No readings provided                 |
+|  BXP_4002  | 400  | Reading has no agents                |
+|  BXP_4003  | 400  | Geohash precision too low            |
+|  BXP_4006  | 400  | Payload hash mismatch                |
+|  BXP_4010  | 401  | Missing or invalid device token      |
+|  BXP_4030  | 403  | Device UUID mismatch                 |
+|  BXP_4040  | 404  | Reading not found                    |
+|  BXP_4041  | 404  | No readings for location             |
+|  BXP_5000  | 500  | Internal server error                |
+
+
+==============================================================================
+## DEVELOPER GUIDE
+Source: https://github.com/bxpprotocol/bxp-spec/blob/main/docs/developer_guide.md
+==============================================================================
+
+BXP Developer Guide
+
+Getting Started in 5 Minutes
+
+1. Start the reference server
+
+cd bxp-protocol/reference-server
+pip install -r requirements.txt
+python server.py
+
+Server runs at http://localhost:5000
+API docs at http://localhost:5000/docs
+
+2. Generate your first .bxp file
+
+cd bxp-protocol/cli
+python bxp_cli.py generate --pm25 47.2 --lat 5.6037 --lon -0.1870
+
+3. Validate the file
+
+python bxp_cli.py validate reading_20260307_100000.bxp.json
+
+4. Submit to the server
+
+python bxp_cli.py submit \
+    --server http://localhost:5000 \
+    --file reading_20260307_100000.bxp.json
+
+5. Query the data back
+
+curl http://localhost:5000/bxp/v2/locations/s1v0g/latest
+
+---
+
+Using the Python SDK
+
+from bxp_sdk import write_bxp, read_bxp, calculate_risk, BXPClient
+
+# Calculate risk from values
+risk = calculate_risk(pm25=67.0, no2=31.0, duration="24h")
+print(risk["score"])    # 89.6
+print(risk["level"])    # VERY_HIGH
+
+# Write a .bxp file
+record = write_bxp("my_reading.bxp.json", {
+    "latitude":  5.6037,
+    "longitude": -0.1870,
+    "pm25":      47.2,
+    "no2":       18.3,
+    "temp":      29.0,
+    "humidity":  78.0
+})
+print(record["bxpHri"])      # 61.2
+print(record["bxpHriLevel"]) # HIGH
+
+# Read a .bxp file
+data = read_bxp("my_reading.bxp.json")
+print(data["_integrityOk"])  # True — hash verified
+
+# Submit to a BXP server
+client = BXPClient("http://localhost:5000")
+result = client.submit(
+    latitude=5.6037, longitude=-0.1870,
+    pm25=47.2, no2=18.3
+)
+print(result["readingId"])  # uuid
+print(result["bxpHri"])     # 61.2
+
+---
+
+Submitting Data via curl
+
+# Submit a reading
+curl -X POST http://localhost:5000/bxp/v2/readings \
+  -H "Content-Type: application/json" \
+  -d '{
+    "readings": [{
+      "deviceUuid": "550e8400-e29b-41d4-a716-446655440000",
+      "latitude": 5.6037,
+      "longitude": -0.1870,
+      "agents": [
+        {"agentId": "PM2_5", "value": 47.2, "unit": "ug/m3"},
+        {"agentId": "NO2",   "value": 18.3, "unit": "ppb"}
+      ]
+    }]
+  }'
+
+# Get latest for location
+curl http://localhost:5000/bxp/v2/locations/s1v0g/latest
+
+# Get all readings
+curl http://localhost:5000/bxp/v2/readings
+
+# Calculate HRI
+curl -X POST "http://localhost:5000/bxp/v2/hri/calculate?duration=24h&population=sensitive" \
+  -H "Content-Type: application/json" \
+  -d '[{"agentId": "PM2_5", "value": 67.0, "unit": "ug/m3"}]'
+
+---
+
+BXP File Format Reference
+
+Minimum valid .bxp.json:
+
+{
+  "bxpVersion": "2.0",
+  "deviceUuid": "550e8400-e29b-41d4-a716-446655440000",
+  "geohash": "s1v0g",
+  "timestampUs": 1741342800000000,
+  "agents": [
+    {"agentId": "PM2_5", "value": 47.2, "unit": "ug/m3"}
+  ],
+  "quality": {"flag": "UNVALIDATED", "confidence": 0.8}
+}
+
+Agent IDs:
+- Particulates: PM1, PM2_5, PM10, BC
+- Gases: CO, CO2, NO2, SO2, O3, H2S, NH3
+- VOCs: TVOC, BENZ, FORM, TOLU, XYLE
+- Environment: TEMP, RH, PRESS, UV
+- Heavy metals: PB, HG, AS
+- Derived: BXP_HRI
+
+Quality flags: VALIDATED, UNVALIDATED, SUSPECT, INVALID
+
+---
+
+Geohash Quick Reference
+
+from bxp_sdk import encode_geohash
+
+# Encode Accra coordinates
+gh = encode_geohash(5.6037, -0.1870, precision=7)
+print(gh)  # s1v0gx4
+
+# Precision guide:
+# 5 chars = ~4.9 km  (district)
+# 6 chars = ~1.2 km  (neighborhood)
+# 7 chars = ~153 m   (street block)
+# 8 chars = ~38 m    (building)
+
+---
+
+CLI Reference
+
+# Generate a .bxp file
+bxp generate --pm25 47.2 --lat 5.60 --lon -0.18
+bxp generate --pm25 47.2 --no2 18 --temp 29 --lat 5.60 --lon -0.18 --location "Accra"
+bxp generate --pm25 47.2 --gh s1v0g --output my_reading.bxp.json
+
+# Read a .bxp file
+bxp read my_reading.bxp.json
+bxp read my_reading.bxp.json --raw
+
+# Validate a .bxp file
+bxp validate my_reading.bxp.json
+
+# Calculate HRI
+bxp hri --pm25 67.0 --no2 31.0
+bxp hri --pm25 67.0 --duration 24h --population sensitive
+
+# Submit to server
+bxp submit --server http://localhost:5000 --file my_reading.bxp.json
+
+# Check server status
+bxp server-status --server http://localhost:5000
+
+---
+
+Contributing
+
+BXP is open source (Apache 2.0).
+GitHub: https://github.com/bxpprotocol/bxp-spec
+
+To contribute:
+1. Fork the repository
+2. Create a feature branch
+3. Submit a Pull Request
+
+RFC process: All specification changes require a 30-day
+public comment period via GitHub Issues before adoption.
+
+
+==============================================================================
+## PROTOCOL OVERVIEW
+Source: https://github.com/bxpprotocol/bxp-spec/blob/main/docs/protocol_overview.md
+==============================================================================
+
+BXP Protocol Overview
+
+What is BXP?
+
+BXP (Breathe Exposure Protocol) is an open file format and data exchange
+protocol for recording, storing, and transmitting human atmospheric
+exposure data over time.
+
+BXP is to air quality data what MP4 is to video — a universal format
+that any system can read, write, and exchange, owned by nobody,
+usable by everyone.
+
+The Problem BXP Solves
+
+Air pollution causes 7 million premature deaths annually.
+The sensors to measure it exist and are getting cheaper every year.
+The barrier is not hardware — it is data fragmentation.
+
+Every sensor manufacturer, every government agency, every research
+institution uses a different data format. Data that cannot communicate
+with itself cannot be used to coordinate a response.
+
+BXP is the universal language that ends this fragmentation.
+
+Core Concepts
+
+The .bxp File
+
+A .bxp file (or .bxp.json) is a JSON document representing one or
+more atmospheric exposure readings. Every .bxp file contains:
+
+- When and where the measurement was taken
+- What was measured (any combination of 31 atmospheric agents)
+- How reliable the measurement is (quality flags)
+- A composite health risk score (BXP-HRI, experimental)
+- A cryptographic hash for integrity verification
+
+Any device can generate a .bxp file. Any system can read it.
+
+The BXP-HRI (Experimental)
+
+The BXP Health Risk Index is a composite score from 0-100 representing
+overall atmospheric health risk. Unlike single-pollutant indices (US AQI,
+European CAQI), BXP-HRI incorporates all available agents simultaneously,
+weighted by their actual contribution to global disease burden (WHO DALYs).
+
+⚠️ Not clinically or epidemiologically validated. Do not use for medical decisions.
+
+BXP-HRI levels:
+- 0-20:   CLEAN      — No restrictions
+- 21-40:  MODERATE   — Sensitive groups: limit exertion
+- 41-60:  ELEVATED   — Reduce heavy outdoor exertion
+- 61-75:  HIGH       — Wear N95, close windows
+- 76-90:  VERY_HIGH  — Avoid all outdoor activity
+- 91-100: HAZARDOUS  — Emergency conditions
+
+The Federated Network
+
+BXP is not a platform — it is a protocol. Like HTTP, nobody owns it.
+Any organization can run a BXP node on their own infrastructure.
+Nodes discover each other through a lightweight registry that maps
+geographic areas to node URLs. Data stays with its owner.
+
+Who BXP is For
+
+Sensor manufacturers: Provide a BXP export. Every application
+that reads BXP can immediately use your sensor data.
+
+Environmental agencies: Deploy a BXP node. Your monitoring
+data becomes instantly interoperable with every other BXP source.
+
+Researchers: Query any BXP node using the standard REST API.
+One query format works for every data source.
+
+Developers: Build applications on BXP. Your app works with
+any data source that speaks BXP.
+
+Communities: Run a community node. Your sensor network
+contributes to the global picture without losing data sovereignty.
+
+License
+
+Apache 2.0. Free forever. No royalties. No restrictions.
+No gatekeepers. Ever.

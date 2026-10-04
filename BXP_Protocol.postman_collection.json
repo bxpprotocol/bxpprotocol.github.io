@@ -1,0 +1,255 @@
+{
+  "info": {
+    "name": "BXP Protocol API",
+    "description": "Complete collection for the BXP Protocol Reference Node API v2.1.\n\nSet the `base_url` variable to your node URL before running.\n\nGet started: https://github.com/bxpprotocol/bxp-spec",
+    "version": "2.1.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {"key": "base_url",    "value": "http://localhost:5000"},
+    {"key": "device_token","value": ""},
+    {"key": "reading_id",  "value": ""},
+    {"key": "geohash",     "value": "s0000"},
+    {"key": "city",        "value": "london"}
+  ],
+  "item": [
+    {
+      "name": "Health & Status",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET", "url": "{{base_url}}/bxp/v2/health",
+            "description": "Returns node status, version, uptime, and reading count."
+          }
+        },
+        {
+          "name": "Prometheus Metrics",
+          "request": {
+            "method": "GET", "url": "{{base_url}}/metrics",
+            "description": "Prometheus-compatible metrics endpoint."
+          }
+        },
+        {
+          "name": "Federated Nodes",
+          "request": {
+            "method": "GET", "url": "{{base_url}}/bxp/v2/nodes",
+            "description": "List known federated BXP nodes."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Readings",
+      "item": [
+        {
+          "name": "Submit Reading (anonymous)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/bxp/v2/readings",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"readings\": [{\n    \"latitude\": 5.6037,\n    \"longitude\": -0.1870,\n    \"agents\": [\n      {\"agentId\": \"PM2_5\", \"value\": 47.2, \"unit\": \"ug/m3\"},\n      {\"agentId\": \"NO2\",   \"value\": 18.3, \"unit\": \"ppb\"},\n      {\"agentId\": \"TEMP\",  \"value\": 29.0, \"unit\": \"C\"}\n    ],\n    \"durationS\": 60,\n    \"indoorOutdoor\": \"outdoor\"\n  }]\n}"
+            },
+            "description": "Submit a reading without authentication. Returns 201."
+          }
+        },
+        {
+          "name": "Submit Reading (authenticated)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/bxp/v2/readings",
+            "header": [
+              {"key": "Content-Type",  "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{device_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"readings\": [{\n    \"latitude\": 5.6037,\n    \"longitude\": -0.1870,\n    \"agents\": [\n      {\"agentId\": \"PM2_5\", \"value\": 47.2, \"unit\": \"ug/m3\"}\n    ]\n  }]\n}"
+            }
+          }
+        },
+        {
+          "name": "List Readings (default cities)",
+          "request": {"method": "GET", "url": "{{base_url}}/bxp/v2/readings"}
+        },
+        {
+          "name": "List Readings (by geohash)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/bxp/v2/readings?geohash={{geohash}}&limit=20",
+              "query": [
+                {"key": "geohash", "value": "{{geohash}}"},
+                {"key": "limit",   "value": "20"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Readings (paginated)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/bxp/v2/readings?limit=10&offset=0",
+              "query": [
+                {"key": "limit",  "value": "10"},
+                {"key": "offset", "value": "0"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Reading by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/bxp/v2/readings/{{reading_id}}"
+          }
+        },
+        {
+          "name": "Verify Reading Integrity",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/bxp/v2/readings/{{reading_id}}/verify",
+            "description": "Verifies payload hash (§2.2 integrity check)."
+          }
+        },
+        {
+          "name": "Delete Reading (cryptographic §9)",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/bxp/v2/readings/{{reading_id}}",
+            "header": [{"key": "Authorization", "value": "Bearer {{device_token}}"}],
+            "description": "Cryptographically verifiable deletion per BXP §9."
+          }
+        }
+      ]
+    },
+    {
+      "name": "City Data",
+      "item": [
+        {
+          "name": "Get City Data",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/bxp/v2/city/{{city}}",
+            "description": "Live BXP data for a city via AQICN. Supports ETag caching."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Locations",
+      "item": [
+        {
+          "name": "Latest Reading at Geohash",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/bxp/v2/locations/{{geohash}}/latest"
+          }
+        },
+        {
+          "name": "History at Geohash",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/bxp/v2/locations/{{geohash}}/history?limit=50"
+          }
+        },
+        {
+          "name": "Aggregate at Geohash (k≥5 §9)",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/bxp/v2/locations/{{geohash}}/aggregate",
+            "description": "Returns min/max/avg HRI only if ≥5 readings exist (k-anonymity §9)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Search",
+      "item": [
+        {
+          "name": "Search by City Name",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/bxp/v2/search?q=accra"
+          }
+        },
+        {
+          "name": "Search by Coordinates",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/bxp/v2/search?lat=5.6037&lon=-0.1870"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Devices",
+      "item": [
+        {
+          "name": "Register Device",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/bxp/v2/devices/register",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"label\": \"My Air Sensor\"\n}"
+            },
+            "description": "Returns a bearer token — store it securely, shown only once."
+          }
+        },
+        {
+          "name": "Get Device Info",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/bxp/v2/devices/{{device_uuid}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Community Reports",
+      "item": [
+        {
+          "name": "Submit Report",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/bxp/v2/community/reports",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"latitude\": 5.6037,\n  \"longitude\": -0.1870,\n  \"reportType\": \"odor\",\n  \"description\": \"Burning smell from nearby factory\",\n  \"severity\": \"high\"\n}"
+            }
+          }
+        },
+        {
+          "name": "List Reports",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/bxp/v2/community/reports?limit=20"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Federation",
+      "item": [
+        {
+          "name": "Announce Node",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/bxp/v2/nodes/announce",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nodeId\": \"bxp-my-node-001\",\n  \"baseUrl\": \"https://my-bxp-node.example.com\",\n  \"bxpVersion\": \"2.0\",\n  \"nodeType\": \"reference\"\n}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
