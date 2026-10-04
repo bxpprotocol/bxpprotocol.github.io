@@ -3,7 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>BXP Validator & Playground — Breathe Exposure Protocol</title>
+<title>BXP Validator — validate air quality data against the BXP v2.0 schema</title>
+<meta name="description" content="Free browser-based validator for BXP records. Checks your air quality JSON against the BXP v2.0 schema, verifies integrity and geohash precision, and computes the experimental HRI. Nothing is uploaded.">
+<link rel="canonical" href="https://bxpprotocol.github.io/validator.html">
+<meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://bxpprotocol.github.io/validator.html">
+<meta property="og:site_name" content="BXP Protocol">
+<meta property="og:title" content="BXP Validator — check your air quality data against the open standard">
+<meta property="og:description" content="Paste a BXP record and get instant schema validation, integrity checks, and an experimental health risk score. Runs entirely in your browser.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="BXP Validator — air quality data validator">
+<meta name="twitter:description" content="Validate BXP v2.0 records against the open standard for atmospheric exposure data. Client-side, instant, free.">
+<link rel="alternate" type="text/plain" title="BXP machine-readable index (llms.txt)" href="https://bxpprotocol.github.io/llms.txt">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "BXP Validator",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Any (runs in-browser)",
+  "url": "https://bxpprotocol.github.io/validator.html",
+  "description": "Browser-based validator for BXP v2.0 records. Checks schema conformance, integrity, and geohash precision entirely client-side, and computes the experimental BXP-HRI index.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "isPartOf": { "@type": "SoftwareSourceCode", "name": "BXP — Breathe Exposure Protocol", "url": "https://bxpprotocol.github.io/", "codeRepository": "https://github.com/bxpprotocol/bxp-spec", "version": "2.0", "license": "https://www.apache.org/licenses/LICENSE-2.0" }
+}
+</script>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Cabinet+Grotesk:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -599,10 +624,11 @@ footer{
   </div>
   <nav>
     <a href="index.html">← Home</a>
-    <a href="/dashboard" target="_blank">Live Dashboard</a>
-    <a href="/docs" target="_blank">API Docs</a>
-    <a href="https://github.com/bxpprotocol/bxp-spec" target="_blank">GitHub</a>
-    <a href="https://doi.org/10.5281/zenodo.18906812" target="_blank">DOI</a>
+    <a href="spec.html">Spec</a>
+    <a href="api.html">API</a>
+    <a href="http://localhost:5000/dashboard" target="_blank" rel="noopener">Local node</a>
+    <a href="https://github.com/bxpprotocol/bxp-spec" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://doi.org/10.5281/zenodo.18906812" target="_blank" rel="noopener">DOI</a>
   </nav>
 </header>
 

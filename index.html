@@ -16,6 +16,168 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="BXP — The open data standard for atmospheric exposure">
 <meta name="twitter:description" content="One interoperable layer connecting sensors, applications, researchers, and institutions. Apache 2.0.">
+<link rel="alternate" type="application/atom+xml" title="BXP Protocol releases" href="https://bxpprotocol.github.io/feed.xml">
+<link rel="alternate" type="application/json" title="BXP REST API contract (OpenAPI 3.1)" href="https://raw.githubusercontent.com/bxpprotocol/bxp-spec/main/openapi.json">
+<link rel="help" type="text/plain" title="BXP machine-readable index (llms.txt)" href="https://bxpprotocol.github.io/llms.txt">
+
+<!-- ═══ Entity markup. Without this, search engines and AI systems read "BXP"
+     as a string on a page rather than as an identifiable standard with a
+     repository, license, author, and version. ═══ -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareSourceCode",
+  "@id": "https://bxpprotocol.github.io/#project",
+  "name": "BXP — Breathe Exposure Protocol",
+  "alternateName": "Breathe Exposure Protocol",
+  "description": "Open protocol and REST API for atmospheric exposure data interoperability. One data layer connecting sensors, applications, researchers, and institutions.",
+  "url": "https://bxpprotocol.github.io/",
+  "codeRepository": "https://github.com/bxpprotocol/bxp-spec",
+  "issueTracking": "https://github.com/bxpprotocol/bxp-spec/issues",
+  "programmingLanguage": ["Python", "TypeScript"],
+  "license": "https://www.apache.org/licenses/LICENSE-2.0",
+  "version": "2.0",
+  "datePublished": "2026-09-01",
+  "dateModified": "2026-10-02",
+  "applicationCategory": "DeveloperApplication",
+  "developmentStatus": "https://schema.org/ActiveDevelopment",
+  "operatingSystem": "Cross-platform",
+  "abstract": "A universal protocol for atmospheric exposure data: a 32-byte-fixed-header binary container and an equivalent JSON representation, a REST API, a five-stage processing pipeline, a privacy floor, and pull-based federation. Comparable in intent to HTTP for the web — a specification rather than a platform.",
+  "keywords": "air quality data standard, air pollution API, atmospheric exposure protocol, PM2.5 data format, environmental sensor interoperability, air quality data format, sensor data exchange, environmental monitoring standard, air quality API, exposure data, air quality interoperability",
+  "featureList": [
+    "32-byte fixed-header binary .bxp container with CRC32 integrity and optional gzip",
+    ".bxp.json representation, semantically identical, losslessly convertible",
+    "REST API: 23 endpoints covering readings, locations, nearby, search, and federation",
+    "Five-stage pipeline: Locate, Detect, Interpret, Protect, Report",
+    "Five-class source provenance taxonomy (SPEC.md 6.8)",
+    "Privacy floor: SHA-256 hashed identifiers, geohash precision limits, k-anonymity, cryptographic deletion",
+    "Pull-based federation with cursor pagination and deletion tombstones",
+    "17 golden conformance vectors, byte-for-byte verified in Python and TypeScript",
+    "Python and TypeScript SDKs proven interoperable",
+    "BXP-HRI composite index (experimental, not clinically validated)"
+  ],
+  "softwareRequirements": "Python 3.10+ or Node.js 18+",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD",
+    "availability": "https://schema.org/InStock",
+    "license": "https://www.apache.org/licenses/LICENSE-2.0"
+  },
+  "maintainer": { "@type": "Organization", "name": "BXP Protocol", "url": "https://bxpprotocol.github.io/" },
+  "author": { "@type": "Organization", "name": "BXP Protocol contributors", "url": "https://github.com/bxpprotocol/bxp-spec/graphs/contributors" },
+  "citation": ["https://doi.org/10.5281/zenodo.18906812", "https://doi.org/10.5281/zenodo.18907003"],
+  "sameAs": [
+    "https://github.com/bxpprotocol/bxp-spec",
+    "https://doi.org/10.5281/zenodo.18906812",
+    "https://orcid.org/0009-0001-4856-4986"
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": "https://bxpprotocol.github.io/#org",
+  "name": "BXP Protocol",
+  "alternateName": "Breathe Exposure Protocol",
+  "url": "https://bxpprotocol.github.io/",
+  "description": "Maintainers of BXP, an open standard for atmospheric exposure data interoperability. Apache 2.0 licensed with no gatekeepers.",
+  "email": "bxpprotocol@proton.me",
+  "areaServed": "World",
+  "knowsAbout": ["air quality data", "atmospheric exposure", "environmental monitoring", "data interoperability", "open standards", "public health", "atmospheric science", "sensor networks"],
+  "sameAs": ["https://github.com/bxpprotocol", "https://orcid.org/0009-0001-4856-4986"]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "BXP Validator",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Any (runs in-browser)",
+  "url": "https://bxpprotocol.github.io/validator.html",
+  "description": "Browser-based validator for BXP v2.0 records. Checks schema conformance, integrity, and geohash precision entirely client-side, and computes the experimental BXP-HRI index.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "isPartOf": { "@id": "https://bxpprotocol.github.io/#project" }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Breathe",
+  "applicationCategory": "HealthApplication",
+  "operatingSystem": "Any (runs in-browser)",
+  "url": "https://bxpprotocol.github.io/breathe.html",
+  "description": "Reference consumer application built on BXP. Shows current particulate exposure for a location, tracks readings over time in browser storage, and can read live measurements from a self-hosted BXP node.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "isPartOf": { "@id": "https://bxpprotocol.github.io/#project" }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "@id": "https://bxpprotocol.github.io/#faq",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is an atmospheric exposure data standard?",
+      "acceptedAnswer": { "@type": "Answer", "text": "It is a common file format and API that lets measurements from different sensors and providers be exchanged without custom integration. Air quality networks historically each publish a different format, so a reading taken by one system cannot be read by another. BXP is such a standard for atmospheric exposure data: one record shape, one API surface, one conformance suite." }
+    },
+    {
+      "@type": "Question",
+      "name": "What is BXP and what problem does it solve?",
+      "acceptedAnswer": { "@type": "Answer", "text": "BXP (Breathe Exposure Protocol) is an open protocol and REST API for atmospheric exposure data. Air pollution causes roughly 7 million premature deaths a year, and the sensors that measure it already exist. What does not exist is shared infrastructure: every manufacturer, agency, and research network publishes an incompatible format. BXP defines one interoperable layer so a sensor reading can move between instruments, applications, researchers, and institutions unchanged." }
+    },
+    {
+      "@type": "Question",
+      "name": "How is BXP different from OpenAQ or a normal air quality API?",
+      "acceptedAnswer": { "@type": "Answer", "text": "OpenAQ and vendor APIs are catalogues or gateways: they describe data a specific provider already holds, and you query the provider. BXP is a protocol, not a service — a specification with a conformance test suite, so any organisation can implement its own node without permission from anyone. A BXP node can also ingest OpenAQ data and re-export it as BXP records, so the two compose rather than compete." }
+    },
+    {
+      "@type": "Question",
+      "name": "What file formats does BXP use?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Two representations of the same record. The binary .bxp format is a 32-byte fixed header containing magic number, version, file type, flags, a microsecond timestamp, payload length, and CRC32 checksums for both header and payload, followed by an optionally gzipped JSON payload. The .bxp.json form is the same data as plain JSON. Conversion between them is lossless in both directions, and both are defined in the specification with golden test vectors." }
+    },
+    {
+      "@type": "Question",
+      "name": "Do I need an API key or an account to use BXP?",
+      "acceptedAnswer": { "@type": "Answer", "text": "No. The specification, both SDKs, the reference server, the validator, and the conformance suite are public under Apache 2.0. You can run a node with a single docker compose command and query it locally with no credentials. Registration is only needed to obtain a device token for authenticated writes." }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I know an implementation is actually BXP compliant?",
+      "acceptedAnswer": { "@type": "Answer", "text": "By conformance test, not by assertion. The repository ships 17 golden vector files covering valid records and deliberately malformed ones: bad magic numbers, truncated headers, truncated payloads, corrupted header and payload checksums, and unsupported major versions. An implementation is compliant when it passes all of them. The Python and TypeScript reference implementations both pass, which is what demonstrates the specification is implementable from the document alone." }
+    },
+    {
+      "@type": "Question",
+      "name": "What does BXP-HRI measure and can I rely on it medically?",
+      "acceptedAnswer": { "@type": "Answer", "text": "BXP-HRI is an experimental composite 0-100 index combining available pollutant agents with weights derived from WHO disability-adjusted life-year burden data. It is not clinically or epidemiologically validated, so it must not be used for medical decisions, diagnosis, or clinical guidance. It is labelled experimental in the specification, the SDKs, and the user interfaces specifically so nobody mistakes it for a validated health metric." }
+    },
+    {
+      "@type": "Question",
+      "name": "How does BXP handle privacy and personal data?",
+      "acceptedAnswer": { "@type": "Answer", "text": "The privacy floor is enforced in the reference implementation, not just described in policy. Personal identifiers are stored as SHA-256 hashes, community and anonymous submissions are snapped to a geohash-5 cell centre so exact coordinates are never stored, aggregates must satisfy a minimum group size (k-anonymity), and deletion is cryptographic and propagates to federated peers as a tombstone." }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I run a BXP node on my own infrastructure?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes, and that is the intended deployment. The reference node runs with docker compose up and binds to port 5000. Because federation is pull-based rather than push-based, your node does not need to accept inbound connections or expose data to a central operator, so it can sit inside a private network and satisfy data residency requirements." }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I cite BXP in research?",
+      "acceptedAnswer": { "@type": "Answer", "text": "The specification and the reference implementation each have a permanent Zenodo DOI: 10.5281/zenodo.18906812 for the specification and 10.5281/zenodo.18907003 for the implementation. The repository also ships a CITATION.cff file, so citation tooling and GitHub's 'Cite this repository' feature resolve the right authors, title, and version automatically." }
+    }
+  ]
+}
+</script>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230a0a0a'/><text x='16' y='22' font-family='system-ui' font-size='15' font-weight='700' fill='%2300d4c8' text-anchor='middle'>B</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -261,6 +423,7 @@ footer{border-top:1px solid var(--line);background:var(--bg-sub);padding:52px 0 
       <a href="#ecosystem" class="hide">Ecosystem</a>
       <a href="validator.html">Validator</a>
       <a href="breathe.html">Breathe</a>
+      <a href="api.html" class="hide">Docs</a>
       <a class="btn btn-primary nav-cta" href="#start">Get started</a>
     </div>
   </div>
@@ -664,6 +827,18 @@ BXPClient(<span class="s">"http://localhost:5000"</span>).submit(latitude=<span 
       <a class="eco" href="breathe.html">
         <div class="eco-ic">◍</div><h4>Breathe</h4><p>Reference consumer app — map your exposure over time from any BXP-compliant node.</p><span class="eco-tag">static html</span>
       </a>
+      <a class="eco" href="spec.html">
+        <div class="eco-ic">§</div><h4>Specification</h4><p>The full v2.0 document rendered for the web — file format, agents, pipeline, API, privacy, conformance.</p><span class="eco-tag">reference</span>
+      </a>
+      <a class="eco" href="api.html">
+        <div class="eco-ic">⇋</div><h4>API reference</h4><p>All 23 endpoints with parameters and descriptions, generated from the running server.</p><span class="eco-tag">openapi 3.1</span>
+      </a>
+      <a class="eco" href="agents.html">
+        <div class="eco-ic">◑</div><h4>Agent reference</h4><p>Every atmospheric agent with its canonical unit and the WHO guideline value it is measured against.</p><span class="eco-tag">31 agents</span>
+      </a>
+      <a class="eco" href="versions.html">
+        <div class="eco-ic">⌖</div><h4>Versions &amp; citation</h4><p>How to pin a version so your integration stays valid, plus BibTeX, RIS, APA, MLA, and Chicago with permanent DOIs.</p><span class="eco-tag">doi · bixtex</span>
+      </a>
     </div>
   </div>
 </section>
@@ -742,6 +917,10 @@ BXPClient(<span class="s">"http://localhost:5000"</span>).submit(latitude=<span 
         <a href="https://github.com/bxpprotocol/bxp-spec/tree/main/cli">CLI</a>
         <a href="validator.html">Validator</a>
         <a href="breathe.html">Breathe app</a>
+        <a href="spec.html">Specification</a>
+        <a href="api.html">API reference</a>
+        <a href="agents.html">Agent reference</a>
+        <a href="versions.html">Versions &amp; citation</a>
       </div>
       <div class="foot-col">
         <h5>Project</h5>

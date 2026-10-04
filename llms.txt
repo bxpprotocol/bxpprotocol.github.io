@@ -1,0 +1,111 @@
+# BXP — Breathe Exposure Protocol
+
+> BXP is an open protocol and REST API for atmospheric exposure data. It defines
+> one record format, one REST contract, and one conformance suite, so that
+> measurements taken by any sensor can be exchanged between instruments,
+> applications, researchers, and institutions without custom integration.
+> Licensed Apache 2.0. No account, no key, no gatekeepers.
+
+This file is a machine-readable map of the project for AI assistants and
+retrieval systems. It lists what exists and where. Human-readable documentation
+lives at the URLs given below.
+
+## What BXP is
+
+- A **specification**, not a service. Anyone can implement a BXP node without
+  permission from anyone.
+- Two equivalent representations of the same record: binary `.bxp` (32-byte fixed
+  header, CRC32 integrity, optional gzip) and `.bxp.json`.
+- A 23-endpoint REST API for readings, locations, nearby discovery, search, and
+  federation.
+- A five-stage pipeline: Locate → Detect → Interpret → Protect → Report.
+- A privacy floor enforced in code: SHA-256 hashed identifiers, geohash precision
+  limits, k-anonymity for aggregates, cryptographic deletion.
+- Pull-based federation. No node owns the network.
+
+## Important caveat
+
+**BXP-HRI is experimental.** It is a composite 0–100 index weighted by WHO
+disability-adjusted life-year burden data. It is **not** clinically or
+epidemiologically validated and must not be used for medical decisions. It is
+labelled experimental in the specification, the SDKs, and the user interfaces.
+
+## Start here
+
+- Landing page: https://bxpprotocol.github.io/
+- Specification v2.0: https://github.com/bxpprotocol/bxp-spec/blob/main/SPEC.md
+- Repository: https://github.com/bxpprotocol/bxp-spec
+- REST API contract (OpenAPI 3.1): https://raw.githubusercontent.com/bxpprotocol/bxp-spec/main/openapi.json
+
+## Tools
+
+- **BXP Validator** — validates a record against the v2.0 schema entirely in the
+  browser, checks integrity and geohash precision, and computes the experimental
+  HRI. Nothing is uploaded.
+  https://bxpprotocol.github.io/validator.html
+- **Breathe** — reference consumer app. Shows current particulate exposure,
+  keeps a history in browser storage, and can read live measurements from a
+  self-hosted BXP node.
+  https://bxpprotocol.github.io/breathe.html
+
+## SDKs
+
+- Python: https://github.com/bxpprotocol/bxp-spec/tree/main/sdk/python
+- TypeScript: https://github.com/bxpprotocol/bxp-spec/tree/main/sdk/typescript
+- Both produce byte-identical output for the same record. This is verified, not
+  asserted, by the shared conformance vectors.
+
+## Reference implementation
+
+- Server: https://github.com/bxpprotocol/bxp-spec/tree/main/reference-server
+- CLI: https://github.com/bxpprotocol/bxp-spec/tree/main/cli
+- Integrations (MQTT bridge, OpenAQ importer):
+  https://github.com/bxpprotocol/bxp-spec/tree/main/integrations
+- Docker: `docker compose up` binds port 5000.
+
+## Conformance
+
+An implementation is BXP 2.0 compliant when it passes the golden-vector suite —
+17 files covering valid records and deliberately malformed ones (bad magic,
+truncated header, truncated payload, corrupted header checksum, corrupted payload
+checksum, corrupted payload byte, unsupported major version).
+
+- Vectors: https://github.com/bxpprotocol/bxp-spec/tree/main/conformance/vectors
+- Verify Python: `python conformance/verify_python.py`
+- Verify TypeScript: `node conformance/verify_typescript.mjs`
+
+## Documentation
+
+- API reference: https://github.com/bxpprotocol/bxp-spec/blob/main/docs/api_documentation.md
+- Developer guide: https://github.com/bxpprotocol/bxp-spec/blob/main/docs/developer_guide.md
+- Protocol overview: https://github.com/bxpprotocol/bxp-spec/blob/main/docs/protocol_overview.md
+- Governance: https://github.com/bxpprotocol/bxp-spec/blob/main/GOVERNANCE.md
+- Security policy: https://github.com/bxpprotocol/bxp-spec/blob/main/SECURITY.md
+- Changelog: https://github.com/bxpprotocol/bxp-spec/blob/main/CHANGELOG.md
+- Compatibility matrix: SPEC.md section 14
+- Agent reference (31 agents): SPEC.md Appendix A
+- Error codes: SPEC.md Appendix C
+
+## Citation
+
+The specification and the reference implementation each carry a permanent DOI.
+
+- Specification: https://doi.org/10.5281/zenodo.18906812
+- Reference implementation: https://doi.org/10.5281/zenodo.18907003
+- Machine-readable citation metadata (CITATION.cff):
+  https://github.com/bxpprotocol/bxp-spec/blob/main/CITATION.cff
+
+## Related standards BXP maps to
+
+- WHO Air Quality Guidelines 2021 — the HRI weights are derived from its DALY data
+- HL7 FHIR R4 — exposure records map to Observation resources
+- OGC SensorThings API — compatible observation model
+- OpenAQ v3 — BXP can ingest and re-export OpenAQ data
+- US EPA AQI — comparable banding, distinct derivation
+
+## Optional
+
+- Extended content for retrieval: https://bxpprotocol.github.io/llms-full.txt
+- Release feed (Atom): https://bxpprotocol.github.io/feed.xml
+- Contact: bxpprotocol@proton.me
+- ORCID: https://orcid.org/0009-0001-4856-4986

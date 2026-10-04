@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BXP REST API — all 23 endpoints of a BXP v2.0 node</title>
+<meta name="description" content="Complete HTTP contract for a BXP node: 26 operations across 23 paths covering readings, locations, nearby discovery, search, device registry, community reports, and federation. OpenAPI 3.1, generated from the reference implementation.">
+<link rel="canonical" href="https://bxpprotocol.github.io/api.html">
+<meta name="robots" content="index,follow,max-snippet:-1">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://bxpprotocol.github.io/api.html">
+<meta property="og:site_name" content="BXP Protocol">
+<meta property="og:title" content="BXP REST API — all 23 endpoints of a BXP v2.0 node">
+<meta property="og:description" content="Complete HTTP contract for a BXP node: 26 operations across 23 paths covering readings, locations, nearby discovery, search, device registry, community reports, and federation. OpenAPI 3.1, generated from the reference implementation.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="BXP REST API — all 23 endpoints of a BXP v2.0 node">
+<meta name="twitter:description" content="Complete HTTP contract for a BXP node: 26 operations across 23 paths covering readings, locations, nearby discovery, search, device registry, community reports, and federation. OpenAPI 3.1, generated from the reference implementation.">
+<link rel="alternate" type="text/plain" title="BXP machine-readable index (llms.txt)" href="https://bxpprotocol.github.io/llms.txt">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fff; --bg-sub:#f7f8fa; --ink:#0a0a0c; --ink-2:#3d3d45; --ink-3:#6e6e78;
+  --line:#e6e7eb; --line-2:#d4d6dc; --brand:#00b8a0; --brand-ink:#046b5e;
+  --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.65;-webkit-font-smoothing:antialiased}
+a{color:var(--brand-ink)}
+.wrap{max-width:960px;margin:0 auto;padding:0 24px}
+header.top{border-bottom:1px solid var(--line);background:var(--bg-sub)}
+header.top .wrap{display:flex;align-items:center;gap:24px;height:58px;flex-wrap:wrap}
+.logo{font-weight:700;letter-spacing:-.02em;color:var(--ink);text-decoration:none;display:flex;align-items:center;gap:8px}
+.logo span{width:24px;height:24px;border-radius:6px;background:var(--ink);color:var(--brand);display:grid;place-items:center;font-size:12px;font-weight:800}
+header.top nav{display:flex;gap:20px;margin-left:auto;flex-wrap:wrap}
+header.top nav a{font-size:14px;color:var(--ink-2);text-decoration:none;font-weight:500}
+header.top nav a:hover{color:var(--ink)}
+main{padding:52px 0 80px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);font-weight:500;display:block;margin-bottom:12px}
+h1{font-size:clamp(30px,4.5vw,44px);letter-spacing:-.035em;line-height:1.1;margin-bottom:14px}
+h2{font-size:22px;letter-spacing:-.02em;margin:44px 0 12px;padding-top:20px;border-top:1px solid var(--line)}
+h3{font-size:16px;letter-spacing:-.01em;margin:22px 0 8px}
+p{color:var(--ink-2);margin-bottom:12px;max-width:74ch}
+.lede{font-size:18px;color:var(--ink-2);margin-bottom:22px;max-width:70ch}
+code{font-family:var(--mono);font-size:.88em;background:var(--bg-sub);border:1px solid var(--line);border-radius:4px;padding:1px 5px}
+pre{background:#0a0a0c;color:#e6e7eb;padding:16px;border-radius:10px;overflow-x:auto;font-family:var(--mono);font-size:12.5px;line-height:1.7;margin:14px 0}
+pre code{background:none;border:none;padding:0;color:inherit}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);font-weight:600;background:var(--bg-sub);position:sticky;top:0}
+td.mono,th.mono{font-family:var(--mono);font-size:12.5px}
+.tblwrap{border:1px solid var(--line);border-radius:10px;overflow:auto;margin:16px 0;max-height:none}
+.tblwrap table{margin:0}
+.note{border:1px solid #fde68a;background:#fffbeb;border-radius:10px;padding:14px 16px;margin:18px 0;font-size:14px;color:#78350f}
+.note strong{display:block;margin-bottom:4px;color:#92400e}
+.meta{font-size:13px;color:var(--ink-3);margin-bottom:24px}
+.method{display:inline-block;font-family:var(--mono);font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:4px;margin-right:8px;letter-spacing:.04em;min-width:52px;text-align:center}
+.m-get{background:#dbeafe;color:#1e40af}
+.m-post{background:#dcfce7;color:#166534}
+.m-delete{background:#fee2e2;color:#991b1b}
+.op{border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:10px 0;background:var(--bg)}
+.op-head{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+.path{font-family:var(--mono);font-size:14px;font-weight:600;color:var(--ink)}
+.op p{margin:0;font-size:13.5px}
+.tagrow{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.tag{font-family:var(--mono);font-size:10.5px;background:var(--bg-sub);border:1px solid var(--line);border-radius:4px;padding:2px 6px;color:var(--ink-3)}
+.toc{background:var(--bg-sub);border:1px solid var(--line);border-radius:10px;padding:16px 20px;margin:22px 0}
+.toc ol{margin:0;padding-left:20px;columns:2;font-size:14px}
+.toc li{margin:3px 0}
+@media(max-width:640px){.toc ol{columns:1}}
+footer{border-top:1px solid var(--line);background:var(--bg-sub);padding:26px 0;font-size:13px;color:var(--ink-3)}
+footer a{color:var(--ink-2)}
+.pill{display:inline-block;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:3px 9px;border-radius:999px;background:#fef3c7;color:#92400e;border:1px solid #fde68a;margin-bottom:14px}
+.citebox{background:var(--bg-sub);border:1px solid var(--line);border-radius:10px;padding:16px;margin:12px 0}
+.citebox h4{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);margin-bottom:8px;font-weight:600}
+</style>
+
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="logo" href="/"><span>B</span>BXP</a>
+  <nav>
+    <a href="/">Overview</a>
+    <a href="spec.html">Specification</a>
+    <a href="api.html">API</a>
+    <a href="agents.html">Agents</a>
+    <a href="versions.html">Versions &amp; citation</a>
+    <a href="validator.html">Validator</a>
+    <a href="https://github.com/bxpprotocol/bxp-spec">GitHub</a>
+  </nav>
+</div></header>
+<main><div class="wrap">
+<span class="eyebrow">REST API</span>
+<h1>BXP REST API</h1>
+<p class="lede">The complete HTTP contract for a BXP v2.0 node. Every BXP node
+exposes this surface, so any client written against it can query any node.</p>
+<p class="meta">Version 2.0 · 23 endpoints · OpenAPI 3.1.0 · generated from the running reference server</p>
+
+<div class="note"><strong>Machine-readable contract</strong>
+The authoritative definition is the OpenAPI 3.1 document at
+<a href="https://raw.githubusercontent.com/bxpprotocol/bxp-spec/main/openapi.json">openapi.json</a>.
+Import it into Postman, Insomnia, or any OpenAPI-aware tool. This page is
+generated from that same file, so it cannot describe an endpoint the server does
+not implement.</div>
+
+<h2 id="using">Using the API</h2>
+<p>Submit a reading:</p>
+<pre><code>curl -X POST http://localhost:5000/bxp/v2/readings \
+  -H "Content-Type: application/json" \
+  -d '{"readings":[{"latitude":5.6037,"longitude":-0.1870,
+       "source":"native",
+       "agents":[{"agentId":"PM2_5","value":47.2,"unit":"ug/m3"}]}]}'</code></pre>
+<p>Find relevant observations near a point:</p>
+<pre><code>curl "http://localhost:5000/bxp/v2/nearby?lat=5.60&amp;lon=-0.18&amp;radiusKm=25"</code></pre>
+<p>Replicate from a peer node:</p>
+<pre><code>curl "http://localhost:5000/bxp/v2/sync?since=0"</code></pre>
+
+<h2 id="auth">Authentication</h2>
+<p>Reads are unauthenticated. Writes require a device token obtained from
+<code>POST /bxp/v2/devices/register</code>, which is rate limited to 5 requests
+per minute per IP. Inter-node replication uses a shared secret. Both mechanisms
+are deliberately minimal — real node identity and trust are deferred to a future
+RFC rather than left implied.</p>
+
+<h2 id="compatibility">Version negotiation</h2>
+<p>The <code>major</code> path segment is the protocol major version. MINOR
+additions are backward compatible: a server may add response fields, and clients
+must ignore-and-preserve fields they do not recognise. Breaking changes require a
+new major version with 18 months advance notice.</p>
+
+<h2 id="readings">Readings</h2>
+<div class="op"><div class="op-head"><span class="method m-get">GET</span><span class="path">/bxp/v2/locations/{geohash}/aggregate</span></div><p>Get Location Aggregate</p><p style="color:var(--ink-3);font-size:13px">Privacy-safe aggregate (SPEC.md 9): only returned when &gt;= 5 readings contribute.</p></div>
+<div class="op"><div class="op-head"><span class="method m-get">GET</span><span class="path">/bxp/v2/locations/{geohash}/history</span></div><p>Get Location History</p></div>
+<div class="op"><div class="op-head"><span class="method m-get">GET</span><span class="path">/bxp/v2/locations/{geohash}/latest</span></div><p>Get Location Latest</p></div>
+<div class="op"><div class="op-head"><span class="method m-get">GET</span><span class="path">/bxp/v2/nearby</span></div><p>Get Nearby</p><p style="color:var(--ink-3);font-size:13px">Relevance-ranked &quot;closest useful observation&quot; lookup (SPEC.md 7 Stage 6,
+8.2.1) for a caller with no sensor of their own. Ranking blends distance,
+freshness and quality; see database.get_nearby_readings.</p></div>
+<div class="op"><div class="op-head"><span class="method m-get">GET</span><span class="path">/bxp/v2/readings</span></div><p>Get Readings</p><p style="color:var(--ink-3);font-size:13px">List stored readings (offset pagination). With no filters, returns live
+data for the default cities. format=binary returns one binary `.bxp`
+container (SPEC.md 5.4, fileType=&quot;aggregate&quot;) wrapping {&quot;readings&quot;: [...]}.</p></div>
+<div class="op"><div class="op-head"><span class="method m-post">POST</span><span class="path">/bxp/v2/readings</span></div><p>Submit Readings</p><p style="color:var(--ink-3);font-size:13px">Accept BXP readings as JSON (SPEC.md 2) or a binary `.bxp` container
+(SPEC.md 5.1/5.2, auto-detected by magic number). The batch is stored
+atomically; a reading whose ID already exists is reported, never overwritten.</p></div>
+<div class="op"><div class="op-head"><span class="method m-delete">DELETE</span><span class="path">/bxp/v2/readings/{reading_id}</span></div><p>Delete Reading Endpoint</p><p style="color:var(--ink-3);font-size:13px">Delete a reading with cryptographic proof (SPEC.md 9). The authenticated
+device must be the one that submitted it. The reading&#x27;s content is erased;
+only a tombstone remains so the deletion replicates to peers.</p></div>
+<div class="op"><div class="op-head"><span class="method m-get">GET</span><span class="path">/bxp/v2/readings/{reading_id}</span></div><p>Get Reading By Id</p><p style="color:var(--ink-3);font-size:13px">format=binary returns the reading as a binary `.bxp` container (fileType=&quot;reading&quot;).</p></div>
+<div class="op"><div class="op-head"><span class="method m-get">GET</span><span class="path">/bxp/v2/readings/{reading_id}/verify</span></div><p>Verify Reading Endpoint</p></div>
+<div class="op"><div class="op-head"><span class="method m-get">GET</span><span class="path">/bxp/v2/search</span></div><p>Search</p><p style="color:var(--ink-3);font-size:13px">Search by city name (live AQICN data) and/or coordinates (stored readings in that cell).</p></div>
+<div class="op"><div class="op-head"><span class="method m-get">GET</span><span class="path">/compare</span></div><p>Compare View</p></div><h2 id="devices">Devices</h2>
+<div class="op"><div class="op-head"><span class="method m-post">POST</span><span class="path">/bxp/v2/devices/register</span></div><p>Register Device Endpoint</p></div>
+<div class="op"><div class="op-head"><span class="method m-get">GET</span><span class="path">/bxp/v2/devices/{device_uuid}</span></div><p>Get Device Endpoint</p></div><h2 id="community">Community</h2>
+<div class="op"><div class="op-head"><span class="method m-get">GET</span><span class="path">/bxp/v2/community/reports</span></div><p>Get Reports</p></div>
+<div class="op"><div class="op-head"><span class="method m-post">POST</span><span class="path">/bxp/v2/community/reports</span></div><p>Submit Report</p></div><h2 id="federation">Federation</h2>
+<div class="op"><div class="op-head"><span class="method m-get">GET</span><span class="path">/bxp/v2/nodes</span></div><p>List Nodes</p></div>
+<div class="op"><div class="op-head"><span class="method m-post">POST</span><span class="path">/bxp/v2/nodes/announce</span></div><p>Announce Node</p><p style="color:var(--ink-3);font-size:13px">Register a peer node so it appears in GET /nodes. This is a directory
+entry only - this server never fetches the announced URL - and a node_id
+cannot be re-pointed at a different baseUrl (see database.upsert_node).</p></div>
+<div class="op"><div class="op-head"><span class="method m-get">GET</span><span class="path">/bxp/v2/sync</span></div><p>Sync Pull</p><p style="color:var(--ink-3);font-size:13px">Federation pull (SPEC.md 7 Stage 7, 8.2.2). Returns every change after the
+opaque cursor `since` (default 0 = from the beginning), oldest first, plus
+`nextCursor` to resume from. Deleted readings arrive as tombstones
+({&quot;readingId&quot;, &quot;deleted&quot;: true, &quot;deletionProof&quot;}) that a replica must apply.</p></div><h2 id="operations">Operations</h2>
+<div class="op"><div class="op-head"><span class="method m-get">GET</span><span class="path">/</span></div><p>Root</p></div>
+<div class="op"><div class="op-head"><span class="method m-get">GET</span><span class="path">/bxp/v2/city/{city}</span></div><p>Get City</p></div>
+<div class="op"><div class="op-head"><span class="method m-get">GET</span><span class="path">/bxp/v2/health</span></div><p>Health</p></div>
+<div class="op"><div class="op-head"><span class="method m-get">GET</span><span class="path">/dashboard</span></div><p>Dashboard Home</p></div>
+<div class="op"><div class="op-head"><span class="method m-get">GET</span><span class="path">/dashboard/{city}</span></div><p>Dashboard</p></div>
+<div class="op"><div class="op-head"><span class="method m-get">GET</span><span class="path">/map</span></div><p>Map View</p></div>
+<div class="op"><div class="op-head"><span class="method m-get">GET</span><span class="path">/metrics</span></div><p>Metrics</p><p style="color:var(--ink-3);font-size:13px">Prometheus-compatible metrics.</p></div>
+<div class="op"><div class="op-head"><span class="method m-get">GET</span><span class="path">/widget/{city}</span></div><p>Widget</p><p style="color:var(--ink-3);font-size:13px">Embeddable iframe widget.</p></div>
+
+<p style="margin-top:40px;font-size:13px;color:var(--ink-3)">
+23 paths · 26 operations · generated from the reference server's
+OpenAPI document. See also the
+<a href="https://github.com/bxpprotocol/bxp-spec/blob/main/docs/api_documentation.md">prose API documentation</a>.
+</p>
+</div></main>
+<footer><div class="wrap">
+  BXP — Breathe Exposure Protocol · Apache 2.0 ·
+  <a href="https://github.com/bxpprotocol/bxp-spec">Repository</a> ·
+  <a href="https://doi.org/10.5281/zenodo.18906812">Cite this work</a>
+</div></footer>
+</body>
+</html>

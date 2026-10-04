@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>BXP Protocol releases</title>
+  <subtitle>Open protocol and API for atmospheric exposure data interoperability.</subtitle>
+  <id>https://bxpprotocol.github.io/feed.xml</id>
+  <link rel="self" href="https://bxpprotocol.github.io/feed.xml"/>
+  <link rel="alternate" href="https://bxpprotocol.github.io/"/>
+  <updated>2026-10-03T00:00:00Z</updated>
+  <author><name>BXP Protocol contributors</name></author>
+  <rights>Apache-2.0</rights>
+  <entry>
+    <title>v2.1.0 — 2026-10-03</title>
+    <id>https://github.com/bxpprotocol/bxp-spec/releases/tag/v2.1.0</id>
+    <link rel="alternate" href="https://github.com/bxpprotocol/bxp-spec/releases/tag/v2.1.0"/>
+    <updated>2026-10-03T00:00:00Z</updated>
+    <summary>Breaking: `GET /bxp/v2/sync` now takes `since` and returns `nextCursor`</summary>
+    <content type="text">Reference node hardening (checkpoint 07)
+
+Breaking: GET /bxp/v2/sync now takes since and returns nextCursor
+(previously sinceTs / nextSinceTs). since=0 still means "from the start".
+
+- Sync cursor is an ingest sequence, not a timestamp. The old timestamp
+  cursor let one far-future reading stall replication forever and skipped
+  readings that arrived late from offline devices.
+- Deletion is real and replicates. Deleting a reading erases its content
+  (secure_delete on) and leaves a tombstone that /sync delivers, so peers
+  erase their copies too. Previously only a flag was set.
+- Ownership. Registering an existing device UUID is now 409 (it used to
+  mint a new token for it). Anonymous callers cannot submit under a registered
+  device's UUID, and an authenticated device cannot submit as another (403).
+- No silent overwrites. Readings are insert-if-absent; a resubmission can
+  no longer replace or resurrect a reading. Batches are stored atomically.
+  Reading IDs now include location and values, so distinct readings at one
+  instant no longer collide.
+- Privacy floor enforced. Anonymous submissions and community reports are
+  snapped to their geohash-5 cell centre (SPEC.md 9.1); exact coordinates were
+  previously stored and returned.
+- /nearby correctness. The 3x3 geohash block is chosen from the search
+  radius and latitude; a fixed precision-5 block missed readings well inside
+  the radius at high latitude. Queries are also index-friendly now (range
+  predicates instead of LIKE).
+- Pagination. The agent filter runs in SQL, so total, limit and
+  offset agree. Limits are validated (422) instead of silently trusted.
+- Ingest keeps what clients send. Agent-level fields (uncertainty,
+  method, the SPEC.md 5.5.1 correction object) and top-level ext /
+  context survive storage and replication (SPEC.md 5.7).
+- Input bounds. NaN/Infinity rejected; batch size, string lengths,
+  timestamps and identifiers are capped. The city cache is bounded.
+- HTML/JS injection. The dashboard, widget, map and compare pages escape
+  every value that comes from the URL or the upstream API; the city name is
+  URL-encoded when calling AQICN.
+- POST /nodes/announce validates input, requires an http(s) URL, and cannot
+  re-point an existing nodeId. /metrics labels are sanitised.
+- Code layout: server.py split into hri.py, pages.py, geo.py;
+  three duplicated geohash implementations replaced by geo.py.
+- Tests: test_database.py, test_pages.py, test_hri.py (stdlib only) and
+  about 25 new server tests. The FastAPI routes and test_server.py were
+  written without being run (no network to install FastAPI in the sandbox);
+  run make check before relying on this.
+
+Security
+
+- Broken access control (fixed): DELETE /bxp/v2/readings/{id} only
+  checked that the caller held a valid device token, not that it owned the
+  reading, so any registered device could delete any other device's data.
+  Now returns 403 unless the token's device submitted the reading.
+- Decompression bomb / DoS (fixed): the binary decoder inflated gzip
+  payloads without a size limit; a ~200 KB upload to the unauthenticated
+  POST /bxp/v2/readings forced ~460 MB of allocation. Inflation is now
+  capped at 16 MiB (MAX_DECOMPRESSED_BYTES) in both the Python and
+  TypeScript decoders. (The first TypeScript version of this guard leaked an
+  unhandled AbortError that would crash a Node process; fixed and tested.)
+- Unbounded request bodies (fixed): uploads were read fully into memory.
+  Now capped (default 8 MiB, BXP_MAX_BODY_BYTES), enforced for both
+  declared and chunked bodies (413).
+- Rate-limit bypass (fixed): X-Forwarded-For was trusted
+  unconditionally, so any client could dodge per-IP limits by spoofing it.
+  Ignored unless BXP_TRUST_PROXY_HEADERS=true.
+- Memory growth (fixed): the rate limiter never evicted idle keys;
+  combined with the spoofable header this was an unbounded-memory vector.
+  Stale keys are now swept.
+- BXP_NODE_SYNC_TOKEN is compared in constant time (hmac.compare_digest).</content>
+  </entry>
+  <entry>
+    <title>v2.0.0 — March 2026</title>
+    <id>https://github.com/bxpprotocol/bxp-spec/releases/tag/v2.0.0</id>
+    <link rel="alternate" href="https://github.com/bxpprotocol/bxp-spec/releases/tag/v2.0.0"/>
+    <updated>2026-10-03T00:00:00Z</updated>
+    <summary>This release represents the complete BXP specification — a full</summary>
+    <content type="text">The Official Standard
+
+This release represents the complete BXP specification — a full
+architectural expansion of the original v1 concept into a
+production-ready, globally deployable open standard.
+
+Added
+
+File System Architecture
+- Complete BXP:// volume structure with 9 top-level directories
+- /meta — volume identity, schema versioning, Merkle tree checksums
+- /locations — geohash-based geographic hierarchy (precision 5–9)
+- /agents — canonical pollutant and biological agent definitions
+- /exposures — device, personal, and aggregate exposure records
+- /devices — device registry with calibration traceability
+- /alerts — alert event system
+- /community — community observation reports
+- /research — research-grade dataset storage
+- /system — audit logs, system files, schema version control
+
+File Format
+- Binary .bxp format with 32-byte fixed header
+- Magic number 0x42585000 for universal file identification
+- CRC32 integrity checksums at both header and payload level
+- Optional compression flag (bit0) and encryption flag (bit1)
+- Optional Ed25519 cryptographic signing flag (bit2)
+- JSON .bxp.json representation — semantically identical to binary
+- Lossless conversion between binary and JSON representations
+- Container schema v2 — direct evolution of v1 container
+
+Agent Schema
+- 31 atmospheric agents fully specified across 7 categories
+- Particulates: PM1, PM2.5, PM10, Black Carbon
+- Gases: CO, CO2, NO2, NO, SO2, O3, H2S, NH3
+- Volatile Organics: TVOC, Benzene, Formaldehyde, Toluene, Xylene, Naphthalene
+- Biological: Mold Spores, Grass Pollen, Tree Pollen, Total Bacteria, Dust Mite Allergen
+- Heavy Metals: Lead, Mercury, Arsenic
+- Environmental: Temperature, Humidity, Pressure, UV Index
+- Derived: AQI_US, BXP Health Risk Index (BXP_HRI)
+- All thresholds aligned with WHO Air Quality Guidelines 2021
+
+Protocol Stages
+- Stage 1 LOCATE — geohash precision requirements and location acquisition methods
+- Stage 2 DETECT — three-tier source classification system (Tier 1/2/3)
+- Stage 3 INTERPRET — automated QC rules, unit normalization, humidity correction
+- Stage 4 PROTECT — six-level risk framework (CLEAN through HAZARDOUS)
+- Stage 5 REPORT — community observation schema with event tagging
+
+REST API
+- 15 endpoints fully specified
+- Standard response envelope with requestId, meta, and errors
+- Three authentication token classes: Device, User, API Key
+- Rate limiting framework with standard response headers
+- Complete error code system (BXP_4001 through BXP_5030)
+- Support for json, bxp, and csv response formats
+- Geohash resolution parameter for spatial aggregation
+
+Security &amp; Privacy
+- AES-256-GCM encryption for personal records at rest
+- TLS 1.3 mandatory for all data in transit
+- Ed25519 cryptographic signatures for reading integrity
+- SHA-256 Merkle tree for volume-level tamper detection
+- Append-only cryptographically chained audit logs
+- Person identifiers stored as SHA-256 hashes only — never plain
+- k-anonymization for community aggregates (minimum k=5)
+- Single-call permanent personal data deletion
+- GDPR, CCPA, POPIA, PDPA, HIPAA compliance framework
+
+Community Reporting Layer
+- Full community report schema with qualitative observation fields
+- 12 standardized event tags including harmattan and generator_exhaust
+- Five-stage automated QC pipeline
+- Reporter reliability scoring system (0.5 to 1.0)
+- Geospatial clustering for correlated event detection
+- Abuse and spam detection system
+
+BXP Health Risk Index
+- BXP_HRI composite score (0–100) across all available agents
+- WHO-derived agent weighting (8 agents, weights sum to 1.0)
+- Duration modifiers: 1h (1.0×), 8h (1.2×), 24h (1.5×)
+- Vulnerability modifiers: general (1.0×), sensitive groups (1.3×)
+- Full Python reference implementation included
+
+Governance
+- BXP Foundation structure defined
+- Technical Steering Committee (7 elected members)
+- Working Groups: hardware, software, privacy, health, community
+- Advisory Board framework: WHO, agencies, manufacturers, academia
+- Semanti</content>
+  </entry>
+  <entry>
+    <title>v1.0.0 — February 15, 2026 — FROZEN</title>
+    <id>https://github.com/bxpprotocol/bxp-spec/releases/tag/v1.0.0</id>
+    <link rel="alternate" href="https://github.com/bxpprotocol/bxp-spec/releases/tag/v1.0.0"/>
+    <updated>2026-10-03T00:00:00Z</updated>
+    <summary>This is where BXP began. Conceived, designed, and implemented</summary>
+    <content type="text">The Origin
+
+This is where BXP began. Conceived, designed, and implemented
+by Elvarin on February 15, 2026. The v1 specification established
+the foundational concepts that all future versions are built upon.
+
+This version is permanently frozen. It is preserved as the
+original public record of BXP's creation.
+
+Established in v1
+
+Core Concept
+- Breathe Exposure Protocol — the name, the vision, the purpose
+- User-owned data by default — no implicit transmission permitted
+- Offline-first architecture — no network required for operation
+- Sensor-agnostic design — works with any data source
+- Forward-extensible format — built to grow without breaking
+
+Exposure Event Schema (bxp.exposure_event.v1)
+- event_id — UUID per exposure event
+- timestamp_utc — ISO 8601 UTC timestamp
+- location — latitude and longitude
+- exposure_vector — oxygen, nitrogen, pollution, pollen, acidity
+- notes — optional human-readable context
+- Partial records permitted — timestamp-only events are valid
+
+Container Schema (bxp.container.v1)
+- protocol — "Breathe Exposure Protocol"
+- version — protocol version string
+- owner — data ownership declaration (default: "user")
+- generated_at — container creation timestamp
+- events — array of Exposure Event v1 objects
+- payload_hash — SHA-256 of canonical JSON payload
+- signature — cryptographic signature of payload hash
+- verification — method, status (Verified / Tampered / Unverified)
+
+Verification Protocol
+- Canonical serialization using sorted JSON keys
+- SHA-256 hashing of UTF-8 encoded payload
+- Self-signing permitted in v1
+- Three verification states: Verified, Unverified, Tampered
+
+Guarantees
+- Data is user-owned by default
+- No implicit data transmission permitted
+- No surveillance assumptions
+- Offline-first
+- Forward-extensible without breaking v1
+
+Working Implementation
+- Python reference implementation included in v1
+- UUID generation for event identity
+- SHA-256 hashing and self-signing
+- Container build and verify functions
+- File export to .bxp.txt format
+- Verified working on date of publication
+
+---</content>
+  </entry>
+</feed>

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <!-- Primary surfaces: the site a visitor lands on and the tools they use. -->
   <url>
     <loc>https://bxpprotocol.github.io/</loc>
     <lastmod>2026-10-02</lastmod>
@@ -8,7 +10,7 @@
   </url>
   <url>
     <loc>https://bxpprotocol.github.io/validator.html</loc>
-    <lastmod>2026-10-01</lastmod>
+    <lastmod>2026-10-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -18,6 +20,38 @@
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
+  <url>
+    <loc>https://bxpprotocol.github.io/spec.html</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://bxpprotocol.github.io/api.html</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://bxpprotocol.github.io/agents.html</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://bxpprotocol.github.io/versions.html</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://bxpprotocol.github.io/llms.txt</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <!-- Prose documentation also mirrored from the source repository. -->
   <url>
     <loc>https://bxpprotocol.github.io/api_documentation.md</loc>
     <lastmod>2026-10-01</lastmod>
@@ -36,16 +70,61 @@
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
+  <!--
+    The specification and repository are versioned. Pinning a major version in
+    the URL means a citation or integration written today still resolves to the
+    same document after a future release.
+  -->
   <url>
     <loc>https://github.com/bxpprotocol/bxp-spec/blob/main/SPEC.md</loc>
-    <lastmod>2026-10-01</lastmod>
+    <lastmod>2026-10-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://github.com/bxpprotocol/bxp-spec</loc>
-    <lastmod>2026-10-01</lastmod>
+    <lastmod>2026-10-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
+  <url>
+    <loc>https://github.com/bxpprotocol/bxp-spec/blob/main/CHANGELOG.md</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://github.com/bxpprotocol/bxp-spec/blob/main/GOVERNANCE.md</loc>
+    <lastmod>2026-10-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://github.com/bxpprotocol/bxp-spec/blob/main/SECURITY.md</loc>
+    <lastmod>2026-10-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://github.com/bxpprotocol/bxp-spec/blob/main/CONTRIBUTING.md</loc>
+    <lastmod>2026-10-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <!-- Machine-readable contract and citation targets. -->
+  <url>
+    <loc>https://doi.org/10.5281/zenodo.18906812</loc>
+    <lastmod>2026-09-01</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://doi.org/10.5281/zenodo.18907003</loc>
+    <lastmod>2026-09-01</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
 </urlset>
