@@ -422,8 +422,8 @@ paths:
         schema:
           anyOf:
           - type: number
-            maximum: 90.0
-            minimum: -90.0
+            maximum: 90
+            minimum: -90
           - type: 'null'
           title: Lat
       - name: lon
@@ -432,8 +432,8 @@ paths:
         schema:
           anyOf:
           - type: number
-            maximum: 180.0
-            minimum: -180.0
+            maximum: 180
+            minimum: -180
           - type: 'null'
           title: Lon
       - name: limit
@@ -472,16 +472,16 @@ paths:
         required: true
         schema:
           type: number
-          maximum: 90.0
-          minimum: -90.0
+          maximum: 90
+          minimum: -90
           title: Lat
       - name: lon
         in: query
         required: true
         schema:
           type: number
-          maximum: 180.0
-          minimum: -180.0
+          maximum: 180
+          minimum: -180
           title: Lon
       - name: radiusM
         in: query

@@ -633,8 +633,8 @@
               "anyOf": [
                 {
                   "type": "number",
-                  "maximum": 90.0,
-                  "minimum": -90.0
+                  "maximum": 90,
+                  "minimum": -90
                 },
                 {
                   "type": "null"
@@ -651,8 +651,8 @@
               "anyOf": [
                 {
                   "type": "number",
-                  "maximum": 180.0,
-                  "minimum": -180.0
+                  "maximum": 180,
+                  "minimum": -180
                 },
                 {
                   "type": "null"
@@ -708,8 +708,8 @@
             "required": true,
             "schema": {
               "type": "number",
-              "maximum": 90.0,
-              "minimum": -90.0,
+              "maximum": 90,
+              "minimum": -90,
               "title": "Lat"
             }
           },
@@ -719,8 +719,8 @@
             "required": true,
             "schema": {
               "type": "number",
-              "maximum": 180.0,
-              "minimum": -180.0,
+              "maximum": 180,
+              "minimum": -180,
               "title": "Lon"
             }
           },
