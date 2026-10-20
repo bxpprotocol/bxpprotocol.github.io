@@ -1,0 +1,75 @@
+name: BXP Website CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-html:
+    name: Validate HTML files
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check for broken internal links
+        run: |
+          python -c "
+import re, sys
+from pathlib import Path
+
+errors = []
+html_files = list(Path('.').glob('*.html'))
+for f in html_files:
+    content = f.read_text(encoding='utf-8')
+    # Find href/src links to local files
+    links = re.findall(r'(?:href|src)=[\"\\\']([^\"\\\']+)[\"\\\']', content)
+    for link in links:
+        if link.startswith(('http://', 'https://', '#', 'mailto:')):
+            continue
+        # Strip fragment/query
+        path = link.split('#')[0].split('?')[0]
+        if not Path(path).exists():
+            errors.append(f'{f}: broken link to {path}')
+
+if errors:
+    for e in errors:
+        print(e)
+    sys.exit(1)
+print(f'Checked {len(html_files)} HTML files — no broken internal links')
+          "
+
+      - name: Validate JSON files
+        run: |
+          python -c "
+import json
+from pathlib import Path
+
+errors = []
+for f in Path('.').glob('*.json'):
+    try:
+        json.loads(f.read_text(encoding='utf-8'))
+    except json.JSONDecodeError as e:
+        errors.append(f'{f}: {e}')
+
+if errors:
+    for e in errors:
+        print(e)
+    raise SystemExit(1)
+print('All JSON files valid')
+          "
+
+      - name: Check required files exist
+        run: |
+          test -f index.html
+          test -f validator.html
+          test -f .nojekyll
+          test -f robots.txt
+          test -f sitemap.xml
+          echo "All required files present"
